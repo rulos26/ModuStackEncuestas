@@ -16,6 +16,17 @@
     <!-- Scripts -->
     <link rel="stylesheet" href="{{ asset('public/build/assets/app-DbaZCfaT.css') }}">
     <script type="module" src="{{ asset('public/build/assets/app-BDAque31.js') }}"></script>
+
+    <!-- AdminLTE y dependencias -->
+    <link rel="stylesheet" href="{{ asset('public/vendor/adminlte/dist/css/adminlte.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('public/vendor/fontawesome-free/css/all.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('public/vendor/icheck-bootstrap/icheck-bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('public/vendor/overlayScrollbars/css/OverlayScrollbars.min.css') }}">
+
+    <script src="{{ asset('public/vendor/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('public/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('public/vendor/overlayScrollbars/js/jquery.overlayScrollbars.min.js') }}"></script>
+    <script src="{{ asset('public/vendor/adminlte/dist/js/adminlte.min.js') }}"></script>
 </head>
 <body>
     <div id="app">
