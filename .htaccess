@@ -1,0 +1,20 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Redirige todas las peticiones al public/index.php
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+
+    # Opcional: fuerza HTTPS (descomenta si tienes SSL)
+    # RewriteCond %{HTTPS} off
+    # RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# Protege archivos y carpetas sensibles
+<FilesMatch "\.(env|env.example|htaccess|git|gitignore|gitattributes|log|json|lock|md|yml|yaml|ini|sh|bat|sql|bak)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Deshabilita listado de directorios
+Options -Indexes 
