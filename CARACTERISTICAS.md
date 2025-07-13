@@ -1,6 +1,6 @@
 # Características Actuales del Proyecto (Laravel 12+)
 
-Este proyecto es una instalación base de Laravel 12+, lista para ser extendida y personalizada según las necesidades del sistema de encuestas.
+Este proyecto es una instalación base de Laravel 12+ con integración completa de AdminLTE 3 por CDN, adaptado para autenticación y panel administrativo moderno.
 
 ## 1. Instalación Base de Laravel
 - Framework Laravel 12+ instalado.
@@ -20,18 +20,21 @@ Este proyecto es una instalación base de Laravel 12+, lista para ser extendida 
 - Migraciones para manejo de sesiones y tokens de recuperación de contraseña.
 
 ## 3. Rutas y Controladores
-- Ruta principal `/` que retorna la vista de bienvenida (`welcome.blade.php`).
+- Ruta principal `/` que redirige al login.
+- Rutas de autenticación y dashboard protegidas.
 - No existen rutas personalizadas, recursos ni controladores adicionales implementados.
 
-## 4. Vistas
-- Vista de bienvenida por defecto de Laravel.
-- No existen vistas personalizadas para autenticación, administración ni CRUD.
+## 4. Vistas y Frontend
+- Login y dashboard adaptados a AdminLTE 3, usando únicamente assets por CDN.
+- Todas las imágenes de logo y preloader usan CDN oficial de AdminLTE.
+- No existen vistas personalizadas para CRUD de usuarios ni módulos adicionales.
 
 ## 5. Dependencias y Configuración
 - Dependencias estándar de Laravel.
-- No se han instalado paquetes adicionales para autenticación avanzada, roles, permisos, plantillas administrativas, etc.
+- AdminLTE 3 integrado y configurado para uso por CDN (sin assets locales).
+- No se han instalado paquetes adicionales para roles, permisos, ni otras plantillas administrativas.
 
 ---
 
 **Nota:**  
-El sistema está listo para ser ampliado. Puedes agregar autenticación robusta, gestión de usuarios, roles, plantillas administrativas y cualquier otra funcionalidad según tus necesidades. 
+El sistema está listo para ser ampliado. Puedes agregar gestión de usuarios, roles, módulos personalizados y cualquier otra funcionalidad según tus necesidades. 
