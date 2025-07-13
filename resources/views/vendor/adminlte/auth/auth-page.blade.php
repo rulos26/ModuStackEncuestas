@@ -31,7 +31,14 @@
         <div class="{{ $authType }}-logo">
             <a href="{{ $dashboardUrl }}">
 
-                {{-- Logo Image --}}
+                {{--
+                    INTEGRACIÓN CON MÓDULO DE CONFIGURACIÓN DE IMÁGENES:
+                    Esta vista personalizada prioriza las imágenes de la base de datos sobre config/adminlte.php.
+                    Si existe una imagen personalizada en la tabla 'settings', se usa esa.
+                    Si no existe, se usa el CDN de AdminLTE como fallback.
+                    Los valores de config/adminlte.php solo se usan para clases CSS y atributos alt.
+                --}}
+                @php($loginLogo = \App\Models\Setting::current()->login_logo)
                 @if (config('adminlte.auth_logo.enabled', false))
                     <img src="{{ asset(config('adminlte.auth_logo.img.path')) }}"
                          alt="{{ config('adminlte.auth_logo.img.alt') }}"
@@ -45,7 +52,7 @@
                             height="{{ config('adminlte.auth_logo.img.height') }}"
                          @endif>
                 @else
-                    <img src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/img/AdminLTELogo.png"
+                    <img src="{{ $loginLogo ? asset('storage/'.$loginLogo) : 'https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/img/AdminLTELogo.png' }}"
                          alt="AdminLTE Logo"
                          height="50">
                 @endif

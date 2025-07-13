@@ -68,8 +68,16 @@
     {{-- Custom Stylesheets (post AdminLTE) --}}
     @yield('adminlte_css')
 
-    {{-- Favicon --}}
-    @if(config('adminlte.use_ico_only'))
+    {{--
+        INTEGRACIÓN CON MÓDULO DE CONFIGURACIÓN DE IMÁGENES:
+        Esta vista personalizada prioriza las imágenes de la base de datos sobre config/adminlte.php.
+        Si existe una imagen personalizada en la tabla 'settings', se usa esa como favicon.
+        Si no existe, se usan los valores de config/adminlte.php para favicon.
+    --}}
+    @php($logo = \App\Models\Setting::current()->logo)
+    @if($logo)
+        <link rel="shortcut icon" href="{{ asset('storage/'.$logo) }}" />
+    @elseif(config('adminlte.use_ico_only'))
         <link rel="shortcut icon" href="{{ asset('favicons/favicon.ico') }}" />
     @elseif(config('adminlte.use_full_favicon'))
         <link rel="shortcut icon" href="{{ asset('favicons/favicon.ico') }}" />

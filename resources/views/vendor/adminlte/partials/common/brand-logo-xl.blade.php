@@ -15,13 +15,20 @@
         class="brand-link logo-switch {{ config('adminlte.classes_brand') }}"
     @endif>
 
-    {{-- Small brand logo --}}
-    <img src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/img/AdminLTELogo.png"
+    {{--
+        INTEGRACIÓN CON MÓDULO DE CONFIGURACIÓN DE IMÁGENES:
+        Esta vista personalizada prioriza las imágenes de la base de datos sobre config/adminlte.php.
+        Si existe una imagen personalizada en la tabla 'settings', se usa esa.
+        Si no existe, se usa el CDN de AdminLTE como fallback.
+        Los valores de config/adminlte.php solo se usan para clases CSS y atributos alt.
+    --}}
+    @php($logo = \App\Models\Setting::current()->logo)
+    <img src="{{ $logo ? asset('storage/'.$logo) : 'https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/img/AdminLTELogo.png' }}"
          alt="{{ config('adminlte.logo_img_alt', 'AdminLTE') }}"
          class="{{ config('adminlte.logo_img_class', 'brand-image-xl') }} logo-xs">
 
     {{-- Large brand logo --}}
-    <img src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/img/AdminLTELogo.png"
+    <img src="{{ $logo ? asset('storage/'.$logo) : 'https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/img/AdminLTELogo.png' }}"
          alt="{{ config('adminlte.logo_img_alt', 'AdminLTE') }}"
          class="{{ config('adminlte.logo_img_xl_class', 'brand-image-xs') }} logo-xl">
 

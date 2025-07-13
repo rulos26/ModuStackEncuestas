@@ -296,13 +296,24 @@ return [
     | For detailed instructions you can look here:
     | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/Menu-Configuration
     |
+    | IMPLEMENTACIÓN DEL MENÚ:
+    | Este menú está configurado para un sistema de encuestas con las siguientes secciones:
+    | - Dashboard: Página principal del sistema
+    | - Gestión de Encuestas: Crear, listar y gestionar encuestas
+    | - Respuestas: Ver respuestas, reportes y exportar datos
+    | - Administración: Gestión de usuarios y configuración del sistema
+    | - Sistema: Logs y ayuda
+    |
+    | Las rutas marcadas con '#' están pendientes de implementación.
+    | La ruta 'settings.images' está implementada y funcional.
+    |
     */
 
     'menu' => [
         // Navbar items:
         [
             'type' => 'navbar-search',
-            'text' => 'search',
+            'text' => 'Buscar',
             'topnav_right' => true,
         ],
         [
@@ -313,84 +324,142 @@ return [
         // Sidebar items:
         [
             'type' => 'sidebar-menu-search',
-            'text' => 'search',
+            'text' => 'Buscar',
         ],
+
+        // Dashboard
         [
-            'text' => 'blog',
-            'url' => 'admin/blog',
-            'can' => 'manage-blog',
+            'text' => 'Dashboard',
+            'url' => 'home',
+            'icon' => 'fas fa-fw fa-tachometer-alt',
         ],
+
+        ['header' => 'GESTIÓN DE ENCUESTAS'],
+
+        // Encuestas
         [
-            'text' => 'pages',
-            'url' => 'admin/pages',
-            'icon' => 'far fa-fw fa-file',
-            'label' => 4,
-            'label_color' => 'success',
-        ],
-        ['header' => 'account_settings'],
-        [
-            'text' => 'profile',
-            'url' => 'admin/settings',
-            'icon' => 'fas fa-fw fa-user',
-        ],
-        [
-            'text' => 'change_password',
-            'url' => 'admin/settings',
-            'icon' => 'fas fa-fw fa-lock',
-        ],
-        [
-            'text' => 'multilevel',
-            'icon' => 'fas fa-fw fa-share',
+            'text' => 'Encuestas',
+            'icon' => 'fas fa-fw fa-clipboard-list',
             'submenu' => [
                 [
-                    'text' => 'level_one',
+                    'text' => 'Listar Encuestas',
                     'url' => '#',
+                    'icon' => 'fas fa-fw fa-list',
                 ],
                 [
-                    'text' => 'level_one',
+                    'text' => 'Crear Encuesta',
                     'url' => '#',
-                    'submenu' => [
-                        [
-                            'text' => 'level_two',
-                            'url' => '#',
-                        ],
-                        [
-                            'text' => 'level_two',
-                            'url' => '#',
-                            'submenu' => [
-                                [
-                                    'text' => 'level_three',
-                                    'url' => '#',
-                                ],
-                                [
-                                    'text' => 'level_three',
-                                    'url' => '#',
-                                ],
-                            ],
-                        ],
-                    ],
+                    'icon' => 'fas fa-fw fa-plus',
                 ],
                 [
-                    'text' => 'level_one',
+                    'text' => 'Plantillas',
                     'url' => '#',
+                    'icon' => 'fas fa-fw fa-copy',
                 ],
             ],
         ],
-        ['header' => 'labels'],
+
+        // Respuestas
         [
-            'text' => 'important',
-            'icon_color' => 'red',
+            'text' => 'Respuestas',
+            'icon' => 'fas fa-fw fa-reply',
+            'submenu' => [
+                [
+                    'text' => 'Ver Respuestas',
+                    'url' => '#',
+                    'icon' => 'fas fa-fw fa-eye',
+                ],
+                [
+                    'text' => 'Reportes',
+                    'url' => '#',
+                    'icon' => 'fas fa-fw fa-chart-bar',
+                ],
+                [
+                    'text' => 'Exportar Datos',
+                    'url' => '#',
+                    'icon' => 'fas fa-fw fa-download',
+                ],
+            ],
+        ],
+
+        ['header' => 'ADMINISTRACIÓN'],
+
+        // Usuarios
+        [
+            'text' => 'Usuarios',
+            'icon' => 'fas fa-fw fa-users',
+            'submenu' => [
+                [
+                    'text' => 'Listar Usuarios',
+                    'url' => '#',
+                    'icon' => 'fas fa-fw fa-list',
+                ],
+                [
+                    'text' => 'Crear Usuario',
+                    'url' => '#',
+                    'icon' => 'fas fa-fw fa-user-plus',
+                ],
+                [
+                    'text' => 'Roles y Permisos',
+                    'url' => '#',
+                    'icon' => 'fas fa-fw fa-user-shield',
+                ],
+            ],
+        ],
+
+        // Configuración
+        [
+            'text' => 'Configuración',
+            'icon' => 'fas fa-fw fa-cogs',
+            'submenu' => [
+                [
+                    'text' => 'Imágenes del Sistema',
+                    'url' => 'settings.images',
+                    'icon' => 'fas fa-fw fa-images',
+                ],
+                [
+                    'text' => 'Configuración General',
+                    'url' => '#',
+                    'icon' => 'fas fa-fw fa-sliders-h',
+                ],
+                [
+                    'text' => 'Backup y Restauración',
+                    'url' => '#',
+                    'icon' => 'fas fa-fw fa-database',
+                ],
+            ],
+        ],
+
+        ['header' => 'SISTEMA'],
+
+        // Logs y Monitoreo
+        [
+            'text' => 'Logs del Sistema',
+            'icon' => 'fas fa-fw fa-file-alt',
             'url' => '#',
         ],
+
+        // Ayuda
         [
-            'text' => 'warning',
-            'icon_color' => 'yellow',
-            'url' => '#',
-        ],
-        [
-            'text' => 'information',
-            'icon_color' => 'cyan',
-            'url' => '#',
+            'text' => 'Ayuda',
+            'icon' => 'fas fa-fw fa-question-circle',
+            'submenu' => [
+                [
+                    'text' => 'Documentación',
+                    'url' => '#',
+                    'icon' => 'fas fa-fw fa-book',
+                ],
+                [
+                    'text' => 'Soporte Técnico',
+                    'url' => '#',
+                    'icon' => 'fas fa-fw fa-headset',
+                ],
+                [
+                    'text' => 'Acerca de',
+                    'url' => '#',
+                    'icon' => 'fas fa-fw fa-info-circle',
+                ],
+            ],
         ],
     ],
 
@@ -548,3 +617,4 @@ return [
 
     'livewire' => false,
 ];
+
