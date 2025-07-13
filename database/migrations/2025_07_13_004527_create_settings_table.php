@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('login_logo')->nullable();
             $table->string('dashboard_logo')->nullable();
             $table->string('spinner')->nullable();
+            $table->string('favicon')->nullable();
         });
     }
 

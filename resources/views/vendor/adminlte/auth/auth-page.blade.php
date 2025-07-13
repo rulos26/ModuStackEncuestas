@@ -52,7 +52,7 @@
                             height="{{ config('adminlte.auth_logo.img.height') }}"
                          @endif>
                 @else
-                    <img src="{{ $loginLogo ? asset('storage/'.$loginLogo) : 'https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/img/AdminLTELogo.png' }}"
+                    <img src="{{ $loginLogo ? asset('storage/images/login/' . basename($loginLogo)) : 'https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/img/AdminLTELogo.png' }}"
                          alt="AdminLTE Logo"
                          height="50">
                 @endif

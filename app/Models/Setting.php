@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
  * - login_logo: Logo específico para páginas de autenticación
  * - dashboard_logo: Logo específico para el dashboard
  * - spinner: Imagen del preloader/spinner
+ * - favicon: Favicon personalizado del sistema
  *
  * Las imágenes se almacenan en storage/app/public/images/ y son accesibles
  * desde /storage/images/ gracias al enlace simbólico de Laravel.
@@ -25,7 +26,7 @@ use Illuminate\Database\Eloquent\Model;
 class Setting extends Model
 {
     protected $fillable = [
-        'logo', 'login_logo', 'dashboard_logo', 'spinner'
+        'logo', 'login_logo', 'dashboard_logo', 'spinner', 'favicon'
     ];
 
     /**

@@ -29,9 +29,17 @@ class ImageSettingsController extends Controller
     {
         $settings = Setting::current();
         $data = [];
-        foreach(['logo', 'login_logo', 'dashboard_logo', 'spinner'] as $field) {
+        foreach(['logo', 'login_logo', 'dashboard_logo', 'spinner', 'favicon'] as $field) {
             if ($request->hasFile($field)) {
-                $path = $request->file($field)->store('images', 'public');
+                $folder = match($field) {
+                    'logo' => 'images/logo',
+                    'login_logo' => 'images/login',
+                    'dashboard_logo' => 'images/dashboard',
+                    'spinner' => 'images/spinner',
+                    'favicon' => 'images/favicon',
+                    default => 'images',
+                };
+                $path = $request->file($field)->store($folder, 'public');
                 $data[$field] = $path;
             }
         }
