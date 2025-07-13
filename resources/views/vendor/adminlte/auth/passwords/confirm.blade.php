@@ -25,7 +25,7 @@
         {{-- Lockscreen logo --}}
         <div class="lockscreen-logo">
             <a href="{{ $dashboardUrl }}">
-                <img src="{{ asset(config('adminlte.logo_img')) }}" height="50">
+                <img src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/img/AdminLTELogo.png" height="50">
                 {!! config('adminlte.logo', '<b>Admin</b>LTE') !!}
             </a>
         </div>
