@@ -36,10 +36,10 @@ class ImageSettingsController extends Controller
                     'login_logo' => 'images/login',
                     'dashboard_logo' => 'images/dashboard',
                     'spinner' => 'images/spinner',
-                    'favicon' => 'images/favicon',
+                    'favicon' => 'favicon',
                     default => 'images',
                 };
-                $path = $request->file($field)->store($folder, 'public');
+                $path = $request->file($field)->store($folder, 'public_storage');
                 $data[$field] = $path;
             }
         }
