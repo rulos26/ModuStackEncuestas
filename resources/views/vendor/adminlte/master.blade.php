@@ -77,9 +77,9 @@
     @php($logo = \App\Models\Setting::current()->logo)
     @php($favicon = \App\Models\Setting::current()->favicon)
     @if($favicon)
-        <link rel="shortcut icon" href="{{ asset('storage/favicon/' . basename($favicon)) }}" />
+        <link rel="shortcut icon" href="{{ '/public/storage/favicon/' . basename($favicon) }}" />
     @elseif($logo)
-        <link rel="shortcut icon" href="{{ asset('storage/images/logo/' . basename($logo)) }}" />
+        <link rel="shortcut icon" href="{{ '/public/storage/logo/' . basename($logo) }}" />
     @elseif(config('adminlte.use_ico_only'))
         <link rel="shortcut icon" href="{{ asset('favicons/favicon.ico') }}" />
     @elseif(config('adminlte.use_full_favicon'))

@@ -38,4 +38,26 @@ class Setting extends Model
     {
         return self::first() ?? self::create([]);
     }
+
+    // Agrega métodos para obtener la URL pública de cada imagen
+    public function getLogoUrl()
+    {
+        return $this->logo ? '/public/storage/logo/' . basename($this->logo) : null;
+    }
+    public function getLoginLogoUrl()
+    {
+        return $this->login_logo ? '/public/storage/login/' . basename($this->login_logo) : null;
+    }
+    public function getDashboardLogoUrl()
+    {
+        return $this->dashboard_logo ? '/public/storage/dashboard/' . basename($this->dashboard_logo) : null;
+    }
+    public function getSpinnerUrl()
+    {
+        return $this->spinner ? '/public/storage/spinner/' . basename($this->spinner) : null;
+    }
+    public function getFaviconUrl()
+    {
+        return $this->favicon ? '/public/storage/favicon/' . basename($this->favicon) : null;
+    }
 }
