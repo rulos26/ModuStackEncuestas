@@ -42,22 +42,22 @@ class Setting extends Model
     // Agrega métodos para obtener la URL pública de cada imagen
     public function getLogoUrl()
     {
-        return $this->logo ? '/public/storage/logo/' . basename($this->logo) : null;
+        return $this->logo ? '/public/storage/logo/logo.png' : null;
     }
     public function getLoginLogoUrl()
     {
-        return $this->login_logo ? '/public/storage/login/' . basename($this->login_logo) : null;
+        return $this->login_logo ? '/public/storage/login/login.png' : null;
     }
     public function getDashboardLogoUrl()
     {
-        return $this->dashboard_logo ? '/public/storage/dashboard/' . basename($this->dashboard_logo) : null;
+        return $this->dashboard_logo ? '/public/storage/dashboard/dashboard.png' : null;
     }
     public function getSpinnerUrl()
     {
-        return $this->spinner ? '/public/storage/spinner/' . basename($this->spinner) : null;
+        return $this->spinner ? '/public/storage/spinner/spinner.png' : null;
     }
     public function getFaviconUrl()
     {
-        return $this->favicon ? '/public/storage/favicon/' . basename($this->favicon) : null;
+        return $this->favicon ? '/public/storage/favicon/favicon.png' : null;
     }
 }

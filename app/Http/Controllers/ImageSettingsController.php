@@ -29,18 +29,32 @@ class ImageSettingsController extends Controller
     {
         $settings = Setting::current();
         $data = [];
+        $nombres = [
+            'logo' => 'logo.png',
+            'login_logo' => 'login.png',
+            'dashboard_logo' => 'dashboard.png',
+            'spinner' => 'spinner.png',
+            'favicon' => 'favicon.png',
+        ];
+        $carpetas = [
+            'logo' => 'images/logo',
+            'login_logo' => 'images/login',
+            'dashboard_logo' => 'images/dashboard',
+            'spinner' => 'images/spinner',
+            'favicon' => 'favicon',
+        ];
         foreach(['logo', 'login_logo', 'dashboard_logo', 'spinner', 'favicon'] as $field) {
             if ($request->hasFile($field)) {
-                $folder = match($field) {
-                    'logo' => 'images/logo',
-                    'login_logo' => 'images/login',
-                    'dashboard_logo' => 'images/dashboard',
-                    'spinner' => 'images/spinner',
-                    'favicon' => 'favicon',
-                    default => 'images',
-                };
-                $path = $request->file($field)->store($folder, 'public_storage');
-                $data[$field] = $path;
+                $folder = $carpetas[$field];
+                $filename = $nombres[$field];
+                $fullPath = $folder . '/' . $filename;
+                // Eliminar archivo anterior si existe
+                if (file_exists(public_path('storage/' . $fullPath))) {
+                    unlink(public_path('storage/' . $fullPath));
+                }
+                // Guardar el nuevo archivo con el nombre fijo
+                $request->file($field)->move(public_path('storage/' . $folder), $filename);
+                $data[$field] = $fullPath;
             }
         }
         $settings->update($data);
