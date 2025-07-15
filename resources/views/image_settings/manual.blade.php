@@ -28,27 +28,27 @@
                             <div class="col-md-6 mb-2">
                                 <span class="badge badge-info"><i class="fas fa-image"></i> Logo Principal</span><br>
                                 <small>Cabecera y menú lateral.<br>Recomendado: PNG, 120x40px.</small><br>
-                                <img src="https://dummyimage.com/120x40/007bff/fff&text=Logo" alt="Ejemplo Logo" class="img-thumbnail mt-1">
+                                <img src="{{ $settings->getLogoUrl() ?? 'https://dummyimage.com/120x40/007bff/fff&text=Logo' }}" alt="Ejemplo Logo" class="img-thumbnail mt-1">
                             </div>
                             <div class="col-md-6 mb-2">
                                 <span class="badge badge-info"><i class="fas fa-sign-in-alt"></i> Logo Login</span><br>
                                 <small>Pantalla de inicio de sesión.<br>Recomendado: PNG, 120x40px.</small><br>
-                                <img src="https://dummyimage.com/120x40/6c757d/fff&text=Login" alt="Ejemplo Login" class="img-thumbnail mt-1">
+                                <img src="{{ $settings->getLoginLogoUrl() ?? 'https://dummyimage.com/120x40/6c757d/fff&text=Login' }}" alt="Ejemplo Login" class="img-thumbnail mt-1">
                             </div>
                             <div class="col-md-6 mb-2">
                                 <span class="badge badge-info"><i class="fas fa-tachometer-alt"></i> Logo Dashboard</span><br>
                                 <small>Página principal del dashboard.<br>Recomendado: PNG, 200x60px.</small><br>
-                                <img src="https://dummyimage.com/200x60/28a745/fff&text=Dashboard" alt="Ejemplo Dashboard" class="img-thumbnail mt-1">
+                                <img src="{{ $settings->getDashboardLogoUrl() ?? 'https://dummyimage.com/200x60/28a745/fff&text=Dashboard' }}" alt="Ejemplo Dashboard" class="img-thumbnail mt-1">
                             </div>
                             <div class="col-md-6 mb-2">
                                 <span class="badge badge-info"><i class="fas fa-sync-alt"></i> Spinner (Preloader)</span><br>
                                 <small>Animación de carga.<br>Recomendado: GIF/PNG, 60x60px.</small><br>
-                                <img src="https://dummyimage.com/60x60/ffc107/fff&text=Spin" alt="Ejemplo Spinner" class="img-thumbnail mt-1">
+                                <img src="{{ $settings->getSpinnerUrl() ?? 'https://dummyimage.com/60x60/ffc107/fff&text=Spin' }}" alt="Ejemplo Spinner" class="img-thumbnail mt-1">
                             </div>
                             <div class="col-md-6 mb-2">
                                 <span class="badge badge-info"><i class="fas fa-star"></i> Favicon</span><br>
                                 <small>Pestaña del navegador.<br>Recomendado: ICO/PNG, 32x32px.</small><br>
-                                <img src="https://dummyimage.com/32x32/343a40/fff&text=F" alt="Ejemplo Favicon" class="img-thumbnail mt-1">
+                                <img src="{{ $settings->getFaviconUrl() ?? 'https://dummyimage.com/32x32/343a40/fff&text=F' }}" alt="Ejemplo Favicon" class="img-thumbnail mt-1">
                             </div>
                         </div>
                     </div>
