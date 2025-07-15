@@ -1,3 +1,4 @@
+@php($settings = \App\Models\Setting::current())
 @extends('adminlte::page')
 
 @section('title', 'Manual de Usuario - Módulo de Imágenes')
