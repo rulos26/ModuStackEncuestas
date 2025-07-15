@@ -62,8 +62,9 @@ Este proyecto es una instalación base de Laravel 12+ con integración completa 
 
 ## 9. Módulo de Logs del Sistema
 - Visualización de los logs de Laravel directamente desde el panel administrativo.
+- Visualización de un log individual de errores del módulo (module_error.log).
 - Acceso protegido solo para usuarios autenticados.
-- Acceso rápido desde el menú lateral ("Logs del Sistema").
+- Acceso rápido desde el menú lateral ("Logs del Sistema"), con submenú para cada log.
 
 ---
 

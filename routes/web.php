@@ -18,4 +18,5 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/settings/images', [App\Http\Controllers\ImageSettingsController::class, 'update'])->name('settings.images.update');
     // Logs del sistema
     Route::get('/logs', [App\Http\Controllers\LogController::class, 'index'])->name('logs.index');
+    Route::get('/logs/module', [App\Http\Controllers\LogController::class, 'module'])->name('logs.module');
 });

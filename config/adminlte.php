@@ -436,7 +436,18 @@ return [
         [
             'text' => 'Logs del Sistema',
             'icon' => 'fas fa-fw fa-file-alt',
-            'url' => 'logs',
+            'submenu' => [
+                [
+                    'text' => 'Laravel Log',
+                    'url' => 'logs',
+                    'icon' => 'fas fa-fw fa-file',
+                ],
+                [
+                    'text' => 'Errores del Módulo',
+                    'url' => 'logs/module',
+                    'icon' => 'fas fa-fw fa-exclamation-triangle',
+                ],
+            ],
         ],
 
         // Ayuda
