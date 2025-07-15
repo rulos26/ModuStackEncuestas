@@ -9,6 +9,17 @@
 @section('content')
 <div class="row justify-content-center">
     <div class="col-md-8">
+        <div class="alert alert-info">
+            <h5 class="mb-2"><i class="fas fa-info-circle"></i> ¿Qué es el Módulo de Imágenes?</h5>
+            <ul class="mb-1">
+                <li><b>Logo Principal:</b> Imagen que aparece en la cabecera y menú lateral del sistema.</li>
+                <li><b>Logo Login:</b> Imagen mostrada en la pantalla de inicio de sesión.</li>
+                <li><b>Logo Dashboard:</b> Imagen destacada en la página principal del dashboard.</li>
+                <li><b>Spinner (Preloader):</b> Imagen animada que aparece mientras carga el sistema.</li>
+                <li><b>Favicon:</b> Icono pequeño que aparece en la pestaña del navegador.</li>
+            </ul>
+            <p class="mb-0">Puedes personalizar cada imagen para adaptar el sistema a la identidad visual de tu organización. <br>Solo los administradores pueden realizar estos cambios.</p>
+        </div>
         @if(session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
