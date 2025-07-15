@@ -16,6 +16,9 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::middleware(['auth'])->group(function () {
     Route::get('/settings/images', [App\Http\Controllers\ImageSettingsController::class, 'index'])->name('settings.images');
     Route::post('/settings/images', [App\Http\Controllers\ImageSettingsController::class, 'update'])->name('settings.images.update');
+    Route::get('/settings/images/manual', function() {
+        return view('image_settings.manual');
+    })->name('settings.images.manual');
     // Logs del sistema
     Route::get('/logs', [App\Http\Controllers\LogController::class, 'index'])->name('logs.index');
     Route::get('/logs/module', [App\Http\Controllers\LogController::class, 'module'])->name('logs.module');

@@ -461,7 +461,7 @@ return [
                     'submenu' => [
                         [
                             'text' => 'Módulo de Imágenes',
-                            'url' => 'settings/images',
+                            'url' => 'settings/images/manual',
                             'icon' => 'fas fa-fw fa-image',
                         ],
                     ],
