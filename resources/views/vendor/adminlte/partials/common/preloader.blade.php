@@ -17,7 +17,7 @@
             Los valores de config/adminlte.php solo se usan para clases CSS y atributos alt.
         --}}
         @php($spinner = \App\Models\Setting::current()->spinner)
-        <img src="{{ $spinner ? asset('storage/images/spinner/spinner.png') : 'https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/img/AdminLTELogo.png' }}"
+        <img src="{{ $spinner ? asset('public/storage/images/spinner/spinner.png') : 'https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/img/AdminLTELogo.png' }}"
              alt="AdminLTE Preloader"
              height="60"
              width="60"
