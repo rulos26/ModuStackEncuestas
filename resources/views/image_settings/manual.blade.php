@@ -49,7 +49,7 @@
                             <div class="col-md-6 mb-2">
                                 <span class="badge badge-info"><i class="fas fa-star"></i> Favicon</span><br>
                                 <small>Pestaña del navegador.<br>Recomendado: ICO/PNG, 32x32px.</small><br>
-                                <img src="{{ $settings->getFaviconUrl() ?? 'https://dummyimage.com/32x32/343a40/fff&text=F' }}" alt="Ejemplo Favicon" class="img-thumbnail mt-1">
+                                <img src="{{ $settings->getFaviconUrl() ?? 'https://dummyimage.com/32x32/343a40/fff&text=F' }}" alt="Ejemplo Favicon" class="img-thumbnail mt-1" style="width:32px;height:32px;max-width:32px;max-height:32px;">
                             </div>
                         </div>
                     </div>
