@@ -41,19 +41,23 @@ class ImageSettingsController extends Controller
             'login_logo' => 'images/login',
             'dashboard_logo' => 'images/dashboard',
             'spinner' => 'images/spinner',
-            'favicon' => 'favicon',
+            'favicon' => 'images/favicon',
         ];
         foreach(['logo', 'login_logo', 'dashboard_logo', 'spinner', 'favicon'] as $field) {
             if ($request->hasFile($field)) {
                 $folder = $carpetas[$field];
                 $filename = $nombres[$field];
                 $fullPath = $folder . '/' . $filename;
+                $publicFolder = public_path('storage/' . $folder);
+                if (!file_exists($publicFolder)) {
+                    mkdir($publicFolder, 0777, true);
+                }
                 // Eliminar archivo anterior si existe
                 if (file_exists(public_path('storage/' . $fullPath))) {
                     unlink(public_path('storage/' . $fullPath));
                 }
                 // Guardar el nuevo archivo con el nombre fijo
-                $request->file($field)->move(public_path('storage/' . $folder), $filename);
+                $request->file($field)->move($publicFolder, $filename);
                 $data[$field] = $fullPath;
             }
         }

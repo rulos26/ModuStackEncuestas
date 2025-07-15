@@ -23,12 +23,12 @@
         Los valores de config/adminlte.php solo se usan para clases CSS y atributos alt.
     --}}
     @php($logo = \App\Models\Setting::current()->logo)
-    <img src="{{ $logo ? '/public/storage/logo/logo.png' : 'https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/img/AdminLTELogo.png' }}"
+    <img src="{{ $logo ? asset('storage/images/logo/logo.png') : 'https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/img/AdminLTELogo.png' }}"
          alt="{{ config('adminlte.logo_img_alt', 'AdminLTE') }}"
          class="{{ config('adminlte.logo_img_class', 'brand-image-xl') }} logo-xs">
 
     {{-- Large brand logo --}}
-    <img src="{{ $logo ? '/public/storage/logo/logo.png' : 'https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/img/AdminLTELogo.png' }}"
+    <img src="{{ $logo ? asset('storage/images/logo/logo.png') : 'https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/img/AdminLTELogo.png' }}"
          alt="{{ config('adminlte.logo_img_alt', 'AdminLTE') }}"
          class="{{ config('adminlte.logo_img_xl_class', 'brand-image-xs') }} logo-xl">
 
