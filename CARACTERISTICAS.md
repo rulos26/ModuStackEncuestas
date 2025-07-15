@@ -60,6 +60,11 @@ Este proyecto es una instalación base de Laravel 12+ con integración completa 
 - **Configuración dinámica**: Imágenes del sistema gestionables desde la base de datos.
 - **Menú modular**: Fácilmente extensible para futuras funcionalidades.
 
+## 9. Módulo de Logs del Sistema
+- Visualización de los logs de Laravel directamente desde el panel administrativo.
+- Acceso protegido solo para usuarios autenticados.
+- Acceso rápido desde el menú lateral ("Logs del Sistema").
+
 ---
 
 **Estado Actual:**  

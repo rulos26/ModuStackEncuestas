@@ -436,7 +436,7 @@ return [
         [
             'text' => 'Logs del Sistema',
             'icon' => 'fas fa-fw fa-file-alt',
-            'url' => '#',
+            'url' => 'logs',
         ],
 
         // Ayuda
