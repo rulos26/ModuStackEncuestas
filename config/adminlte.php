@@ -457,8 +457,14 @@ return [
             'submenu' => [
                 [
                     'text' => 'Documentación',
-                    'url' => '#',
                     'icon' => 'fas fa-fw fa-book',
+                    'submenu' => [
+                        [
+                            'text' => 'Módulo de Imágenes',
+                            'url' => 'settings/images',
+                            'icon' => 'fas fa-fw fa-image',
+                        ],
+                    ],
                 ],
                 [
                     'text' => 'Soporte Técnico',
