@@ -4,6 +4,28 @@
     <link rel="stylesheet" href="{{ asset('vendor/icheck-bootstrap/icheck-bootstrap.min.css') }}">
 @stop
 
+@section('adminlte_css')
+    @parent
+    <style>
+        .login-box input[type="email"],
+        .login-box input[type="password"],
+        .login-box input[type="text"] {
+            color: #222 !important;
+            background-color: #f8f9fa !important;
+        }
+        body.dark-mode .login-box input[type="email"],
+        body.dark-mode .login-box input[type="password"],
+        body.dark-mode .login-box input[type="text"] {
+            color: #222 !important;
+            background-color: #e9ecef !important;
+        }
+        .login-box ::placeholder {
+            color: #888 !important;
+            opacity: 1;
+        }
+    </style>
+@endsection
+
 @php
     $loginUrl = View::getSection('login_url') ?? config('adminlte.login_url', 'login');
     $registerUrl = View::getSection('register_url') ?? config('adminlte.register_url', 'register');
