@@ -28,6 +28,10 @@ Este proyecto es una instalación base de Laravel 12+ con integración completa 
 
 ## 4. Vistas y Frontend
 - Login y dashboard adaptados a AdminLTE 3, usando únicamente assets por CDN.
+- Login completamente en español, con textos, botones y mensajes claros.
+- Botón de 'Ingresar' optimizado, más largo y visualmente atractivo.
+- Campo de contraseña con botón de mostrar/ocultar (ojito).
+- Modo oscuro automático según la preferencia del sistema operativo del usuario.
 - Vistas personalizadas para configuración de imágenes del sistema.
 - Dashboard mejorado con widgets informativos y navegación clara.
 - Todas las imágenes de logo y preloader usan CDN oficial de AdminLTE o imágenes personalizadas desde la base de datos.

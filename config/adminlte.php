@@ -391,18 +391,13 @@ return [
             'submenu' => [
                 [
                     'text' => 'Listar Usuarios',
-                    'url' => '#',
+                    'url' => 'users',
                     'icon' => 'fas fa-fw fa-list',
                 ],
                 [
                     'text' => 'Crear Usuario',
-                    'url' => '#',
+                    'url' => 'users/create',
                     'icon' => 'fas fa-fw fa-user-plus',
-                ],
-                [
-                    'text' => 'Roles y Permisos',
-                    'url' => '#',
-                    'icon' => 'fas fa-fw fa-user-shield',
                 ],
             ],
         ],

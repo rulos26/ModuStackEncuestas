@@ -22,4 +22,6 @@ Route::middleware(['auth'])->group(function () {
     // Logs del sistema
     Route::get('/logs', [App\Http\Controllers\LogController::class, 'index'])->name('logs.index');
     Route::get('/logs/module', [App\Http\Controllers\LogController::class, 'module'])->name('logs.module');
+    Route::resource('users', App\Http\Controllers\UserController::class);
+    Route::get('users-export', [App\Http\Controllers\UserController::class, 'export'])->name('users.export');
 });
