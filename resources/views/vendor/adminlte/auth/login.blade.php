@@ -16,12 +16,15 @@
         body.dark-mode .login-box input[type="email"],
         body.dark-mode .login-box input[type="password"],
         body.dark-mode .login-box input[type="text"] {
-            color: #222 !important;
-            background-color: #e9ecef !important;
+            color: #fff !important;
+            background-color: #343a40 !important;
         }
         .login-box ::placeholder {
             color: #888 !important;
             opacity: 1;
+        }
+        body.dark-mode .login-box ::placeholder {
+            color: #ccc !important;
         }
     </style>
 @endsection
