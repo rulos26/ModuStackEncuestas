@@ -64,7 +64,7 @@
     }
 @endphp
 
-@section('auth_header', __('adminlte::adminlte.login_message'))
+@section('auth_header', 'Inicia sesión para comenzar')
 
 @section('auth_body')
     <form action="{{ $loginUrl }}" method="post">
@@ -129,21 +129,5 @@
 @stop
 
 @section('auth_footer')
-    {{-- Password reset link --}}
-    @if($passResetUrl)
-        <p class="my-0">
-            <a href="{{ $passResetUrl }}">
-                {{ __('adminlte::adminlte.i_forgot_my_password') }}
-            </a>
-        </p>
-    @endif
-
-    {{-- Register link --}}
-    @if($registerUrl)
-        <p class="my-0">
-            <a href="{{ $registerUrl }}">
-                {{ __('adminlte::adminlte.register_a_new_membership') }}
-            </a>
-        </p>
-    @endif
+    {{-- Enlaces eliminados para no mostrar 'I forgot my password' ni 'Register a new membership' --}}
 @stop
