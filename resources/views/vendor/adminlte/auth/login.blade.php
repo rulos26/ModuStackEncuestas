@@ -27,6 +27,17 @@
             border-color: #007bff !important;
             box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
         }
+        /* Forzar color en autocompletado/autofill */
+        body.dark-mode .login-box input:-webkit-autofill,
+        body.dark-mode .login-box input:-webkit-autofill:focus,
+        body.dark-mode .login-box input:-webkit-autofill:hover,
+        body.dark-mode .login-box input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 100px #343a40 inset !important;
+            box-shadow: 0 0 0 100px #343a40 inset !important;
+            -webkit-text-fill-color: #fff !important;
+            color: #fff !important;
+            border-color: #007bff !important;
+        }
         .login-box ::placeholder {
             color: #888 !important;
             opacity: 1;
