@@ -101,9 +101,9 @@
                     <label for="remember">{{ __('adminlte::adminlte.remember_me') }}</label>
                 </div>
             </div>
-            <div class="col-4">
-                <button type="submit" class="btn btn-primary btn-block">
-                    <span class="fas fa-sign-in-alt"></span> {{ __('adminlte::adminlte.sign_in') }}
+            <div class="col-4 d-flex align-items-end justify-content-end">
+                <button type="submit" class="btn btn-primary btn-block" style="min-width: 160px; padding: 0.75rem 1.5rem; font-size: 1.1rem; display: flex; align-items: center; justify-content: center;">
+                    <span class="fas fa-sign-in-alt mr-2"></span> <span>Ingresar</span>
                 </button>
             </div>
         </div>
