@@ -19,6 +19,14 @@
             color: #fff !important;
             background-color: #343a40 !important;
         }
+        body.dark-mode .login-box input[type="email"]:focus,
+        body.dark-mode .login-box input[type="password"]:focus,
+        body.dark-mode .login-box input[type="text"]:focus {
+            color: #fff !important;
+            background-color: #343a40 !important;
+            border-color: #007bff !important;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+        }
         .login-box ::placeholder {
             color: #888 !important;
             opacity: 1;
