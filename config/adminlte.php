@@ -519,6 +519,11 @@ return [
             'route' => 'testing.index',
             // 'can' => 'role-admin-superadmin', // Eliminado para acceso libre a autenticados
         ],
+        [
+            'text' => 'Test Interno',
+            'icon' => 'fas fa-vials',
+            'route' => 'test.index',
+        ],
     ],
 
     /*

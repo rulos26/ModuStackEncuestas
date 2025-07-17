@@ -35,6 +35,7 @@ Este proyecto es una instalación base de Laravel 12+ con integración completa 
 - Vistas personalizadas para configuración de imágenes del sistema.
 - Dashboard mejorado con widgets informativos y navegación clara.
 - Todas las imágenes de logo y preloader usan CDN oficial de AdminLTE o imágenes personalizadas desde la base de datos.
+- **Visibilidad radical de inputs:** Todos los formularios del sistema tienen campos de entrada (input, select, textarea) con fondo oscuro, texto claro y soporte para autocompletado/autorrelleno, garantizando máxima legibilidad en modo oscuro y claro.
 
 ## 5. Menú de Navegación
 - **Menú implementado en `config/adminlte.php`** con las siguientes secciones:
@@ -42,10 +43,11 @@ Este proyecto es una instalación base de Laravel 12+ con integración completa 
   - **Gestión de Encuestas**: Crear, listar y gestionar encuestas
   - **Respuestas**: Ver respuestas, reportes y exportar datos
   - **Administración**: Gestión de usuarios y configuración del sistema
-  - **Sistema**: Logs y ayuda
+  - **Sistema**: Logs, pruebas automatizadas y ayuda
 - Menú responsive con iconos FontAwesome.
 - Búsqueda integrada en navbar y sidebar.
 - Widget de pantalla completa.
+- **Módulo de pruebas automatizadas:** Accesible desde el menú lateral, permite ejecutar y visualizar los tests de PHPUnit directamente desde el panel, solo para usuarios autenticados.
 
 ## 6. Módulo de Configuración de Imágenes
 - **Modelo `Setting`**: Gestiona logos, login_logo, dashboard_logo y spinner.
@@ -53,18 +55,24 @@ Este proyecto es una instalación base de Laravel 12+ con integración completa 
 - **Almacenamiento**: Imágenes guardadas en `storage/app/public/images/`.
 - **Integración completa**: Logos, favicon y preloader personalizables desde el panel de administración.
 
-## 7. Dependencias y Configuración
+## 7. Gestión de Usuarios y Roles
+- **Listado de usuarios**: Implementado con DataTables (búsqueda, orden, paginación, exportación a CSV/Excel).
+- **Formulario de usuario**: Campo de contraseña con botón de ver/ocultar, campo de rol como select único (no multiselect), roles cargados dinámicamente desde la base de datos.
+- **Asignación de roles**: Un usuario solo puede tener un rol, asignado o actualizado desde el formulario.
+- **Validación robusta**: El rol es obligatorio y debe existir en la base de datos.
+
+## 8. Dependencias y Configuración
 - Dependencias estándar de Laravel.
 - AdminLTE 3 integrado y configurado para uso por CDN (sin assets locales).
 - Configuración optimizada para sistema de encuestas.
 
-## 8. Características Técnicas
+## 9. Características Técnicas
 - **Assets por CDN**: Mejor rendimiento y mantenimiento simplificado.
 - **Vistas personalizadas**: Documentadas con comentarios explicativos.
 - **Configuración dinámica**: Imágenes del sistema gestionables desde la base de datos.
 - **Menú modular**: Fácilmente extensible para futuras funcionalidades.
 
-## 9. Módulo de Logs del Sistema
+## 10. Módulo de Logs del Sistema
 - Visualización de los logs de Laravel directamente desde el panel administrativo.
 - Visualización de un log individual de errores del módulo (module_error.log).
 - Acceso protegido solo para usuarios autenticados.
@@ -73,10 +81,9 @@ Este proyecto es una instalación base de Laravel 12+ con integración completa 
 ---
 
 **Estado Actual:**  
-El sistema tiene una base sólida con autenticación, dashboard funcional, menú de navegación completo y módulo de configuración de imágenes. Está listo para implementar las funcionalidades específicas del sistema de encuestas.
+El sistema tiene una base sólida con autenticación, dashboard funcional, menú de navegación completo, módulo de configuración de imágenes, gestión avanzada de usuarios y roles, y módulo de pruebas automatizadas. Está listo para implementar las funcionalidades específicas del sistema de encuestas.
 
 **Próximos Pasos Sugeridos:**  
 1. Implementar CRUD de encuestas
 2. Sistema de respuestas y reportes
-3. Gestión de usuarios y roles
-4. Módulos adicionales según necesidades específicas 
+3. Módulos adicionales según necesidades específicas 

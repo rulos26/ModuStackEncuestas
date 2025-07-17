@@ -42,3 +42,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('testing', [App\Http\Controllers\TestRunnerController::class, 'index'])->name('testing.index');
     Route::post('testing/run', [App\Http\Controllers\TestRunnerController::class, 'run'])->name('testing.run');
 });
+
+// Módulo de pruebas internas
+Route::get('/test', [App\Http\Controllers\UsuarioTestController::class, 'index'])->name('test.index');
+Route::post('/test/ejecutar', [App\Http\Controllers\UsuarioTestController::class, 'ejecutar'])->name('test.ejecutar');
