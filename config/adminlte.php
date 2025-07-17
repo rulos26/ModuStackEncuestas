@@ -256,7 +256,7 @@ return [
     |
     */
 
-    'use_route_url' => false,
+    'use_route_url' => true,
     'dashboard_url' => 'home',
     'logout_url' => 'logout',
     'login_url' => 'login',
@@ -391,12 +391,12 @@ return [
             'submenu' => [
                 [
                     'text' => 'Listar Usuarios',
-                    'url' => 'users',
+                    'route' => 'users.index',
                     'icon' => 'fas fa-fw fa-list',
                 ],
                 [
                     'text' => 'Crear Usuario',
-                    'url' => 'users/create',
+                    'route' => 'users.create',
                     'icon' => 'fas fa-fw fa-user-plus',
                 ],
             ],
@@ -408,14 +408,12 @@ return [
             'submenu' => [
                 [
                     'text' => 'Listar Roles',
-                    //'url' => 'roles',
-                    //'route'=>'roles.index',
                     'route' => 'roles.index',
                     'icon' => 'fas fa-list',
                 ],
                 [
                     'text' => 'Crear Rol',
-                    'url' => 'roles/create',
+                    'route' => 'roles.create',
                     'icon' => 'fas fa-plus',
                 ],
             ],
@@ -428,7 +426,7 @@ return [
             'submenu' => [
                 [
                     'text' => 'Imágenes del Sistema',
-                    'url' => 'settings.images',
+                    'route' => 'settings.images',
                     'icon' => 'fas fa-fw fa-images',
                 ],
                 [
@@ -453,12 +451,12 @@ return [
             'submenu' => [
                 [
                     'text' => 'Laravel Log',
-                    'url' => 'logs',
+                    'route' => 'logs.index',
                     'icon' => 'fas fa-fw fa-file',
                 ],
                 [
                     'text' => 'Errores del Módulo',
-                    'url' => 'logs/module',
+                    'route' => 'logs.module',
                     'icon' => 'fas fa-fw fa-exclamation-triangle',
                 ],
             ],
@@ -475,7 +473,7 @@ return [
                     'submenu' => [
                         [
                             'text' => 'Módulo de Imágenes',
-                            'url' => 'settings/images/manual',
+                            'route' => 'settings.images.manual',
                             'icon' => 'fas fa-fw fa-image',
                         ],
                     ],
@@ -500,17 +498,17 @@ return [
             'submenu' => [
                 [
                     'text' => 'Logs de Laravel',
-                    'url' => 'logs',
+                    'route' => 'logs.index',
                     'icon' => 'fas fa-fw fa-file-alt',
                 ],
                 [
                     'text' => 'Logs del Módulo',
-                    'url' => 'logs/module',
+                    'route' => 'logs.module',
                     'icon' => 'fas fa-fw fa-bug',
                 ],
                 [
                     'text' => 'Optimización',
-                    'url' => 'system/optimizer',
+                    'route' => 'system.optimizer.index',
                     'icon' => 'fas fa-fw fa-tools',
                 ],
             ],
