@@ -10,46 +10,55 @@
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
-/* Mejorar visibilidad de inputs en modo oscuro y autocompletado para todo el sistema */
-input[type="email"],
-input[type="password"],
-input[type="text"],
-select, textarea {
-    color: #222 !important;
-    background-color: #f8f9fa !important;
+/* Solución radical para visibilidad de inputs en todos los formularios y navegadores */
+input, select, textarea, .form-control, .form-select {
+    background-color: #23272b !important;
+    color: #f8f9fa !important;
+    border-color: #444 !important;
+    box-shadow: none !important;
 }
-body.dark-mode input[type="email"],
-body.dark-mode input[type="password"],
-body.dark-mode input[type="text"],
-body.dark-mode select,
-body.dark-mode textarea {
+input:focus, select:focus, textarea:focus, .form-control:focus, .form-select:focus {
+    background-color: #23272b !important;
     color: #fff !important;
-    background-color: #343a40 !important;
+    border-color: #00e676 !important;
+    box-shadow: 0 0 0 2px #00e67655 !important;
 }
-body.dark-mode input[type="email"]:focus,
-body.dark-mode input[type="password"]:focus,
-body.dark-mode input[type="text"]:focus,
-body.dark-mode select:focus,
-body.dark-mode textarea:focus {
-    color: #fff !important;
-    background-color: #343a40 !important;
-    border-color: #007bff !important;
-    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+input:-webkit-autofill,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:active,
+select:-webkit-autofill,
+select:-webkit-autofill:focus,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:focus,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px #23272b inset !important;
+    box-shadow: 0 0 0 1000px #23272b inset !important;
+    -webkit-text-fill-color: #f8f9fa !important;
+    color: #f8f9fa !important;
+    border-color: #00e676 !important;
+    background-color: #23272b !important;
+    transition: background-color 5000s ease-in-out 0s;
 }
-body.dark-mode input:-webkit-autofill,
-body.dark-mode input:-webkit-autofill:focus,
-body.dark-mode input:-webkit-autofill:hover,
-body.dark-mode input:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0 100px #343a40 inset !important;
-    box-shadow: 0 0 0 100px #343a40 inset !important;
-    -webkit-text-fill-color: #fff !important;
-    color: #fff !important;
-    border-color: #007bff !important;
+input::placeholder, textarea::placeholder, .form-control::placeholder {
+    color: #b0b0b0 !important;
+    opacity: 1 !important;
 }
-input::placeholder, textarea::placeholder {
-    color: #888 !important;
-    opacity: 1;
+input::-webkit-input-placeholder, textarea::-webkit-input-placeholder, .form-control::-webkit-input-placeholder {
+    color: #b0b0b0 !important;
+    opacity: 1 !important;
 }
-body.dark-mode input::placeholder, body.dark-mode textarea::placeholder {
-    color: #ccc !important;
+input:-ms-input-placeholder, textarea:-ms-input-placeholder, .form-control:-ms-input-placeholder {
+    color: #b0b0b0 !important;
+    opacity: 1 !important;
+}
+input::-ms-input-placeholder, textarea::-ms-input-placeholder, .form-control::-ms-input-placeholder {
+    color: #b0b0b0 !important;
+    opacity: 1 !important;
+}
+input, select, textarea, .form-control, .form-select {
+    caret-color: #00e676 !important;
 }
