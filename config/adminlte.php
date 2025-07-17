@@ -408,7 +408,8 @@ return [
             'submenu' => [
                 [
                     'text' => 'Listar Roles',
-                    'url' => 'roles',
+                    //'url' => 'roles',
+                    'route'=>'roles.index',
                     'icon' => 'fas fa-list',
                 ],
                 [
