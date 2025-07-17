@@ -9,3 +9,30 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+/* Mejorar visibilidad de inputs en modo oscuro y autocompletado */
+input, select, textarea {
+    background-color: #23272b !important;
+    color: #f8f9fa !important;
+}
+input:-webkit-autofill,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px #23272b inset !important;
+    -webkit-text-fill-color: #f8f9fa !important;
+    color: #f8f9fa !important;
+    background-color: #23272b !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+select:-webkit-autofill,
+textarea:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px #23272b inset !important;
+    -webkit-text-fill-color: #f8f9fa !important;
+    color: #f8f9fa !important;
+    background-color: #23272b !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+input, select, textarea {
+    caret-color: #00e676;
+}
