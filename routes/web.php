@@ -38,7 +38,7 @@ Route::prefix('system/optimizer')->name('system.optimizer.')->middleware(['auth'
 });
 
 // Módulo de testing
-Route::middleware(['auth', 'role:admin|superadmin'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('testing', [App\Http\Controllers\TestRunnerController::class, 'index'])->name('testing.index');
     Route::post('testing/run', [App\Http\Controllers\TestRunnerController::class, 'run'])->name('testing.run');
 });
