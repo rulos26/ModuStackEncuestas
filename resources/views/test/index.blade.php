@@ -1,5 +1,4 @@
-@extends('layouts.app')
-
+@extends('adminlte::page')
 @section('content')
 <div class="container mt-5">
     <h1>Prueba Interna de Usuario</h1>
