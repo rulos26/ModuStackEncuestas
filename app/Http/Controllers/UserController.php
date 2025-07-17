@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use App\Exports\UsersExport;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -76,15 +77,25 @@ class UserController extends Controller
 
     public function store(StoreUserRequest $request)
     {
-        $data = $request->validated();
-        $data['password'] = Hash::make($data['password']);
-        $rol = $data['role'] ?? null;
-        unset($data['role']);
-        $user = User::create($data);
-        if ($rol) {
-            $user->assignRole($rol);
+        try {
+            $data = $request->validated();
+            $data['password'] = Hash::make($data['password']);
+            $rol = $data['role'] ?? null;
+            unset($data['role']);
+            $user = User::create($data);
+            if ($rol) {
+                $user->assignRole($rol);
+            }
+            return redirect()->route('users.index')->with('success', 'Usuario creado correctamente.');
+        } catch (\Exception $e) {
+            Log::channel('user_module')->error('Error en creación de usuario', [
+                'mensaje' => $e->getMessage(),
+                'linea' => $e->getLine(),
+                'archivo' => $e->getFile(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return redirect()->back()->with('error', 'Ocurrió un error al crear el usuario.');
         }
-        return redirect()->route('users.index')->with('success', 'Usuario creado correctamente.');
     }
 
     public function show(User $user)
@@ -99,24 +110,44 @@ class UserController extends Controller
 
     public function update(UpdateUserRequest $request, User $user)
     {
-        $data = $request->validated();
-        if (!empty($data['password'])) {
-            $data['password'] = Hash::make($data['password']);
-        } else {
-            unset($data['password']);
+        try {
+            $data = $request->validated();
+            if (!empty($data['password'])) {
+                $data['password'] = Hash::make($data['password']);
+            } else {
+                unset($data['password']);
+            }
+            $rol = $data['role'] ?? null;
+            unset($data['role']);
+            $user->update($data);
+            if ($rol) {
+                $user->syncRoles([$rol]);
+            }
+            return redirect()->route('users.index')->with('success', 'Usuario actualizado correctamente.');
+        } catch (\Exception $e) {
+            Log::channel('user_module')->error('Error en actualización de usuario', [
+                'mensaje' => $e->getMessage(),
+                'linea' => $e->getLine(),
+                'archivo' => $e->getFile(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return redirect()->back()->with('error', 'Ocurrió un error al actualizar el usuario.');
         }
-        $rol = $data['role'] ?? null;
-        unset($data['role']);
-        $user->update($data);
-        if ($rol) {
-            $user->syncRoles([$rol]);
-        }
-        return redirect()->route('users.index')->with('success', 'Usuario actualizado correctamente.');
     }
 
     public function destroy(User $user)
     {
-        $user->delete();
-        return redirect()->route('users.index')->with('success', 'Usuario eliminado correctamente.');
+        try {
+            $user->delete();
+            return redirect()->route('users.index')->with('success', 'Usuario eliminado correctamente.');
+        } catch (\Exception $e) {
+            Log::channel('user_module')->error('Error en eliminación de usuario', [
+                'mensaje' => $e->getMessage(),
+                'linea' => $e->getLine(),
+                'archivo' => $e->getFile(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return redirect()->back()->with('error', 'Ocurrió un error al eliminar el usuario.');
+        }
     }
 }

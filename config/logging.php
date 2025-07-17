@@ -127,6 +127,17 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        'user_module' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/user_module_error.log'),
+            'level' => 'error',
+        ],
+        'role_module' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/role_module_error.log'),
+            'level' => 'error',
+        ],
+
     ],
 
 ];

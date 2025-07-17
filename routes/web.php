@@ -46,3 +46,12 @@ Route::middleware(['auth'])->group(function () {
 // Módulo de pruebas internas
 Route::get('/test', [App\Http\Controllers\UsuarioTestController::class, 'index'])->name('test.index');
 Route::post('/test/ejecutar', [App\Http\Controllers\UsuarioTestController::class, 'ejecutar'])->name('test.ejecutar');
+
+// Documentación de usuarios y roles
+Route::get('/ayuda/usuarios-roles', function() {
+    return view('ayuda.usuarios_roles');
+})->name('ayuda.usuarios_roles');
+
+// Logs de errores de módulos
+Route::get('/logs/module/user', [App\Http\Controllers\LogController::class, 'userModule'])->name('logs.module.user');
+Route::get('/logs/module/role', [App\Http\Controllers\LogController::class, 'roleModule'])->name('logs.module.role');

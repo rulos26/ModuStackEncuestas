@@ -456,8 +456,19 @@ return [
                 ],
                 [
                     'text' => 'Errores del Módulo',
-                    'route' => 'logs.module',
-                    'icon' => 'fas fa-fw fa-exclamation-triangle',
+                    'icon' => 'fas fa-bug',
+                    'submenu' => [
+                        [
+                            'text' => 'Errores Usuarios',
+                            'route' => 'logs.module.user',
+                            'icon' => 'fas fa-user-times',
+                        ],
+                        [
+                            'text' => 'Errores Roles',
+                            'route' => 'logs.module.role',
+                            'icon' => 'fas fa-user-shield',
+                        ],
+                    ],
                 ],
             ],
         ],
@@ -477,6 +488,11 @@ return [
                             'icon' => 'fas fa-fw fa-image',
                         ],
                     ],
+                ],
+                [
+                    'text' => 'Documentación Usuarios y Roles',
+                    'icon' => 'fas fa-book',
+                    'route' => 'ayuda.usuarios_roles',
                 ],
                 [
                     'text' => 'Soporte Técnico',

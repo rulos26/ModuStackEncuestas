@@ -32,6 +32,22 @@ class LogController extends Controller
         return view('logs.module', compact('logContent'));
     }
 
+    public function userModule()
+    {
+        $logPath = storage_path('logs/user_module_error.log');
+        $log = file_exists($logPath) ? file_get_contents($logPath) : 'No hay errores registrados.';
+        $title = 'Errores del Módulo de Usuarios';
+        return view('logs.module', compact('log', 'title'));
+    }
+
+    public function roleModule()
+    {
+        $logPath = storage_path('logs/role_module_error.log');
+        $log = file_exists($logPath) ? file_get_contents($logPath) : 'No hay errores registrados.';
+        $title = 'Errores del Módulo de Roles';
+        return view('logs.module', compact('log', 'title'));
+    }
+
     /**
      * Registrar un error personalizado en el log del módulo
      * Uso: LogController::logModuleError('Mensaje de error');

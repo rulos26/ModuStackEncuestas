@@ -7,6 +7,7 @@ use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\Http\Requests\StoreRoleRequest;
 use App\Http\Requests\UpdateRoleRequest;
+use Illuminate\Support\Facades\Log;
 
 class RoleController extends Controller
 {
@@ -24,11 +25,22 @@ class RoleController extends Controller
 
     public function store(StoreRoleRequest $request)
     {
-        $role = Role::create(['name' => $request->name, 'guard_name' => 'web']);
-        if ($request->has('permissions')) {
-            $role->syncPermissions($request->permissions);
+        try {
+            $data = $request->validated();
+            $role = Role::create(['name' => $data['name']]);
+            if (!empty($data['permissions'])) {
+                $role->syncPermissions($data['permissions']);
+            }
+            return redirect()->route('roles.index')->with('success', 'Rol creado correctamente.');
+        } catch (\Exception $e) {
+            Log::channel('role_module')->error('Error en creación de rol', [
+                'mensaje' => $e->getMessage(),
+                'linea' => $e->getLine(),
+                'archivo' => $e->getFile(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return redirect()->back()->with('error', 'Ocurrió un error al crear el rol.');
         }
-        return redirect()->route('roles.index')->with('success', 'Rol creado correctamente.');
     }
 
     public function edit(Role $role)
@@ -40,14 +52,35 @@ class RoleController extends Controller
 
     public function update(UpdateRoleRequest $request, Role $role)
     {
-        $role->update(['name' => $request->name]);
-        $role->syncPermissions($request->permissions ?? []);
-        return redirect()->route('roles.index')->with('success', 'Rol actualizado correctamente.');
+        try {
+            $data = $request->validated();
+            $role->update(['name' => $data['name']]);
+            $role->syncPermissions($data['permissions'] ?? []);
+            return redirect()->route('roles.index')->with('success', 'Rol actualizado correctamente.');
+        } catch (\Exception $e) {
+            Log::channel('role_module')->error('Error en actualización de rol', [
+                'mensaje' => $e->getMessage(),
+                'linea' => $e->getLine(),
+                'archivo' => $e->getFile(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return redirect()->back()->with('error', 'Ocurrió un error al actualizar el rol.');
+        }
     }
 
     public function destroy(Role $role)
     {
-        $role->delete();
-        return redirect()->route('roles.index')->with('success', 'Rol eliminado correctamente.');
+        try {
+            $role->delete();
+            return redirect()->route('roles.index')->with('success', 'Rol eliminado correctamente.');
+        } catch (\Exception $e) {
+            Log::channel('role_module')->error('Error en eliminación de rol', [
+                'mensaje' => $e->getMessage(),
+                'linea' => $e->getLine(),
+                'archivo' => $e->getFile(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return redirect()->back()->with('error', 'Ocurrió un error al eliminar el rol.');
+        }
     }
 }
