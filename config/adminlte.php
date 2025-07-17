@@ -401,6 +401,23 @@ return [
                 ],
             ],
         ],
+        // Roles
+        [
+            'text' => 'Roles',
+            'icon' => 'fas fa-user-shield',
+            'submenu' => [
+                [
+                    'text' => 'Listar Roles',
+                    'url' => 'roles',
+                    'icon' => 'fas fa-list',
+                ],
+                [
+                    'text' => 'Crear Rol',
+                    'url' => 'roles/create',
+                    'icon' => 'fas fa-plus',
+                ],
+            ],
+        ],
 
         // Configuración
         [
