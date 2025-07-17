@@ -35,5 +35,11 @@
         <li>El sistema permite agregar nuevos roles y permisos según las necesidades del negocio.</li>
         <li>La arquitectura modular facilita la integración de nuevos módulos de seguridad.</li>
     </ul>
+    <h2>Login Social (Google/Microsoft)</h2>
+    <ul>
+        <li>El sistema permite autenticación mediante Google y Microsoft (OAuth2) usando Socialite.</li>
+        <li><b>Asignación automática de rol:</b> Todos los usuarios que ingresan por login social reciben automáticamente el rol <b>cliente</b>, tanto si es su primer acceso como si ya existían en el sistema.</li>
+        <li>Esto garantiza que el acceso por OAuth2 siempre tendrá permisos de cliente, reforzando la seguridad y segmentación.</li>
+    </ul>
 </div>
 @endsection

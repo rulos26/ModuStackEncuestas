@@ -108,6 +108,14 @@
             </div>
         </div>
     </form>
+    <div class="text-center mt-4">
+        <a href="{{ route('login.google') }}" class="btn btn-danger btn-block mb-2" style="max-width:350px;margin:auto;display:block;">
+            <i class="fab fa-google mr-2"></i> Iniciar sesión con Google
+        </a>
+        <a href="{{ route('login.microsoft') }}" class="btn btn-primary btn-block" style="max-width:350px;margin:auto;display:block;background:#0078d4;border:none;">
+            <i class="fab fa-microsoft mr-2"></i> Iniciar sesión con Microsoft
+        </a>
+    </div>
     <script>
         function togglePassword() {
             var input = document.getElementById('password');
