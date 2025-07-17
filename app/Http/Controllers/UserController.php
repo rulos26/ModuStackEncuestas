@@ -8,7 +8,8 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\UsersExport;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -44,22 +45,27 @@ class UserController extends Controller
         }
         $users = $query->orderByDesc('created_at')->get(['id','name','email','role','created_at']);
         $format = $request->get('format', 'csv');
-        if ($format === 'xlsx') {
-            return Excel::download(new \App\Exports\UsersExport($users), 'usuarios.xlsx');
+
+        // Crear directorio temporal si no existe
+        if (!Storage::exists('temp')) {
+            Storage::makeDirectory('temp');
+        }
+
+        $export = new UsersExport($users);
+
+        if ($format === 'xlsx') {         $filename = 'usuarios_' . date('Y-m-d_H-i-s') . '.xlsx';
+            $filePath = $export->exportToExcel($filename);
+
+            return response()->download($filePath, $filename,
+               ['Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            ])->deleteFileAfterSend(true);
         } else {
-            $headers = [
-                'Content-Type' => 'text/csv',
-                'Content-Disposition' => 'attachment; filename="usuarios.csv"',
-            ];
-            $callback = function() use ($users) {
-                $handle = fopen('php://output', 'w');
-                fputcsv($handle, ['ID', 'Nombre', 'Email', 'Rol', 'Creado']);
-                foreach ($users as $user) {
-                    fputcsv($handle, [$user->id, $user->name, $user->email, $user->role, $user->created_at]);
-                }
-                fclose($handle);
-            };
-            return new StreamedResponse($callback, 200, $headers);
+            $filename = 'usuarios_' . date('Y-m-d_H-i-s') . '.csv';
+            $filePath = $export->exportToCsv($filename);
+
+            return response()->download($filePath, $filename,
+               ['Content-Type' => 'text/csv',
+            ])->deleteFileAfterSend(true);
         }
     }
 

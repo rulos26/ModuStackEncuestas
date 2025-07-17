@@ -2,32 +2,80 @@
 
 namespace App\Exports;
 
-use Illuminate\Contracts\View\View;
-use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Box\Spout\Writer\Common\Creator\WriterEntityFactory;
+use Box\Spout\Common\Entity\Row;
+use Box\Spout\Writer\Common\Creator\Style\StyleBuilder;
+use Box\Spout\Common\Entity\Style\Style;
 
-class UsersExport implements FromCollection, WithHeadings, ShouldAutoSize
+class UsersExport
 {
     protected $users;
+
     public function __construct($users)
     {
         $this->users = $users;
     }
-    public function collection()
+
+    public function exportToExcel($filename = 'usuarios.xlsx')
     {
-        return $this->users->map(function($user) {
-            return [
-                'ID' => $user->id,
-                'Nombre' => $user->name,
-                'Email' => $user->email,
-                'Rol' => $user->role,
-                'Creado' => $user->created_at,
+        $writer = WriterEntityFactory::createXLSXWriter();
+        $writer->openToFile(storage_path('app/temp/' . $filename));
+
+        // Crear estilo para los encabezados
+        $headerStyle = (new StyleBuilder())
+            ->setFontBold()
+            ->setFontSize(12)
+            ->setShouldWrapText(false)
+            ->build();
+
+        // Escribir encabezados
+        $headers = ['ID', 'Nombre', 'Email', 'Rol', 'Creado'];
+        $headerRow = WriterEntityFactory::createRowFromArray($headers, $headerStyle);
+        $writer->addRow($headerRow);
+
+        // Escribir datos
+        foreach ($this->users as $user) {
+            $rowData = [
+                $user->id,
+                $user->name,
+                $user->email,
+                $user->role,
+                $user->created_at->format('d/m/Y H:i:s'),
             ];
-        });
+            $row = WriterEntityFactory::createRowFromArray($rowData);
+            $writer->addRow($row);
+        }
+
+        $writer->close();
+
+        return storage_path('app/temp/' . $filename);
     }
-    public function headings(): array
+
+    public function exportToCsv($filename = 'usuarios.csv')
     {
-        return ['ID', 'Nombre', 'Email', 'Rol', 'Creado'];
+        $writer = WriterEntityFactory::createCSVWriter();
+        $writer->openToFile(storage_path('app/temp/' . $filename));
+
+        // Escribir encabezados
+        $headers = ['ID', 'Nombre', 'Email', 'Rol', 'Creado'];
+        $headerRow = WriterEntityFactory::createRowFromArray($headers);
+        $writer->addRow($headerRow);
+
+        // Escribir datos
+        foreach ($this->users as $user) {
+            $rowData = [
+                $user->id,
+                $user->name,
+                $user->email,
+                $user->role,
+                $user->created_at->format('d/m/Y H:i:s'),
+            ];
+            $row = WriterEntityFactory::createRowFromArray($rowData);
+            $writer->addRow($row);
+        }
+
+        $writer->close();
+
+        return storage_path('app/temp/' . $filename);
     }
 }
