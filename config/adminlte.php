@@ -513,6 +513,12 @@ return [
                 ],
             ],
         ],
+        [
+            'text' => 'Pruebas Automatizadas',
+            'icon' => 'fas fa-vial',
+            'route' => 'testing.index',
+            'can' => 'role-admin-superadmin',
+        ],
     ],
 
     /*

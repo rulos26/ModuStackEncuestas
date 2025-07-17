@@ -36,3 +36,9 @@ Route::prefix('system/optimizer')->name('system.optimizer.')->middleware(['auth'
     Route::post('/clear-temp-files', [App\Modules\SystemOptimizer\Controllers\SystemOptimizerController::class, 'clearTempFiles'])->name('clear-temp-files');
     Route::post('/optimize-all', [App\Modules\SystemOptimizer\Controllers\SystemOptimizerController::class, 'optimizeAll'])->name('optimize-all');
 });
+
+// Módulo de testing
+Route::middleware(['auth', 'role:admin|superadmin'])->group(function () {
+    Route::get('testing', [App\Http\Controllers\TestRunnerController::class, 'index'])->name('testing.index');
+    Route::post('testing/run', [App\Http\Controllers\TestRunnerController::class, 'run'])->name('testing.run');
+});
