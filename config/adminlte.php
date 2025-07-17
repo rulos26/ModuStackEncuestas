@@ -409,7 +409,8 @@ return [
                 [
                     'text' => 'Listar Roles',
                     //'url' => 'roles',
-                    'route'=>'roles.index',
+                    //'route'=>'roles.index',
+                    'route' => 'roles.index',
                     'icon' => 'fas fa-list',
                 ],
                 [
