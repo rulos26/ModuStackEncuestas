@@ -473,6 +473,29 @@ return [
                 ],
             ],
         ],
+
+        ['header' => 'OPTIMIZACIÓN'],
+        [
+            'text' => 'Optimización del Sistema',
+            'icon' => 'fas fa-fw fa-tools',
+            'submenu' => [
+                [
+                    'text' => 'Logs de Laravel',
+                    'url' => 'logs',
+                    'icon' => 'fas fa-fw fa-file-alt',
+                ],
+                [
+                    'text' => 'Logs del Módulo',
+                    'url' => 'logs/module',
+                    'icon' => 'fas fa-fw fa-bug',
+                ],
+                [
+                    'text' => 'Optimización',
+                    'url' => 'system/optimizer',
+                    'icon' => 'fas fa-fw fa-tools',
+                ],
+            ],
+        ],
     ],
 
     /*

@@ -25,3 +25,13 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('users', App\Http\Controllers\UserController::class);
     Route::get('users-export', [App\Http\Controllers\UserController::class, 'export'])->name('users.export');
 });
+
+// Rutas del módulo de optimización del sistema
+Route::prefix('system/optimizer')->name('system.optimizer.')->middleware(['auth'])->group(function () {
+    Route::get('/', [App\Modules\SystemOptimizer\Controllers\SystemOptimizerController::class, 'index'])->name('index');
+    Route::post('/clear-caches', [App\Modules\SystemOptimizer\Controllers\SystemOptimizerController::class, 'clearCaches'])->name('clear-caches');
+    Route::post('/dump-autoload', [App\Modules\SystemOptimizer\Controllers\SystemOptimizerController::class, 'dumpAutoload'])->name('dump-autoload');
+    Route::post('/optimize-routes', [App\Modules\SystemOptimizer\Controllers\SystemOptimizerController::class, 'optimizeRoutes'])->name('optimize-routes');
+    Route::post('/clear-temp-files', [App\Modules\SystemOptimizer\Controllers\SystemOptimizerController::class, 'clearTempFiles'])->name('clear-temp-files');
+    Route::post('/optimize-all', [App\Modules\SystemOptimizer\Controllers\SystemOptimizerController::class, 'optimizeAll'])->name('optimize-all');
+});
