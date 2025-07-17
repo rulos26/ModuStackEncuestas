@@ -40,7 +40,7 @@
                     <th>Nombre</th>
                     <th>Email</th>
                     <th>Creado</th>
-                    <th>Rol</th>
+                    <th>Roles</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -51,7 +51,11 @@
                     <td>{{ $user->name }}</td>
                     <td>{{ $user->email }}</td>
                     <td>{{ $user->created_at->format('d/m/Y H:i') }}</td>
-                    <td>{{ ucfirst($user->role) }}</td>
+                    <td>
+                        @foreach($user->roles as $role)
+                            <span class="badge bg-info">{{ $role->name }}</span>
+                        @endforeach
+                    </td>
                     <td>
                         <a href="{{ route('users.show', $user) }}" class="btn btn-info btn-sm" title="Ver"><i class="fas fa-eye"></i></a>
                         <a href="{{ route('users.edit', $user) }}" class="btn btn-warning btn-sm" title="Editar"><i class="fas fa-edit"></i></a>

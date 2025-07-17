@@ -14,10 +14,12 @@
     <label for="password_confirmation">Confirmar contraseña</label>
     <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" {{ $edit ? '' : 'required' }} minlength="6">
 </div>
-<div class="form-group">
-    <label for="role">Rol</label>
-    <select name="role" id="role" class="form-control" required>
-        <option value="usuario" {{ old('role', $user->role ?? '') == 'usuario' ? 'selected' : '' }}>Usuario</option>
-        <option value="admin" {{ old('role', $user->role ?? '') == 'admin' ? 'selected' : '' }}>Administrador</option>
+<div class="mb-3">
+    <label for="roles" class="form-label">Roles</label>
+    <select name="roles[]" id="roles" class="form-control" multiple required>
+        @foreach(Spatie\Permission\Models\Role::all() as $role)
+            <option value="{{ $role->name }}" {{ (isset($user) && $user->hasRole($role->name)) || (is_array(old('roles')) && in_array($role->name, old('roles', []))) ? 'selected' : '' }}>{{ $role->name }}</option>
+        @endforeach
     </select>
+    @error('roles')<span class="text-danger">{{ $message }}</span>@enderror
 </div>

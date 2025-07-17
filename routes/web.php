@@ -24,6 +24,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/logs/module', [App\Http\Controllers\LogController::class, 'module'])->name('logs.module');
     Route::resource('users', App\Http\Controllers\UserController::class);
     Route::get('users-export', [App\Http\Controllers\UserController::class, 'export'])->name('users.export');
+    Route::resource('roles', App\Http\Controllers\RoleController::class);
 });
 
 // Rutas del módulo de optimización del sistema
