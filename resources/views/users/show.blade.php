@@ -10,8 +10,6 @@
 <div class="card">
     <div class="card-body">
         <dl class="row">
-            <dt class="col-sm-3">ID</dt>
-            <dd class="col-sm-9">{{ $user->id }}</dd>
             <dt class="col-sm-3">Nombre</dt>
             <dd class="col-sm-9">{{ $user->name }}</dd>
             <dt class="col-sm-3">Email</dt>
@@ -23,7 +21,6 @@
             <dt class="col-sm-3">Actualizado</dt>
             <dd class="col-sm-9">{{ $user->updated_at->format('d/m/Y H:i') }}</dd>
         </dl>
-        <a href="{{ route('users.edit', $user) }}" class="btn btn-warning"><i class="fas fa-edit"></i> Editar</a>
         <a href="{{ route('users.index') }}" class="btn btn-secondary">Volver</a>
     </div>
 </div>

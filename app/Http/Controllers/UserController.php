@@ -78,11 +78,11 @@ class UserController extends Controller
     {
         $data = $request->validated();
         $data['password'] = Hash::make($data['password']);
-        $roles = $data['roles'] ?? [];
-        unset($data['roles']);
+        $rol = $data['role'] ?? null;
+        unset($data['role']);
         $user = User::create($data);
-        if (!empty($roles)) {
-            $user->syncRoles($roles);
+        if ($rol) {
+            $user->assignRole($rol);
         }
         return redirect()->route('users.index')->with('success', 'Usuario creado correctamente.');
     }
@@ -105,10 +105,12 @@ class UserController extends Controller
         } else {
             unset($data['password']);
         }
-        $roles = $data['roles'] ?? [];
-        unset($data['roles']);
+        $rol = $data['role'] ?? null;
+        unset($data['role']);
         $user->update($data);
-        $user->syncRoles($roles);
+        if ($rol) {
+            $user->syncRoles([$rol]);
+        }
         return redirect()->route('users.index')->with('success', 'Usuario actualizado correctamente.');
     }
 

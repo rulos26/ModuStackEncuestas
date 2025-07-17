@@ -18,8 +18,7 @@ class UpdateUserRequest extends FormRequest
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $userId,
             'password' => 'nullable|string|min:6|confirmed',
-            'roles' => 'required|array|min:1',
-            'roles.*' => 'exists:roles,name',
+            'role' => 'required|string|exists:roles,name',
         ];
     }
 
@@ -29,7 +28,7 @@ class UpdateUserRequest extends FormRequest
             'name' => 'nombre',
             'email' => 'correo electrónico',
             'password' => 'contraseña',
-            'roles' => 'roles',
+            'role' => 'rol',
         ];
     }
 }

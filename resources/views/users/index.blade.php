@@ -13,30 +13,18 @@
 @if(session('error'))
     <div class="alert alert-danger">{{ session('error') }}</div>
 @endif
-<div class="mb-3 d-flex justify-content-between align-items-center">
-    <div>
-        <a href="{{ route('users.create') }}" class="btn btn-primary">
-            <i class="fas fa-user-plus"></i> Nuevo Usuario
-        </a>
-    </div>
-    <form method="GET" action="{{ route('users.index') }}" class="form-inline">
-        <input type="text" name="q" value="{{ request('q') }}" class="form-control mr-2" placeholder="Buscar nombre o email">
-        <select name="role" class="form-control mr-2">
-            <option value="">Todos los roles</option>
-            <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Administrador</option>
-            <option value="usuario" {{ request('role') == 'usuario' ? 'selected' : '' }}>Usuario</option>
-        </select>
-        <button type="submit" class="btn btn-secondary mr-2">Filtrar</button>
-        <a href="{{ route('users.export', ['format' => 'csv'] + request()->all()) }}" class="btn btn-success mr-2"><i class="fas fa-file-csv"></i> Exportar CSV</a>
-        <a href="{{ route('users.export', ['format' => 'xlsx'] + request()->all()) }}" class="btn btn-success"><i class="fas fa-file-excel"></i> Exportar Excel</a>
-    </form>
+<div class="mb-3">
+    <a href="{{ route('users.create') }}" class="btn btn-primary">
+        <i class="fas fa-user-plus"></i> Nuevo Usuario
+    </a>
+    <a href="{{ route('users.export', ['format' => 'csv']) }}" class="btn btn-success mr-2"><i class="fas fa-file-csv"></i> Exportar CSV</a>
+    <a href="{{ route('users.export', ['format' => 'xlsx']) }}" class="btn btn-success"><i class="fas fa-file-excel"></i> Exportar Excel</a>
 </div>
 <div class="card">
     <div class="card-body p-0">
-        <table class="table table-hover table-striped mb-0">
+        <table class="table table-hover table-striped mb-0" id="users-table">
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Nombre</th>
                     <th>Email</th>
                     <th>Creado</th>
@@ -45,9 +33,8 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($users as $user)
+                @foreach($users as $user)
                 <tr>
-                    <td>{{ $user->id }}</td>
                     <td>{{ $user->name }}</td>
                     <td>{{ $user->email }}</td>
                     <td>{{ $user->created_at->format('d/m/Y H:i') }}</td>
@@ -66,16 +53,27 @@
                         </form>
                     </td>
                 </tr>
-                @empty
-                <tr>
-                    <td colspan="5" class="text-center">No hay usuarios registrados.</td>
-                </tr>
-                @endforelse
+                @endforeach
             </tbody>
         </table>
     </div>
-    <div class="card-footer">
-        {{ $users->links() }}
-    </div>
 </div>
 @endsection
+
+@push('js')
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap4.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#users-table').DataTable({
+        language: {
+            url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+        }
+    });
+});
+</script>
+@endpush
+
+@push('css')
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap4.min.css">
+@endpush
