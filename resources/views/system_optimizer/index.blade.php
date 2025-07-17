@@ -1,3 +1,7 @@
+@php
+    $execAvailable = function_exists('exec') && !in_array('exec', array_map('trim', explode(',', ini_get('disable_functions'))));
+@endphp
+
 @extends('adminlte::page')
 
 @section('title', 'Optimización del Sistema')
@@ -30,7 +34,8 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Regenerar Autoloader -->
+                    <!-- Regenerar Autoloader (solo si exec está disponible) -->
+                    @if($execAvailable)
                     <div class="col-md-6">
                         <div class="card bg-success text-white">
                             <div class="card-body text-center">
@@ -43,6 +48,20 @@
                             </div>
                         </div>
                     </div>
+                    @else
+                    <div class="col-md-6">
+                        <div class="card bg-secondary text-white">
+                            <div class="card-body text-center">
+                                <i class="fas fa-sync fa-3x mb-3"></i>
+                                <h5 class="card-title">Regenerar Autoloader</h5>
+                                <p class="card-text">No disponible en este servidor por restricciones de seguridad.</p>
+                                <button class="btn btn-light btn-sm" disabled>
+                                    <i class="fas fa-ban"></i> No disponible
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
                     <!-- Optimizar Rutas -->
                     <div class="col-md-6">
                         <div class="card bg-info text-white">
