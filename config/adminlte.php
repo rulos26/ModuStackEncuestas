@@ -401,6 +401,13 @@ return [
                 ],
             ],
         ],
+        // Panel de Correos
+        [
+            'text' => 'Panel de Correos',
+            'icon' => 'fas fa-envelope',
+            'route' => 'admin.correos.index',
+            'can' => ['role:Superadmin', 'role:Admin'],
+        ],
         // Roles
         [
             'text' => 'Roles',
