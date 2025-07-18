@@ -18,7 +18,7 @@
         --}}
         @php($spinner = \App\Models\Setting::current()->spinner)
         <img src="{{ $spinner ? asset('public/storage/images/spinner/spinner.png') : 'https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/img/AdminLTELogo.png' }}"
-             alt="AdminLTE Preloader"
+             alt="SystemQM Preloader"
              height="60"
              width="60"
              class="animation__shake">

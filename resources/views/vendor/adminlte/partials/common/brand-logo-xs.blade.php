@@ -24,13 +24,13 @@
     --}}
     @php($logo = \App\Models\Setting::current()->logo)
     <img src="{{ $logo ? asset('public/storage/images/logo/logo.png') : 'https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/img/AdminLTELogo.png' }}"
-         alt="{{ config('adminlte.logo_img_alt', 'AdminLTE') }}"
+         alt="SystemQM Logo"
          class="{{ config('adminlte.logo_img_class', 'brand-image img-circle elevation-3') }}"
          style="opacity:.8">
 
     {{-- Brand text --}}
     <span class="brand-text font-weight-light {{ config('adminlte.classes_brand_text') }}">
-        {!! config('adminlte.logo', '<b>Admin</b>LTE') !!}
+        {!! config('adminlte.logo', '<b>System</b>QM') !!}
     </span>
 
 </a>
