@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
+use App\Http\Controllers\Admin\MailPanelController;
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -62,3 +64,8 @@ Route::get('login/google/callback', [App\Http\Controllers\SocialAuthController::
 // Login social Microsoft
 Route::get('login/microsoft', [App\Http\Controllers\SocialAuthController::class, 'redirectToMicrosoft'])->name('login.microsoft');
 Route::get('login/microsoft/callback', [App\Http\Controllers\SocialAuthController::class, 'handleMicrosoftCallback']);
+
+Route::middleware(['auth', 'role:Superadmin|Admin'])->prefix('admin')->group(function () {
+    Route::get('correos', [MailPanelController::class, 'index'])->name('admin.correos.index');
+    Route::post('correos/enviar', [MailPanelController::class, 'send'])->name('admin.correos.send');
+});
