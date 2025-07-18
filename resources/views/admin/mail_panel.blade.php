@@ -51,7 +51,7 @@
                     <td>{{ $mail->sender->name ?? 'N/A' }}</td>
                     <td>{{ $mail->created_at->format('d/m/Y H:i') }}</td>
                     <td>
-                        @if($mail->attachments)
+                        @if(is_array($mail->attachments) && count($mail->attachments))
                             @foreach($mail->attachments as $file)
                                 <a href="{{ asset('storage/'.$file) }}" target="_blank">Ver adjunto</a><br>
                             @endforeach
