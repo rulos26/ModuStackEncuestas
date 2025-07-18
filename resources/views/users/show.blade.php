@@ -9,6 +9,11 @@
 @section('content')
 <div class="card">
     <div class="card-body">
+        <div class="mb-3 text-center">
+            @if($user->roles->count())
+                <span class="badge bg-info" style="font-size:1.1em;">{{ $user->roles->first()->name }}</span>
+            @endif
+        </div>
         <dl class="row">
             <dt class="col-sm-3">Nombre</dt>
             <dd class="col-sm-9">{{ $user->name }}</dd>
