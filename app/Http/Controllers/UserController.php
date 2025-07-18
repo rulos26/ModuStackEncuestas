@@ -25,7 +25,9 @@ class UserController extends Controller
             });
         }
         if ($request->filled('role')) {
-            $query->where('role', $request->role);
+            $query->whereHas('roles', function($q) use ($request) {
+                $q->where('name', $request->role);
+            });
         }
         $users = $query->orderByDesc('created_at')->paginate(10)->appends($request->all());
         return view('users.index', compact('users'));
@@ -42,9 +44,11 @@ class UserController extends Controller
             });
         }
         if ($request->filled('role')) {
-            $query->where('role', $request->role);
+            $query->whereHas('roles', function($q) use ($request) {
+                $q->where('name', $request->role);
+            });
         }
-        $users = $query->orderByDesc('created_at')->get(['id','name','email','role','created_at']);
+        $users = $query->orderByDesc('created_at')->get();
         $format = $request->get('format', 'csv');
 
         // Crear directorio temporal si no existe
