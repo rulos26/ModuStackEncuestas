@@ -30,7 +30,7 @@ class MailPanelController extends Controller
         Mail::send([], [], function ($message) use ($data, $attachments, $request) {
             $message->to($data['to'])
                 ->subject($data['subject'])
-                ->setBody($data['body'], 'text/html');
+                ->html($data['body']); // Cambiado de setBody a html
             foreach ($attachments as $path) {
                 $message->attach(Storage::disk('public')->path($path));
             }
