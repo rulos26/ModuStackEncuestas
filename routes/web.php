@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
 use App\Http\Controllers\Admin\MailPanelController;
+use App\Http\Controllers\EmpleadoController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -72,3 +73,9 @@ Route::get('login/microsoft/callback', [App\Http\Controllers\SocialAuthControlle
 
 Route::get('correos', [MailPanelController::class, 'index'])->name('admin.correos.index');
     Route::post('correos/enviar', [MailPanelController::class, 'send'])->name('admin.correos.send');
+
+Route::get('empleados', [EmpleadoController::class, 'index'])->name('empleados.index');
+Route::get('empleados/create', [EmpleadoController::class, 'create'])->name('empleados.create');
+Route::post('empleados', [EmpleadoController::class, 'store'])->name('empleados.store');
+Route::get('empleados/import', [EmpleadoController::class, 'importForm'])->name('empleados.import.form');
+Route::post('empleados/import', [EmpleadoController::class, 'import'])->name('empleados.import');
