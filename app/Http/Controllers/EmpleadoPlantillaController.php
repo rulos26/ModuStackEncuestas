@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Maatwebsite\Excel\Facades\Excel;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Illuminate\Support\Facades\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class EmpleadoPlantillaController extends Controller
 {
@@ -16,27 +16,34 @@ class EmpleadoPlantillaController extends Controller
 
     public function descargarExcel()
     {
-        $headers = ['Nombre', 'Cargo', 'Teléfono', 'Correo'];
-        $callback = function() use ($headers) {
-            $file = fopen('php://output', 'w');
-            fputcsv($file, $headers);
-            fclose($file);
-        };
-        // Usar Excel::download para xlsx
-        return Excel::download(new \App\Exports\EmpleadoPlantillaExport, 'plantilla_empleados.xlsx');
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->fromArray([
+            ['Nombre', 'Cargo', 'Teléfono', 'Correo']
+        ], null, 'A1');
+
+        $writer = new Xlsx($spreadsheet);
+        $filename = 'plantilla_empleados.xlsx';
+
+        return response()->streamDownload(function() use ($writer) {
+            $writer->save('php://output');
+        }, $filename, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Cache-Control' => 'max-age=0',
+        ]);
     }
 
     public function descargarCsv()
     {
-        $headers = ['Nombre', 'Cargo', 'Teléfono', 'Correo'];
-        $callback = function() use ($headers) {
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="plantilla_empleados.csv"',
+        ];
+        $callback = function() {
             $file = fopen('php://output', 'w');
-            fputcsv($file, $headers);
+            fputcsv($file, ['Nombre', 'Cargo', 'Teléfono', 'Correo']);
             fclose($file);
         };
-        return Response::stream($callback, 200, [
-            "Content-Type" => "text/csv",
-            "Content-Disposition" => "attachment; filename=plantilla_empleados.csv"
-        ]);
+        return response()->stream($callback, 200, $headers);
     }
 }
