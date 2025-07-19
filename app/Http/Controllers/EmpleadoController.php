@@ -55,8 +55,18 @@ class EmpleadoController extends Controller
 
         try {
             $importador = new \App\Imports\EmpleadosImport();
-            $importador->importar($request->file('file'));
-            return redirect()->route('empleados.index')->with('success', 'Empleados importados correctamente.');
+            $resultado = $importador->importar($request->file('file'));
+            $errores = $resultado['errores'];
+            $exitosas = $resultado['exitosas'];
+            $fallidas = $resultado['fallidas'];
+            if (empty($errores)) {
+                return redirect()->route('empleados.index')->with('success', "Empleados importados correctamente. Filas exitosas: $exitosas");
+            } else {
+                return back()->withErrors([
+                    'file' => "Importación finalizada. Filas exitosas: $exitosas, filas fallidas: $fallidas.",
+                    'detalles' => $errores
+                ]);
+            }
         } catch (\Exception $e) {
             return back()->withErrors(['file' => 'Error al importar el archivo: ' . $e->getMessage()]);
         }

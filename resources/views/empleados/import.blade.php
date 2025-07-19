@@ -13,6 +13,11 @@
                                 @foreach ($errors->all() as $error)
                                     <li>{{ $error }}</li>
                                 @endforeach
+                                @if ($errors->has('detalles'))
+                                    @foreach ($errors->get('detalles') as $detalle)
+                                        <li>{{ $detalle }}</li>
+                                    @endforeach
+                                @endif
                             </ul>
                         </div>
                     @endif
