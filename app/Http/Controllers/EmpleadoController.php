@@ -50,11 +50,12 @@ class EmpleadoController extends Controller
     public function import(Request $request)
     {
         $request->validate([
-            'file' => 'required|file|mimes:csv,xlsx',
+            'file' => 'required|file|mimes:csv',
         ]);
 
         try {
-            Excel::import(new EmpleadosImport, $request->file('file'));
+            $importador = new \App\Imports\EmpleadosImport();
+            $importador->importarDesdeCsv($request->file('file'));
             return redirect()->route('empleados.index')->with('success', 'Empleados importados correctamente.');
         } catch (\Exception $e) {
             return back()->withErrors(['file' => 'Error al importar el archivo: ' . $e->getMessage()]);

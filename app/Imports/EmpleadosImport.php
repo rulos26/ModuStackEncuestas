@@ -3,30 +3,36 @@
 namespace App\Imports;
 
 use App\Models\Empleado;
-use Illuminate\Validation\Rule;
-use Maatwebsite\Excel\Concerns\ToModel;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Maatwebsite\Excel\Concerns\WithValidation;
 
-class EmpleadosImport implements ToModel, WithHeadingRow, WithValidation
+class EmpleadosImport
 {
-    public function model(array $row)
+    public function importarDesdeCsv($file)
     {
-        return new Empleado([
-            'nombre' => $row['nombre'],
-            'cargo' => $row['cargo'],
-            'telefono' => $row['telefono'],
-            'correo_electronico' => $row['correo_electronico'],
-        ]);
-    }
-
-    public function rules(): array
-    {
-        return [
-            '*.nombre' => 'required|string|max:255',
-            '*.cargo' => 'required|string|max:255',
-            '*.telefono' => 'required|string|max:20',
-            '*.correo_electronico' => 'required|email|unique:empleados,correo_electronico',
-        ];
+        $handle = fopen($file->getRealPath(), 'r');
+        $header = fgetcsv($handle);
+        $campos = array_map('strtolower', $header);
+        $registros = [];
+        while (($row = fgetcsv($handle)) !== false) {
+            $data = array_combine($campos, $row);
+            // Validaciones básicas
+            if (
+                isset($data['nombre'], $data['cargo'], $data['telefono'], $data['correo']) &&
+                filter_var($data['correo'], FILTER_VALIDATE_EMAIL) &&
+                preg_match('/^[0-9]{10}$/', $data['telefono']) &&
+                str_word_count($data['nombre']) <= 10 &&
+                str_word_count($data['cargo']) <= 10
+            ) {
+                // Evitar duplicados por correo
+                if (!Empleado::where('correo_electronico', $data['correo'])->exists()) {
+                    Empleado::create([
+                        'nombre' => $data['nombre'],
+                        'cargo' => $data['cargo'],
+                        'telefono' => $data['telefono'],
+                        'correo_electronico' => $data['correo'],
+                    ]);
+                }
+            }
+        }
+        fclose($handle);
     }
 }
