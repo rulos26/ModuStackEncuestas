@@ -401,6 +401,12 @@ return [
                 ],
             ],
         ],
+        // Empleados
+        [
+            'text' => 'Empleados',
+            'icon' => 'fas fa-id-badge',
+            'route' => 'empleados.index',
+        ],
         // Panel de Correos
         [
             'text' => 'Panel de Correos',
