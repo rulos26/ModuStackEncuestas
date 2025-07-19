@@ -18,7 +18,6 @@
                         <dd class="col-sm-8">{{ $empleado->correo_electronico }}</dd>
                     </dl>
                     <a href="{{ route('empleados.index') }}" class="btn btn-secondary">Volver</a>
-                    <a href="{{ route('empleados.edit', $empleado->id) }}" class="btn btn-warning">Editar</a>
                 </div>
             </div>
         </div>

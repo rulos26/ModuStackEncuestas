@@ -33,7 +33,7 @@ class EmpleadoController extends Controller
                     $fail('El cargo no debe tener más de 10 palabras.');
                 }
             }],
-            'telefono' => ['required', 'digits:6', 'regex:/^[0-9]{6}$/'],
+            'telefono' => ['required', 'digits:10', 'regex:/^[0-9]{10}$/'],
             'correo_electronico' => 'required|email|unique:empleados,correo_electronico',
         ]);
 
@@ -87,7 +87,7 @@ class EmpleadoController extends Controller
                     $fail('El cargo no debe tener más de 10 palabras.');
                 }
             }],
-            'telefono' => ['required', 'digits:6', 'regex:/^[0-9]{6}$/'],
+            'telefono' => ['required', 'digits:10', 'regex:/^[0-9]{10}$/'],
             'correo_electronico' => 'required|email|unique:empleados,correo_electronico,' . $empleado->id,
         ]);
         $empleado->update($validated);

@@ -30,8 +30,8 @@
                         </div>
                         <div class="form-group mb-3">
                             <label for="telefono">Teléfono</label>
-                            <input type="text" class="form-control" id="telefono" name="telefono" value="{{ old('telefono') }}" required pattern="^[0-9]{6}$" maxlength="6" minlength="6" title="Debe ser un número de 6 dígitos">
-                            <small class="form-text text-muted">Debe ser un número de 6 dígitos.</small>
+                            <input type="number" class="form-control" id="telefono" name="telefono" value="{{ old('telefono') }}" required pattern="^[0-9]{10}$" maxlength="10" minlength="10" title="Debe ser un número de 10 dígitos">
+                            <small class="form-text text-muted">Debe ser un número de 10 dígitos.</small>
                         </div>
                         <div class="form-group mb-3">
                             <label for="correo_electronico">Correo electrónico</label>
