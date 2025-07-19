@@ -79,3 +79,7 @@ Route::get('empleados/create', [EmpleadoController::class, 'create'])->name('emp
 Route::post('empleados', [EmpleadoController::class, 'store'])->name('empleados.store');
 Route::get('empleados/import', [EmpleadoController::class, 'importForm'])->name('empleados.import.form');
 Route::post('empleados/import', [EmpleadoController::class, 'import'])->name('empleados.import');
+Route::get('empleados/{empleado}', [EmpleadoController::class, 'show'])->name('empleados.show');
+Route::get('empleados/{empleado}/edit', [EmpleadoController::class, 'edit'])->name('empleados.edit');
+Route::put('empleados/{empleado}', [EmpleadoController::class, 'update'])->name('empleados.update');
+Route::delete('empleados/{empleado}', [EmpleadoController::class, 'destroy'])->name('empleados.destroy');

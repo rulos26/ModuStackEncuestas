@@ -60,4 +60,44 @@ class EmpleadoController extends Controller
             return back()->withErrors(['file' => 'Error al importar el archivo: ' . $e->getMessage()]);
         }
     }
+
+    public function show($id)
+    {
+        $empleado = Empleado::findOrFail($id);
+        return view('empleados.show', compact('empleado'));
+    }
+
+    public function edit($id)
+    {
+        $empleado = Empleado::findOrFail($id);
+        return view('empleados.edit', compact('empleado'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $empleado = Empleado::findOrFail($id);
+        $validated = $request->validate([
+            'nombre' => ['required', 'string', 'max:255', function($attribute, $value, $fail) {
+                if (str_word_count($value) > 10) {
+                    $fail('El nombre no debe tener más de 10 palabras.');
+                }
+            }],
+            'cargo' => ['required', 'string', 'max:255', function($attribute, $value, $fail) {
+                if (str_word_count($value) > 10) {
+                    $fail('El cargo no debe tener más de 10 palabras.');
+                }
+            }],
+            'telefono' => ['required', 'digits:6', 'regex:/^[0-9]{6}$/'],
+            'correo_electronico' => 'required|email|unique:empleados,correo_electronico,' . $empleado->id,
+        ]);
+        $empleado->update($validated);
+        return redirect()->route('empleados.index')->with('success', 'Empleado actualizado correctamente.');
+    }
+
+    public function destroy($id)
+    {
+        $empleado = Empleado::findOrFail($id);
+        $empleado->delete();
+        return redirect()->route('empleados.index')->with('success', 'Empleado eliminado correctamente.');
+    }
 }
