@@ -75,6 +75,10 @@ Route::get('login/microsoft/callback', [App\Http\Controllers\SocialAuthControlle
 Route::get('correos', [MailPanelController::class, 'index'])->name('admin.correos.index');
     Route::post('correos/enviar', [MailPanelController::class, 'send'])->name('admin.correos.send');
 
+Route::get('empleados/plantillas', [EmpleadoPlantillaController::class, 'plantillas'])->name('empleados.plantillas');
+Route::get('empleados/plantillas/excel', [EmpleadoPlantillaController::class, 'descargarExcel'])->name('empleados.plantilla.excel');
+Route::get('empleados/plantillas/csv', [EmpleadoPlantillaController::class, 'descargarCsv'])->name('empleados.plantilla.csv');
+
 Route::get('empleados', [EmpleadoController::class, 'index'])->name('empleados.index');
 Route::get('empleados/create', [EmpleadoController::class, 'create'])->name('empleados.create');
 Route::post('empleados', [EmpleadoController::class, 'store'])->name('empleados.store');
@@ -84,7 +88,3 @@ Route::get('empleados/{empleado}', [EmpleadoController::class, 'show'])->name('e
 Route::get('empleados/{empleado}/edit', [EmpleadoController::class, 'edit'])->name('empleados.edit');
 Route::put('empleados/{empleado}', [EmpleadoController::class, 'update'])->name('empleados.update');
 Route::delete('empleados/{empleado}', [EmpleadoController::class, 'destroy'])->name('empleados.destroy');
-
-Route::get('empleados/plantillas', [EmpleadoPlantillaController::class, 'plantillas'])->name('empleados.plantillas');
-Route::get('empleados/plantillas/excel', [EmpleadoPlantillaController::class, 'descargarExcel'])->name('empleados.plantilla.excel');
-Route::get('empleados/plantillas/csv', [EmpleadoPlantillaController::class, 'descargarCsv'])->name('empleados.plantilla.csv');
