@@ -10,6 +10,7 @@
                     <div>
                         <a href="{{ route('empleados.create') }}" class="btn btn-success btn-sm">Registrar Empleado</a>
                         <a href="{{ route('empleados.import.form') }}" class="btn btn-info btn-sm">Importar Archivo</a>
+                        <a href="{{ route('empleados.plantillas') }}" class="btn btn-outline-primary btn-sm">Plantillas de carga</a>
                     </div>
                 </div>
                 <div class="card-body">

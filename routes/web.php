@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Http\Controllers\Admin\MailPanelController;
 use App\Http\Controllers\EmpleadoController;
+use App\Http\Controllers\EmpleadoPlantillaController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -83,3 +84,7 @@ Route::get('empleados/{empleado}', [EmpleadoController::class, 'show'])->name('e
 Route::get('empleados/{empleado}/edit', [EmpleadoController::class, 'edit'])->name('empleados.edit');
 Route::put('empleados/{empleado}', [EmpleadoController::class, 'update'])->name('empleados.update');
 Route::delete('empleados/{empleado}', [EmpleadoController::class, 'destroy'])->name('empleados.destroy');
+
+Route::get('empleados/plantillas', [EmpleadoPlantillaController::class, 'plantillas'])->name('empleados.plantillas');
+Route::get('empleados/plantillas/excel', [EmpleadoPlantillaController::class, 'descargarExcel'])->name('empleados.plantilla.excel');
+Route::get('empleados/plantillas/csv', [EmpleadoPlantillaController::class, 'descargarCsv'])->name('empleados.plantilla.csv');
