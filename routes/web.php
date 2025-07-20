@@ -124,3 +124,13 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::resource('paises', App\Http\Controllers\PaisController::class)->except(['show']);
 });
+
+// CRUD de Departamentos
+Route::middleware(['auth'])->group(function () {
+    Route::resource('departamentos', App\Http\Controllers\DepartamentoController::class)->except(['show']);
+});
+
+// CRUD de Municipios
+Route::middleware(['auth'])->group(function () {
+    Route::resource('municipios', App\Http\Controllers\MunicipioController::class)->except(['show']);
+});
