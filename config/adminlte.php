@@ -378,6 +378,11 @@ return [
                     'icon' => 'fas fa-fw fa-clipboard-list',
                     'submenu' => [
                         [
+                            'text' => 'Monitoreo de Sesiones',
+                            'route' => 'session.monitor.index',
+                            'icon' => 'fas fa-fw fa-users',
+                        ],
+                        [
                             'text' => 'Registros del Sistema',
                             'icon' => 'fas fa-fw fa-file-alt',
                             'submenu' => [

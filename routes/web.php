@@ -88,3 +88,21 @@ Route::get('empleados/{empleado}', [EmpleadoController::class, 'show'])->name('e
 Route::get('empleados/{empleado}/edit', [EmpleadoController::class, 'edit'])->name('empleados.edit');
 Route::put('empleados/{empleado}', [EmpleadoController::class, 'update'])->name('empleados.update');
 Route::delete('empleados/{empleado}', [EmpleadoController::class, 'destroy'])->name('empleados.destroy');
+
+// Rutas del módulo de monitoreo de sesiones
+Route::middleware(['auth'])->group(function () {
+    Route::get('/session-monitor', [App\Http\Controllers\SessionMonitorController::class, 'index'])
+        ->name('session.monitor.index');
+    Route::get('/session-monitor/history', [App\Http\Controllers\SessionMonitorController::class, 'history'])
+        ->name('session.monitor.history');
+    Route::get('/session-monitor/active', [App\Http\Controllers\SessionMonitorController::class, 'getActiveSessions'])
+        ->name('session.monitor.active');
+    Route::post('/session-monitor/close/{sessionId}', [App\Http\Controllers\SessionMonitorController::class, 'closeSession'])
+        ->name('session.monitor.close');
+    Route::post('/session-monitor/close-user/{userId}', [App\Http\Controllers\SessionMonitorController::class, 'closeAllUserSessions'])
+        ->name('session.monitor.close-user');
+    Route::post('/session-monitor/close-expired', [App\Http\Controllers\SessionMonitorController::class, 'closeExpiredSessions'])
+        ->name('session.monitor.close-expired');
+    Route::get('/session-monitor/export', [App\Http\Controllers\SessionMonitorController::class, 'export'])
+        ->name('session.monitor.export');
+});

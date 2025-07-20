@@ -47,4 +47,28 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Relación con las sesiones del usuario.
+     */
+    public function sessions()
+    {
+        return $this->hasMany(UserSession::class);
+    }
+
+    /**
+     * Obtener la sesión activa actual del usuario.
+     */
+    public function activeSession()
+    {
+        return $this->sessions()->where('is_active', true)->first();
+    }
+
+    /**
+     * Obtener todas las sesiones activas del usuario.
+     */
+    public function activeSessions()
+    {
+        return $this->sessions()->where('is_active', true)->get();
+    }
 }

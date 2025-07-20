@@ -23,5 +23,8 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('role-admin-superadmin', function ($user) {
             return $user->hasRole('admin') || $user->hasRole('superadmin');
         });
+
+        // Registrar el middleware de rastreo de sesiones
+        $this->app['router']->pushMiddlewareToGroup('web', \App\Http\Middleware\SessionTracker::class);
     }
 }
