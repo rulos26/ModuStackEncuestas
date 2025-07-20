@@ -13,7 +13,7 @@
                 <h4 class="alert-heading"><i class="fas fa-info-circle"></i> ¡Bienvenido al Sistema de Encuestas!</h4>
                 <p>Este es el panel de administración de tu sistema de encuestas. Utiliza el menú lateral para navegar por las diferentes secciones.</p>
                 <hr>
-                <p class="mb-0">El menú está configurado en <code>config/adminlte.php</code> y se renderiza automáticamente en todas las vistas que extiendan de <code>adminlte::page</code>.</p>
+                <p class="mb-0">El sistema incluye gestión de usuarios, roles, empleados, configuración dinámica y herramientas de optimización.</p>
             </div>
         </div>
     </div>
@@ -22,14 +22,14 @@
         <div class="col-lg-3 col-6">
             <div class="small-box bg-info">
                 <div class="inner">
-                    <h3>0</h3>
-                    <p>Encuestas Creadas</p>
+                    <h3>{{ App\Models\User::count() }}</h3>
+                    <p>Usuarios Registrados</p>
                 </div>
                 <div class="icon">
-                    <i class="fas fa-clipboard-list"></i>
+                    <i class="fas fa-users"></i>
                 </div>
-                <a href="#" class="small-box-footer">
-                    Ver todas <i class="fas fa-arrow-circle-right"></i>
+                <a href="{{ route('users.index') }}" class="small-box-footer">
+                    Gestionar usuarios <i class="fas fa-arrow-circle-right"></i>
                 </a>
             </div>
         </div>
@@ -37,14 +37,14 @@
         <div class="col-lg-3 col-6">
             <div class="small-box bg-success">
                 <div class="inner">
-                    <h3>0</h3>
-                    <p>Respuestas Recibidas</p>
+                    <h3>{{ App\Models\Empleado::count() }}</h3>
+                    <p>Empleados Registrados</p>
                 </div>
                 <div class="icon">
-                    <i class="fas fa-reply"></i>
+                    <i class="fas fa-id-badge"></i>
                 </div>
-                <a href="#" class="small-box-footer">
-                    Ver respuestas <i class="fas fa-arrow-circle-right"></i>
+                <a href="{{ route('empleados.index') }}" class="small-box-footer">
+                    Gestionar empleados <i class="fas fa-arrow-circle-right"></i>
                 </a>
             </div>
         </div>
@@ -52,14 +52,14 @@
         <div class="col-lg-3 col-6">
             <div class="small-box bg-warning">
                 <div class="inner">
-                    <h3>1</h3>
-                    <p>Usuarios Registrados</p>
+                    <h3>{{ Spatie\Permission\Models\Role::count() }}</h3>
+                    <p>Roles del Sistema</p>
                 </div>
                 <div class="icon">
-                    <i class="fas fa-users"></i>
+                    <i class="fas fa-user-shield"></i>
                 </div>
-                <a href="#" class="small-box-footer">
-                    Gestionar usuarios <i class="fas fa-arrow-circle-right"></i>
+                <a href="{{ route('roles.index') }}" class="small-box-footer">
+                    Gestionar roles <i class="fas fa-arrow-circle-right"></i>
                 </a>
             </div>
         </div>
@@ -67,14 +67,14 @@
         <div class="col-lg-3 col-6">
             <div class="small-box bg-danger">
                 <div class="inner">
-                    <h3>0</h3>
-                    <p>Reportes Generados</p>
+                    <h3>{{ App\Models\SentMail::count() }}</h3>
+                    <p>Emails Enviados</p>
                 </div>
                 <div class="icon">
-                    <i class="fas fa-chart-bar"></i>
+                    <i class="fas fa-envelope"></i>
                 </div>
-                <a href="#" class="small-box-footer">
-                    Ver reportes <i class="fas fa-arrow-circle-right"></i>
+                <a href="{{ route('admin.correos.index') }}" class="small-box-footer">
+                    Panel de correos <i class="fas fa-arrow-circle-right"></i>
                 </a>
             </div>
         </div>
@@ -93,6 +93,8 @@
                         <li><strong>Laravel 12+:</strong> Framework PHP robusto</li>
                         <li><strong>CDN:</strong> Assets cargados desde CDN para mejor rendimiento</li>
                         <li><strong>Módulo de Imágenes:</strong> Configuración dinámica de logos y favicon</li>
+                        <li><strong>Módulo de Empleados:</strong> Gestión completa con importación masiva</li>
+                        <li><strong>Sistema de Roles:</strong> Permisos granulares con Spatie</li>
                     </ul>
                     <a href="{{ route('settings.images') }}" class="btn btn-primary">
                         <i class="fas fa-images"></i> Configurar Imágenes
@@ -104,18 +106,56 @@
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title"><i class="fas fa-list"></i> Menú Implementado</h3>
+                    <h3 class="card-title"><i class="fas fa-list"></i> Módulos Implementados</h3>
                 </div>
                 <div class="card-body">
-                    <p>El menú lateral incluye las siguientes secciones:</p>
+                    <p>Los siguientes módulos están completamente funcionales:</p>
                     <ul>
-                        <li><strong>Dashboard:</strong> Página principal (actual)</li>
-                        <li><strong>Gestión de Encuestas:</strong> Crear y gestionar encuestas</li>
-                        <li><strong>Respuestas:</strong> Ver y exportar respuestas</li>
-                        <li><strong>Administración:</strong> Usuarios y configuración</li>
-                        <li><strong>Sistema:</strong> Logs y ayuda</li>
+                        <li><strong>Dashboard:</strong> Página principal con estadísticas</li>
+                        <li><strong>Gestión de Usuarios:</strong> CRUD completo con DataTables</li>
+                        <li><strong>Gestión de Roles:</strong> Sistema de permisos avanzado</li>
+                        <li><strong>Gestión de Empleados:</strong> CRUD + Importación masiva (CSV/Excel)</li>
+                        <li><strong>Panel de Correos:</strong> Envío y registro de emails</li>
+                        <li><strong>Configuración:</strong> Imágenes del sistema</li>
+                        <li><strong>Logs:</strong> Monitoreo del sistema</li>
+                        <li><strong>Testing:</strong> Pruebas automatizadas</li>
+                        <li><strong>Optimización:</strong> Herramientas de sistema</li>
                     </ul>
-                    <small class="text-muted">Las rutas marcadas con # están pendientes de implementación.</small>
+                    <small class="text-muted">Todos los módulos están operativos y listos para uso.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-rocket"></i> Acciones Rápidas</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <a href="{{ route('empleados.create') }}" class="btn btn-success btn-block">
+                                <i class="fas fa-user-plus"></i> Registrar Empleado
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ route('empleados.import.form') }}" class="btn btn-info btn-block">
+                                <i class="fas fa-upload"></i> Importar Empleados
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ route('users.create') }}" class="btn btn-warning btn-block">
+                                <i class="fas fa-user-plus"></i> Crear Usuario
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ route('logs.index') }}" class="btn btn-secondary btn-block">
+                                <i class="fas fa-file-alt"></i> Ver Logs
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
