@@ -108,11 +108,13 @@ $(document).ready(function() {
     // Cargar departamentos al seleccionar país
     $('#pais_id').change(function() {
         var paisId = $(this).val();
+        var urlDep = '/empresa/departamentos/' + paisId;
         $('#departamento_id').prop('disabled', true).html('<option value="">Cargando...</option>');
         $('#municipio_id').prop('disabled', true).html('<option value="">Seleccione un municipio</option>');
         if (paisId) {
+            console.log('Intentando acceder a la URL de departamentos:', window.location.origin + urlDep);
             $.ajax({
-                url: '/empresa/departamentos/' + paisId,
+                url: urlDep,
                 method: 'GET',
                 success: function(data) {
                     var options = '<option value="">Seleccione un departamento</option>';
@@ -123,7 +125,7 @@ $(document).ready(function() {
                 },
                 error: function(xhr, status, error) {
                     console.error('Error AJAX departamentos:', {
-                        url: this.url,
+                        url: window.location.origin + urlDep,
                         status: status,
                         error: error,
                         response: xhr.responseText
@@ -138,10 +140,12 @@ $(document).ready(function() {
     // Cargar municipios al seleccionar departamento
     $('#departamento_id').change(function() {
         var depId = $(this).val();
+        var urlMun = '/empresa/municipios/' + depId;
         $('#municipio_id').prop('disabled', true).html('<option value="">Cargando...</option>');
         if (depId) {
+            console.log('Intentando acceder a la URL de municipios:', window.location.origin + urlMun);
             $.ajax({
-                url: '/empresa/municipios/' + depId,
+                url: urlMun,
                 method: 'GET',
                 success: function(data) {
                     var options = '<option value="">Seleccione un municipio</option>';
@@ -152,7 +156,7 @@ $(document).ready(function() {
                 },
                 error: function(xhr, status, error) {
                     console.error('Error AJAX municipios:', {
-                        url: this.url,
+                        url: window.location.origin + urlMun,
                         status: status,
                         error: error,
                         response: xhr.responseText
