@@ -34,7 +34,7 @@ class SessionTracker
         $user = Auth::user();
         $sessionId = Session::getId();
         $currentRoute = $request->route() ? $request->route()->getName() : $request->path();
-        $currentPage = $this->getPageName($currentRoute);
+        $currentPage = $this->getPageName($currentRoute ?? $request->path());
 
         // Buscar sesión existente o crear nueva
         $session = UserSession::where('session_id', $sessionId)
@@ -68,8 +68,13 @@ class SessionTracker
     /**
      * Obtener nombre legible de la página actual.
      */
-    private function getPageName(string $route): string
+    private function getPageName(?string $route): string
     {
+        // Si la ruta es null, retornar un valor por defecto
+        if (!$route) {
+            return 'Página Desconocida';
+        }
+
         $pageNames = [
             'home' => 'Dashboard',
             'users.index' => 'Lista de Usuarios',
@@ -93,6 +98,8 @@ class SessionTracker
             'settings.images' => 'Recursos Visuales',
             'settings.images.manual' => 'Guía de Recursos Visuales',
             'ayuda.usuarios_roles' => 'Manual de Usuarios y Permisos',
+            'session.monitor.index' => 'Monitoreo de Sesiones',
+            'session.monitor.history' => 'Historial de Sesiones',
         ];
 
         return $pageNames[$route] ?? ucfirst(str_replace(['.', '-', '_'], ' ', $route));
