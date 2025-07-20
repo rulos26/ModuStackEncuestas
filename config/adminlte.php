@@ -342,6 +342,11 @@ return [
             'icon' => 'fas fa-fw fa-cogs',
             'submenu' => [
                 [
+                    'text' => 'Información de la Empresa',
+                    'route' => 'empresa.show',
+                    'icon' => 'fas fa-building',
+                ],
+                [
                     'text' => 'Gestión de Accesos',
                     'icon' => 'fas fa-fw fa-key',
                     'submenu' => [

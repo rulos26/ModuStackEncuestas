@@ -106,3 +106,21 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/session-monitor/export', [App\Http\Controllers\SessionMonitorController::class, 'export'])
         ->name('session.monitor.export');
 });
+
+// Rutas del módulo de empresa (Gestión de Entidad Empresarial Única)
+Route::middleware(['auth'])->group(function () {
+    Route::get('empresa', [App\Http\Controllers\EmpresaController::class, 'show'])->name('empresa.show');
+    Route::get('empresa/crear', [App\Http\Controllers\EmpresaController::class, 'create'])->name('empresa.create');
+    Route::post('empresa', [App\Http\Controllers\EmpresaController::class, 'store'])->name('empresa.store');
+    Route::get('empresa/editar', [App\Http\Controllers\EmpresaController::class, 'edit'])->name('empresa.edit');
+    Route::put('empresa', [App\Http\Controllers\EmpresaController::class, 'update'])->name('empresa.update');
+    Route::get('empresa/export/pdf', [App\Http\Controllers\EmpresaController::class, 'exportPdf'])->name('empresa.export.pdf');
+    // AJAX para selects encadenados
+    Route::get('empresa/departamentos/{pais_id}', [App\Http\Controllers\EmpresaController::class, 'getDepartamentos'])->name('empresa.departamentos');
+    Route::get('empresa/municipios/{departamento_id}', [App\Http\Controllers\EmpresaController::class, 'getMunicipios'])->name('empresa.municipios');
+});
+
+// CRUD de Países
+Route::middleware(['auth'])->group(function () {
+    Route::resource('paises', App\Http\Controllers\PaisController::class)->except(['show']);
+});
