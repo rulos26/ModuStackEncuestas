@@ -334,137 +334,126 @@ return [
             'icon' => 'fas fa-fw fa-tachometer-alt',
         ],
 
-        ['header' => 'GESTIÓN PRINCIPAL'],
+        ['header' => 'AJUSTES GENERALES DEL SISTEMA'],
 
-        // Empleados
-        [
-            'text' => 'Empleados',
-            'icon' => 'fas fa-id-badge',
-            'route' => 'empleados.index',
-        ],
-
-        // Usuarios
-        [
-            'text' => 'Usuarios',
-            'icon' => 'fas fa-fw fa-users',
-            'submenu' => [
-                [
-                    'text' => 'Listar Usuarios',
-                    'route' => 'users.index',
-                    'icon' => 'fas fa-fw fa-list',
-                ],
-                [
-                    'text' => 'Crear Usuario',
-                    'route' => 'users.create',
-                    'icon' => 'fas fa-fw fa-user-plus',
-                ],
-            ],
-        ],
-
-        // Roles
-        [
-            'text' => 'Roles y Permisos',
-            'icon' => 'fas fa-user-shield',
-            'submenu' => [
-                [
-                    'text' => 'Listar Roles',
-                    'route' => 'roles.index',
-                    'icon' => 'fas fa-list',
-                ],
-                [
-                    'text' => 'Crear Rol',
-                    'route' => 'roles.create',
-                    'icon' => 'fas fa-plus',
-                ],
-            ],
-        ],
-
-        ['header' => 'COMUNICACIÓN'],
-
-        // Panel de Correos
-        [
-            'text' => 'Panel de Correos',
-            'icon' => 'fas fa-envelope',
-            'route' => 'admin.correos.index',
-        ],
-
-        ['header' => 'CONFIGURACIÓN'],
-
-        // Configuración del Sistema
+        // Configuración
         [
             'text' => 'Configuración',
             'icon' => 'fas fa-fw fa-cogs',
             'submenu' => [
                 [
-                    'text' => 'Imágenes del Sistema',
-                    'route' => 'settings.images',
-                    'icon' => 'fas fa-fw fa-images',
+                    'text' => 'Gestión de Accesos',
+                    'icon' => 'fas fa-fw fa-key',
+                    'submenu' => [
+                        [
+                            'text' => 'Usuarios',
+                            'route' => 'users.index',
+                            'icon' => 'fas fa-fw fa-users',
+                        ],
+                        [
+                            'text' => 'Empleados',
+                            'route' => 'empleados.index',
+                            'icon' => 'fas fa-id-badge',
+                        ],
+                        [
+                            'text' => 'Roles y Permisos',
+                            'route' => 'roles.index',
+                            'icon' => 'fas fa-user-shield',
+                        ],
+                    ],
                 ],
                 [
-                    'text' => 'Optimización del Sistema',
-                    'route' => 'system.optimizer.index',
-                    'icon' => 'fas fa-fw fa-tools',
-                ],
-            ],
-        ],
-
-        ['header' => 'MONITOREO Y LOGS'],
-
-        // Logs del Sistema
-        [
-            'text' => 'Logs del Sistema',
-            'icon' => 'fas fa-fw fa-file-alt',
-            'submenu' => [
-                [
-                    'text' => 'Logs de Laravel',
-                    'route' => 'logs.index',
-                    'icon' => 'fas fa-fw fa-file',
+                    'text' => 'Identidad Corporativa',
+                    'icon' => 'fas fa-fw fa-palette',
+                    'submenu' => [
+                        [
+                            'text' => 'Recursos Visuales',
+                            'route' => 'settings.images',
+                            'icon' => 'fas fa-fw fa-images',
+                        ],
+                    ],
                 ],
                 [
-                    'text' => 'Errores de Usuarios',
-                    'route' => 'logs.module.user',
-                    'icon' => 'fas fa-user-times',
+                    'text' => 'Supervisión y Registros',
+                    'icon' => 'fas fa-fw fa-clipboard-list',
+                    'submenu' => [
+                        [
+                            'text' => 'Registros del Sistema',
+                            'icon' => 'fas fa-fw fa-file-alt',
+                            'submenu' => [
+                                [
+                                    'text' => 'Logs de Aplicación',
+                                    'route' => 'logs.index',
+                                    'icon' => 'fas fa-fw fa-file',
+                                ],
+                                [
+                                    'text' => 'Errores de Usuario',
+                                    'route' => 'logs.module.user',
+                                    'icon' => 'fas fa-user-times',
+                                ],
+                                [
+                                    'text' => 'Errores de Roles',
+                                    'route' => 'logs.module.role',
+                                    'icon' => 'fas fa-user-shield',
+                                ],
+                            ],
+                        ],
+                        [
+                            'text' => 'Diagnósticos',
+                            'icon' => 'fas fa-fw fa-stethoscope',
+                            'submenu' => [
+                                [
+                                    'text' => 'Pruebas Internas',
+                                    'route' => 'test.index',
+                                    'icon' => 'fas fa-vials',
+                                ],
+                            ],
+                        ],
+                    ],
                 ],
                 [
-                    'text' => 'Errores de Roles',
-                    'route' => 'logs.module.role',
-                    'icon' => 'fas fa-user-shield',
-                ],
-            ],
-        ],
-
-        ['header' => 'DESARROLLO Y PRUEBAS'],
-
-        // Pruebas Automatizadas
-        [
-            'text' => 'Pruebas Automatizadas',
-            'icon' => 'fas fa-vial',
-            'route' => 'testing.index',
-        ],
-
-        // Test Interno
-        [
-            'text' => 'Test Interno',
-            'icon' => 'fas fa-vials',
-            'route' => 'test.index',
-        ],
-
-        ['header' => 'AYUDA Y SOPORTE'],
-
-        // Ayuda
-        [
-            'text' => 'Ayuda',
-            'icon' => 'fas fa-fw fa-question-circle',
-            'submenu' => [
-                [
-                    'text' => 'Documentación de Imágenes',
-                    'route' => 'settings.images.manual',
-                    'icon' => 'fas fa-fw fa-image',
+                    'text' => 'Comunicaciones Institucionales',
+                    'icon' => 'fas fa-fw fa-bullhorn',
+                    'submenu' => [
+                        [
+                            'text' => 'Gestor de Correos',
+                            'route' => 'admin.correos.index',
+                            'icon' => 'fas fa-envelope',
+                        ],
+                    ],
                 ],
                 [
-                    'text' => 'Documentación Usuarios y Roles',
-                    'route' => 'ayuda.usuarios_roles',
-                    'icon' => 'fas fa-book',
+                    'text' => 'Rendimiento del Sistema',
+                    'icon' => 'fas fa-fw fa-tachometer-alt',
+                    'submenu' => [
+                        [
+                            'text' => 'Módulo de Optimización',
+                            'route' => 'system.optimizer.index',
+                            'icon' => 'fas fa-fw fa-tools',
+                        ],
+                    ],
+                ],
+                [
+                    'text' => 'Soporte y Documentación',
+                    'icon' => 'fas fa-fw fa-life-ring',
+                    'submenu' => [
+                        [
+                            'text' => 'Manuales y Guías',
+                            'icon' => 'fas fa-fw fa-book',
+                            'submenu' => [
+                                [
+                                    'text' => 'Guía de Recursos Visuales',
+                                    'route' => 'settings.images.manual',
+                                    'icon' => 'fas fa-fw fa-image',
+                                ],
+                                [
+                                    'text' => 'Manual de Usuarios y Permisos',
+                                    'route' => 'ayuda.usuarios_roles',
+                                    'icon' => 'fas fa-book',
+                                ],
+                            ],
+                        ],
+                    ],
                 ],
             ],
         ],
