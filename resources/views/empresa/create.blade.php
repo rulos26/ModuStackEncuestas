@@ -111,12 +111,25 @@ $(document).ready(function() {
         $('#departamento_id').prop('disabled', true).html('<option value="">Cargando...</option>');
         $('#municipio_id').prop('disabled', true).html('<option value="">Seleccione un municipio</option>');
         if (paisId) {
-            $.get('/empresa/departamentos/' + paisId, function(data) {
-                var options = '<option value="">Seleccione un departamento</option>';
-                data.forEach(function(dep) {
-                    options += '<option value="' + dep.id + '">' + dep.nombre + '</option>';
-                });
-                $('#departamento_id').html(options).prop('disabled', false);
+            $.ajax({
+                url: '/empresa/departamentos/' + paisId,
+                method: 'GET',
+                success: function(data) {
+                    var options = '<option value="">Seleccione un departamento</option>';
+                    data.forEach(function(dep) {
+                        options += '<option value="' + dep.id + '">' + dep.nombre + '</option>';
+                    });
+                    $('#departamento_id').html(options).prop('disabled', false);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error AJAX departamentos:', {
+                        url: this.url,
+                        status: status,
+                        error: error,
+                        response: xhr.responseText
+                    });
+                    alert('Error al cargar departamentos. Revisa la consola para más detalles.');
+                }
             });
         } else {
             $('#departamento_id').html('<option value="">Seleccione un departamento</option>').prop('disabled', true);
@@ -127,12 +140,25 @@ $(document).ready(function() {
         var depId = $(this).val();
         $('#municipio_id').prop('disabled', true).html('<option value="">Cargando...</option>');
         if (depId) {
-            $.get('/empresa/municipios/' + depId, function(data) {
-                var options = '<option value="">Seleccione un municipio</option>';
-                data.forEach(function(mun) {
-                    options += '<option value="' + mun.id + '">' + mun.nombre + '</option>';
-                });
-                $('#municipio_id').html(options).prop('disabled', false);
+            $.ajax({
+                url: '/empresa/municipios/' + depId,
+                method: 'GET',
+                success: function(data) {
+                    var options = '<option value="">Seleccione un municipio</option>';
+                    data.forEach(function(mun) {
+                        options += '<option value="' + mun.id + '">' + mun.nombre + '</option>';
+                    });
+                    $('#municipio_id').html(options).prop('disabled', false);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error AJAX municipios:', {
+                        url: this.url,
+                        status: status,
+                        error: error,
+                        response: xhr.responseText
+                    });
+                    alert('Error al cargar municipios. Revisa la consola para más detalles.');
+                }
             });
         } else {
             $('#municipio_id').html('<option value="">Seleccione un municipio</option>').prop('disabled', true);
