@@ -376,6 +376,27 @@ return [
                             'route' => 'settings.images',
                             'icon' => 'fas fa-fw fa-images',
                         ],
+                        [
+                            'text' => 'Gestión Geográfica',
+                            'icon' => 'fas fa-fw fa-globe',
+                            'submenu' => [
+                                [
+                                    'text' => 'Países',
+                                    'route' => 'paises.index',
+                                    'icon' => 'fas fa-flag',
+                                ],
+                                [
+                                    'text' => 'Departamentos',
+                                    'route' => 'departamentos.index',
+                                    'icon' => 'fas fa-map',
+                                ],
+                                [
+                                    'text' => 'Municipios',
+                                    'route' => 'municipios.index',
+                                    'icon' => 'fas fa-map-marker-alt',
+                                ],
+                            ],
+                        ],
                     ],
                 ],
                 [
