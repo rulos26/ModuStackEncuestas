@@ -334,55 +334,14 @@ return [
             'icon' => 'fas fa-fw fa-tachometer-alt',
         ],
 
-        ['header' => 'GESTIÓN DE ENCUESTAS'],
+        ['header' => 'GESTIÓN PRINCIPAL'],
 
-        // Encuestas
+        // Empleados
         [
-            'text' => 'Encuestas',
-            'icon' => 'fas fa-fw fa-clipboard-list',
-            'submenu' => [
-                [
-                    'text' => 'Listar Encuestas',
-                    'url' => '#',
-                    'icon' => 'fas fa-fw fa-list',
-                ],
-                [
-                    'text' => 'Crear Encuesta',
-                    'url' => '#',
-                    'icon' => 'fas fa-fw fa-plus',
-                ],
-                [
-                    'text' => 'Plantillas',
-                    'url' => '#',
-                    'icon' => 'fas fa-fw fa-copy',
-                ],
-            ],
+            'text' => 'Empleados',
+            'icon' => 'fas fa-id-badge',
+            'route' => 'empleados.index',
         ],
-
-        // Respuestas
-        [
-            'text' => 'Respuestas',
-            'icon' => 'fas fa-fw fa-reply',
-            'submenu' => [
-                [
-                    'text' => 'Ver Respuestas',
-                    'url' => '#',
-                    'icon' => 'fas fa-fw fa-eye',
-                ],
-                [
-                    'text' => 'Reportes',
-                    'url' => '#',
-                    'icon' => 'fas fa-fw fa-chart-bar',
-                ],
-                [
-                    'text' => 'Exportar Datos',
-                    'url' => '#',
-                    'icon' => 'fas fa-fw fa-download',
-                ],
-            ],
-        ],
-
-        ['header' => 'ADMINISTRACIÓN'],
 
         // Usuarios
         [
@@ -401,22 +360,10 @@ return [
                 ],
             ],
         ],
-        // Empleados
-        [
-            'text' => 'Empleados',
-            'icon' => 'fas fa-id-badge',
-            'route' => 'empleados.index',
-        ],
-        // Panel de Correos
-        [
-            'text' => 'Panel de Correos',
-            'icon' => 'fas fa-envelope',
-            'route' => 'admin.correos.index',
-            //'can' => ['role:Superadmin', 'role:Admin'],
-        ],
+
         // Roles
         [
-            'text' => 'Roles',
+            'text' => 'Roles y Permisos',
             'icon' => 'fas fa-user-shield',
             'submenu' => [
                 [
@@ -432,7 +379,18 @@ return [
             ],
         ],
 
-        // Configuración
+        ['header' => 'COMUNICACIÓN'],
+
+        // Panel de Correos
+        [
+            'text' => 'Panel de Correos',
+            'icon' => 'fas fa-envelope',
+            'route' => 'admin.correos.index',
+        ],
+
+        ['header' => 'CONFIGURACIÓN'],
+
+        // Configuración del Sistema
         [
             'text' => 'Configuración',
             'icon' => 'fas fa-fw fa-cogs',
@@ -443,48 +401,55 @@ return [
                     'icon' => 'fas fa-fw fa-images',
                 ],
                 [
-                    'text' => 'Configuración General',
-                    'url' => '#',
-                    'icon' => 'fas fa-fw fa-sliders-h',
-                ],
-                [
-                    'text' => 'Backup y Restauración',
-                    'url' => '#',
-                    'icon' => 'fas fa-fw fa-database',
+                    'text' => 'Optimización del Sistema',
+                    'route' => 'system.optimizer.index',
+                    'icon' => 'fas fa-fw fa-tools',
                 ],
             ],
         ],
 
-        ['header' => 'SISTEMA'],
+        ['header' => 'MONITOREO Y LOGS'],
 
-        // Logs y Monitoreo
+        // Logs del Sistema
         [
             'text' => 'Logs del Sistema',
             'icon' => 'fas fa-fw fa-file-alt',
             'submenu' => [
                 [
-                    'text' => 'Laravel Log',
+                    'text' => 'Logs de Laravel',
                     'route' => 'logs.index',
                     'icon' => 'fas fa-fw fa-file',
                 ],
                 [
-                    'text' => 'Errores del Módulo',
-                    'icon' => 'fas fa-bug',
-                    'submenu' => [
-                        [
-                            'text' => 'Errores Usuarios',
-                            'route' => 'logs.module.user',
-                            'icon' => 'fas fa-user-times',
-                        ],
-                        [
-                            'text' => 'Errores Roles',
-                            'route' => 'logs.module.role',
-                            'icon' => 'fas fa-user-shield',
-                        ],
-                    ],
+                    'text' => 'Errores de Usuarios',
+                    'route' => 'logs.module.user',
+                    'icon' => 'fas fa-user-times',
+                ],
+                [
+                    'text' => 'Errores de Roles',
+                    'route' => 'logs.module.role',
+                    'icon' => 'fas fa-user-shield',
                 ],
             ],
         ],
+
+        ['header' => 'DESARROLLO Y PRUEBAS'],
+
+        // Pruebas Automatizadas
+        [
+            'text' => 'Pruebas Automatizadas',
+            'icon' => 'fas fa-vial',
+            'route' => 'testing.index',
+        ],
+
+        // Test Interno
+        [
+            'text' => 'Test Interno',
+            'icon' => 'fas fa-vials',
+            'route' => 'test.index',
+        ],
+
+        ['header' => 'AYUDA Y SOPORTE'],
 
         // Ayuda
         [
@@ -492,66 +457,16 @@ return [
             'icon' => 'fas fa-fw fa-question-circle',
             'submenu' => [
                 [
-                    'text' => 'Documentación',
-                    'icon' => 'fas fa-fw fa-book',
-                    'submenu' => [
-                        [
-                            'text' => 'Módulo de Imágenes',
-                            'route' => 'settings.images.manual',
-                            'icon' => 'fas fa-fw fa-image',
-                        ],
-                    ],
+                    'text' => 'Documentación de Imágenes',
+                    'route' => 'settings.images.manual',
+                    'icon' => 'fas fa-fw fa-image',
                 ],
                 [
                     'text' => 'Documentación Usuarios y Roles',
-                    'icon' => 'fas fa-book',
                     'route' => 'ayuda.usuarios_roles',
-                ],
-                [
-                    'text' => 'Soporte Técnico',
-                    'url' => '#',
-                    'icon' => 'fas fa-fw fa-headset',
-                ],
-                [
-                    'text' => 'Acerca de',
-                    'url' => '#',
-                    'icon' => 'fas fa-fw fa-info-circle',
+                    'icon' => 'fas fa-book',
                 ],
             ],
-        ],
-
-        ['header' => 'OPTIMIZACIÓN'],
-        [
-            'text' => 'Optimización del Sistema',
-            'icon' => 'fas fa-fw fa-tools',
-            'submenu' => [
-                [
-                    'text' => 'Logs de Laravel',
-                    'route' => 'logs.index',
-                    'icon' => 'fas fa-fw fa-file-alt',
-                ],
-                [
-                    'text' => 'Logs del Módulo',
-                    'route' => 'logs.module',
-                    'icon' => 'fas fa-fw fa-bug',
-                ],
-                [
-                    'text' => 'Optimización',
-                    'route' => 'system.optimizer.index',
-                    'icon' => 'fas fa-fw fa-tools',
-                ],
-            ],
-        ],
-        [
-            'text' => 'Pruebas Automatizadas',
-            'icon' => 'fas fa-vial',
-            'route' => 'testing.index',
-            // 'can' => 'role-admin-superadmin', // Eliminado para acceso libre a autenticados
-        ],
-        [
-            'text' => 'Test Interno',
-            'icon' => 'fas fa-vials',
-            'route' => 'test.index',
         ],
     ],
 
