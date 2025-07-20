@@ -116,8 +116,8 @@ Route::middleware(['auth'])->group(function () {
     Route::put('empresa', [App\Http\Controllers\EmpresaController::class, 'update'])->name('empresa.update');
     Route::get('empresa/export/pdf', [App\Http\Controllers\EmpresaController::class, 'exportPdf'])->name('empresa.export.pdf');
     // AJAX para selects encadenados
-    Route::get('empresa/departamentos/{pais_id}', [App\Http\Controllers\EmpresaController::class, 'getDepartamentos'])->name('empresa.departamentos');
-    Route::get('empresa/municipios/{departamento_id}', [App\Http\Controllers\EmpresaController::class, 'getMunicipios'])->name('empresa.municipios');
+    //Route::get('empresa/departamentos/{pais_id}', [App\Http\Controllers\EmpresaController::class, 'getDepartamentos'])->name('empresa.departamentos');
+    //Route::get('empresa/municipios/{departamento_id}', [App\Http\Controllers\EmpresaController::class, 'getMunicipios'])->name('empresa.municipios');
 });
 
 // CRUD de Países
@@ -134,3 +134,5 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::resource('municipios', App\Http\Controllers\MunicipioController::class);
 });
+Route::get('empresa/departamentos/{pais_id}', [App\Http\Controllers\EmpresaController::class, 'getDepartamentos'])->name('empresa.departamentos');
+Route::get('empresa/municipios/{departamento_id}', [App\Http\Controllers\EmpresaController::class, 'getMunicipios'])->name('empresa.municipios');
