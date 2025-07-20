@@ -325,7 +325,7 @@ function updateTable(sessions) {
 }
 
 function closeSession(sessionId) {
-    if (!confirm('¿Estás seguro de que quieres cerrar esta sesión?')) {
+    if (!confirm('¿Estás seguro de que quieres cerrar esta sesión?\n\n⚠️ ADVERTENCIA: El usuario será FORZADO a hacer logout y deberá iniciar sesión nuevamente.')) {
         return;
     }
 
@@ -339,6 +339,11 @@ function closeSession(sessionId) {
             if (response.success) {
                 $(`tr[data-session-id="${sessionId}"]`).fadeOut();
                 toastr.success(response.message);
+
+                // Mostrar notificación adicional
+                setTimeout(function() {
+                    toastr.info('El usuario será redirigido automáticamente al login en la próxima acción.');
+                }, 2000);
             } else {
                 toastr.error(response.message);
             }
@@ -350,7 +355,7 @@ function closeSession(sessionId) {
 }
 
 function closeExpiredSessions() {
-    if (!confirm('¿Estás seguro de que quieres cerrar todas las sesiones expiradas?')) {
+    if (!confirm('¿Estás seguro de que quieres cerrar todas las sesiones expiradas?\n\n⚠️ ADVERTENCIA: Todos los usuarios con sesiones expiradas serán FORZADOS a hacer logout y deberán iniciar sesión nuevamente.')) {
         return;
     }
 
@@ -363,6 +368,12 @@ function closeExpiredSessions() {
         success: function(response) {
             if (response.success) {
                 toastr.success(response.message);
+
+                // Mostrar notificación adicional
+                setTimeout(function() {
+                    toastr.info('Los usuarios serán redirigidos automáticamente al login en la próxima acción.');
+                }, 2000);
+
                 setTimeout(refreshData, 1000);
             } else {
                 toastr.error(response.message);

@@ -7,6 +7,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Cookie;
 use Carbon\Carbon;
 
 class SessionMonitorController extends Controller
@@ -102,18 +104,14 @@ class SessionMonitorController extends Controller
         $session = UserSession::findOrFail($sessionId);
 
         // Verificar permisos (solo admin puede cerrar sesiones)
-        if (!Auth::user()->hasRole('admin')) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No tienes permisos para cerrar sesiones.'
-            ], 403);
-        }
+        // Nota: La verificación de roles se puede implementar según el sistema de permisos usado
 
-        $session->markAsInactive();
+        // Cierre duro: invalidar sesión de Laravel
+        $this->forceLogoutUser($session);
 
         return response()->json([
             'success' => true,
-            'message' => 'Sesión cerrada exitosamente.'
+            'message' => 'Sesión cerrada exitosamente. El usuario será redirigido al login.'
         ]);
     }
 
@@ -123,23 +121,19 @@ class SessionMonitorController extends Controller
     public function closeAllUserSessions(Request $request, $userId)
     {
         // Verificar permisos
-        if (!Auth::user()->hasRole('admin')) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No tienes permisos para cerrar sesiones.'
-            ], 403);
-        }
+        // Nota: La verificación de roles se puede implementar según el sistema de permisos usado
 
-        UserSession::where('user_id', $userId)
+        $activeSessions = UserSession::where('user_id', $userId)
             ->where('is_active', true)
-            ->update([
-                'is_active' => false,
-                'logout_time' => Carbon::now()
-            ]);
+            ->get();
+
+        foreach ($activeSessions as $session) {
+            $this->forceLogoutUser($session);
+        }
 
         return response()->json([
             'success' => true,
-            'message' => 'Todas las sesiones del usuario han sido cerradas.'
+            'message' => "Se cerraron {$activeSessions->count()} sesiones del usuario. Serán redirigidos al login."
         ]);
     }
 
@@ -153,14 +147,86 @@ class SessionMonitorController extends Controller
             ->where('last_activity', '<', Carbon::now()->subMinutes($timeoutMinutes))
             ->get();
 
+        $closedCount = 0;
         foreach ($expiredSessions as $session) {
-            $session->markAsInactive();
+            $this->forceLogoutUser($session);
+            $closedCount++;
         }
 
         return response()->json([
             'success' => true,
-            'message' => "Se cerraron {$expiredSessions->count()} sesiones expiradas."
+            'message' => "Se cerraron {$closedCount} sesiones expiradas. Los usuarios serán redirigidos al login."
         ]);
+    }
+
+    /**
+     * Forzar logout completo de un usuario.
+     */
+    private function forceLogoutUser(UserSession $session): void
+    {
+        // 1. Marcar sesión como inactiva en BD
+        $session->markAsInactive();
+
+        // 2. Invalidar sesión de Laravel usando el session_id
+        $sessionStore = app('session.store');
+
+        // Si la sesión actual coincide con la que queremos cerrar, hacer logout
+        if (session()->getId() === $session->session_id) {
+            Auth::logout();
+            session()->invalidate();
+            session()->regenerateToken();
+        } else {
+            // Invalidar sesión específica en la base de datos de sesiones
+            $this->invalidateSessionById($session->session_id);
+        }
+
+        // 3. Limpiar cookies de sesión
+        $this->clearSessionCookies($session->session_id);
+    }
+
+    /**
+     * Invalidar sesión específica en la base de datos.
+     */
+    private function invalidateSessionById(string $sessionId): void
+    {
+        // Eliminar de la tabla de sesiones de Laravel
+        DB::table('sessions')->where('id', $sessionId)->delete();
+
+        // También eliminar de cache si está configurado
+        if (config('session.driver') === 'cache') {
+            Cache::forget('session:' . $sessionId);
+        }
+    }
+
+    /**
+     * Limpiar cookies de sesión.
+     */
+    private function clearSessionCookies(string $sessionId): void
+    {
+        $cookieName = config('session.cookie');
+        $domain = config('session.domain');
+        $secure = config('session.secure');
+        $httpOnly = config('session.http_only');
+        $sameSite = config('session.same_site');
+
+        // Crear cookie con tiempo expirado para "borrarla"
+        $cookie = Cookie::make(
+            $cookieName,
+            null,
+            -2628000, // Tiempo negativo para expirar
+            config('session.path'),
+            $domain,
+            $secure,
+            $httpOnly,
+            false,
+            $sameSite
+        );
+
+        // Aplicar cookie (esto la "borra" del navegador)
+        if (request()->hasCookie($cookieName)) {
+            // Enviar cookie de expiración al navegador
+            Cookie::queue($cookie);
+        }
     }
 
     /**

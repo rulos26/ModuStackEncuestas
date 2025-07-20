@@ -21,6 +21,9 @@ class SessionTracker
         // Solo rastrear si el usuario está autenticado
         if (Auth::check()) {
             $this->trackUserSession($request);
+
+            // Verificar si la sesión actual ha sido invalidada
+            $this->checkSessionValidity($request);
         }
 
         return $response;
@@ -62,6 +65,34 @@ class SessionTracker
                     'method' => $request->method(),
                 ]
             ]);
+        }
+    }
+
+    /**
+     * Verificar si la sesión actual es válida.
+     */
+    private function checkSessionValidity(Request $request): void
+    {
+        $sessionId = Session::getId();
+        $user = Auth::user();
+
+        // Buscar la sesión en la base de datos
+        $session = UserSession::where('session_id', $sessionId)
+            ->where('user_id', $user->id)
+            ->first();
+
+        // Si la sesión no existe o está marcada como inactiva, hacer logout
+        if (!$session || !$session->is_active) {
+            Auth::logout();
+            Session::invalidate();
+            Session::regenerateToken();
+
+            // Redirigir al login si es una petición web
+            if ($request->expectsJson()) {
+                abort(401, 'Sesión invalidada');
+            } else {
+                redirect()->route('login')->send();
+            }
         }
     }
 
