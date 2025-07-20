@@ -122,15 +122,15 @@ Route::middleware(['auth'])->group(function () {
 
 // CRUD de Países
 Route::middleware(['auth'])->group(function () {
-    Route::resource('paises', App\Http\Controllers\PaisController::class)->except(['show']);
+    Route::resource('paises', App\Http\Controllers\PaisController::class);
 });
 
 // CRUD de Departamentos
 Route::middleware(['auth'])->group(function () {
-    Route::resource('departamentos', App\Http\Controllers\DepartamentoController::class)->except(['show']);
+    Route::resource('departamentos', App\Http\Controllers\DepartamentoController::class);
 });
 
 // CRUD de Municipios
 Route::middleware(['auth'])->group(function () {
-    Route::resource('municipios', App\Http\Controllers\MunicipioController::class)->except(['show']);
+    Route::resource('municipios', App\Http\Controllers\MunicipioController::class);
 });

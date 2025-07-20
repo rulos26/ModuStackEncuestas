@@ -15,6 +15,9 @@ class ExecuteSqlSeeder extends Seeder
      */
     public function run()
     {
+        $this->executeSqlFile(database_path('sql/data_departamentos.sql'));
+        $this->executeSqlFile(database_path('sql/data_municipios.sql'));
+        $this->executeSqlFile(database_path('sql/data_paises.sql'));
         //$this->executeSqlFile(database_path('sql/data_profesion.sql'));
         //$this->executeSqlFile(database_path('sql/data_mensaje_bienvenida.sql'));
         //$this->executeSqlFile(database_path('sql/data_tipo_documentos.sql'));
