@@ -406,16 +406,6 @@ return [
                 ],
                 // Entradas públicas fuera de Ajustes Generales del Sistema
                 [
-                    'text' => 'Política de Privacidad (Pública)',
-                    'url' => '/politica-privacidad',
-                    'icon' => 'fas fa-user-shield',
-                ],
-                [
-                    'text' => 'Información de la Empresa (Pública)',
-                    'route' => 'empresa.show',
-                    'icon' => 'fas fa-building',
-                ],
-                [
                     'text' => 'Supervisión y Registros',
                     'icon' => 'fas fa-fw fa-clipboard-list',
                     'submenu' => [
@@ -503,6 +493,17 @@ return [
                     ],
                 ],
             ],
+        ],
+        // Entradas públicas al final del menú principal
+        [
+            'text' => 'Política de Privacidad (Pública)',
+            'url' => '/politica-privacidad',
+            'icon' => 'fas fa-user-shield',
+        ],
+        [
+            'text' => 'Información de la Empresa (Pública)',
+            'route' => 'empresa.show',
+            'icon' => 'fas fa-building',
         ],
     ],
 
