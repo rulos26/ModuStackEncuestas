@@ -104,15 +104,18 @@
 
 @section('js')
 <script>
+    window.baseUrl = "{{ url('/') }}";
+</script>
+<script>
 $(document).ready(function() {
     // Cargar departamentos al seleccionar país
     $('#pais_id').change(function() {
         var paisId = $(this).val();
-        var urlDep = '/empresa/departamentos/' + paisId;
+        var urlDep = window.baseUrl + '/empresa/departamentos/' + paisId;
         $('#departamento_id').prop('disabled', true).html('<option value="">Cargando...</option>');
         $('#municipio_id').prop('disabled', true).html('<option value="">Seleccione un municipio</option>');
         if (paisId) {
-            console.log('Intentando acceder a la URL de departamentos:', window.location.origin + urlDep);
+            console.log('Intentando acceder a la URL de departamentos:', urlDep);
             $.ajax({
                 url: urlDep,
                 method: 'GET',
@@ -125,7 +128,7 @@ $(document).ready(function() {
                 },
                 error: function(xhr, status, error) {
                     console.error('Error AJAX departamentos:', {
-                        url: window.location.origin + urlDep,
+                        url: urlDep,
                         status: status,
                         error: error,
                         response: xhr.responseText
@@ -140,10 +143,10 @@ $(document).ready(function() {
     // Cargar municipios al seleccionar departamento
     $('#departamento_id').change(function() {
         var depId = $(this).val();
-        var urlMun = '/empresa/municipios/' + depId;
+        var urlMun = window.baseUrl + '/empresa/municipios/' + depId;
         $('#municipio_id').prop('disabled', true).html('<option value="">Cargando...</option>');
         if (depId) {
-            console.log('Intentando acceder a la URL de municipios:', window.location.origin + urlMun);
+            console.log('Intentando acceder a la URL de municipios:', urlMun);
             $.ajax({
                 url: urlMun,
                 method: 'GET',
@@ -156,7 +159,7 @@ $(document).ready(function() {
                 },
                 error: function(xhr, status, error) {
                     console.error('Error AJAX municipios:', {
-                        url: window.location.origin + urlMun,
+                        url: urlMun,
                         status: status,
                         error: error,
                         response: xhr.responseText
