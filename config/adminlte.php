@@ -502,7 +502,7 @@ return [
         ],
         [
             'text' => 'About Quantum Metric',
-            'route' => 'empresa.show',
+            'url' => '/about-quantum-metric',
             'icon' => 'fas fa-building',
         ],
     ],

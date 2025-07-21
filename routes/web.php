@@ -146,3 +146,8 @@ Route::get('/politica-privacidad', function() {
     $politica = PoliticaPrivacidad::where('estado', true)->orderByDesc('fecha_publicacion')->first();
     return view('publico.politica', compact('politica'));
 })->name('public.politica');
+
+// Ruta pública para About Quantum Metric
+Route::get('/about-quantum-metric', function() {
+    return view('publico.about');
+})->name('public.about');
