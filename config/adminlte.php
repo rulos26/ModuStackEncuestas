@@ -356,6 +356,11 @@ return [
                             'icon' => 'fas fa-id-badge',
                         ],
                         [
+                            'text' => 'Empresas Clientes',
+                            'route' => 'empresas_clientes.index',
+                            'icon' => 'fas fa-building',
+                        ],
+                        [
                             'text' => 'Roles y Permisos',
                             'route' => 'roles.index',
                             'icon' => 'fas fa-user-shield',

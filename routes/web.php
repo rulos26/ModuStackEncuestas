@@ -8,6 +8,7 @@ use App\Http\Controllers\EmpleadoController;
 use App\Http\Controllers\EmpleadoPlantillaController;
 use App\Models\PoliticaPrivacidad;
 use App\Models\Empresa;
+use App\Http\Controllers\EmpresasClienteController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -153,3 +154,8 @@ Route::get('/about-quantum-metric', function() {
     $empresa = Empresa::with(['pais', 'departamento', 'municipio'])->first();
     return view('publico.about', compact('empresa'));
 })->name('public.about');
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('empresas_clientes', EmpresasClienteController::class);
+    Route::get('empresas_clientes/{empresas_cliente}/pdf', [EmpresasClienteController::class, 'exportPdf'])->name('empresas_clientes.exportPdf');
+});
