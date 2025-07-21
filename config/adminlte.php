@@ -496,12 +496,12 @@ return [
         ],
         // Entradas públicas al final del menú principal
         [
-            'text' => 'Política de Privacidad (Pública)',
+            'text' => 'Política de Privacidad',
             'url' => '/politica-privacidad',
             'icon' => 'fas fa-user-shield',
         ],
         [
-            'text' => 'Información de la Empresa (Pública)',
+            'text' => 'About Quantum Metric',
             'route' => 'empresa.show',
             'icon' => 'fas fa-building',
         ],
