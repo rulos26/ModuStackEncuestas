@@ -404,7 +404,7 @@ return [
                         ],
                     ],
                 ],
-                // Entradas públicas al final del menú
+                // Entradas públicas fuera de Ajustes Generales del Sistema
                 [
                     'text' => 'Política de Privacidad (Pública)',
                     'url' => '/politica-privacidad',
