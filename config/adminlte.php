@@ -334,7 +334,7 @@ return [
             'icon' => 'fas fa-fw fa-tachometer-alt',
         ],
 
-        ['header' => 'ENCUESTAS: AJUSTES Y CONFIGURACIÓN'],
+        ['header' => 'AJUSTES DE ENCUESTAS'],
 
         ['header' => 'AJUSTES GENERALES DEL SISTEMA'],
 
