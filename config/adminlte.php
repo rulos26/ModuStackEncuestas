@@ -342,11 +342,6 @@ return [
             'icon' => 'fas fa-fw fa-cogs',
             'submenu' => [
                 [
-                    'text' => 'Información de la Empresa',
-                    'route' => 'empresa.show',
-                    'icon' => 'fas fa-building',
-                ],
-                [
                     'text' => 'Gestión de Accesos',
                     'icon' => 'fas fa-fw fa-key',
                     'submenu' => [
@@ -377,6 +372,16 @@ return [
                             'icon' => 'fas fa-fw fa-images',
                         ],
                         [
+                            'text' => 'Información de la Empresa',
+                            'route' => 'empresa.show',
+                            'icon' => 'fas fa-building',
+                        ],
+                        [
+                            'text' => 'Privacidad de Datos',
+                            'route' => 'politicas-privacidad.index',
+                            'icon' => 'fas fa-user-shield',
+                        ],
+                        [
                             'text' => 'Gestión Geográfica',
                             'icon' => 'fas fa-fw fa-globe',
                             'submenu' => [
@@ -398,6 +403,17 @@ return [
                             ],
                         ],
                     ],
+                ],
+                // Entradas públicas al final del menú
+                [
+                    'text' => 'Política de Privacidad (Pública)',
+                    'url' => '/politica-privacidad',
+                    'icon' => 'fas fa-user-shield',
+                ],
+                [
+                    'text' => 'Información de la Empresa (Pública)',
+                    'route' => 'empresa.show',
+                    'icon' => 'fas fa-building',
                 ],
                 [
                     'text' => 'Supervisión y Registros',
@@ -485,11 +501,6 @@ return [
                             ],
                         ],
                     ],
-                ],
-                [
-                    'text' => 'Privacidad de Datos',
-                    'route' => 'politicas-privacidad.index',
-                    'icon' => 'fas fa-user-shield',
                 ],
             ],
         ],
