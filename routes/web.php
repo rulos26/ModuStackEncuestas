@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\MailPanelController;
 use App\Http\Controllers\EmpleadoController;
 use App\Http\Controllers\EmpleadoPlantillaController;
 use App\Models\PoliticaPrivacidad;
+use App\Models\Empresa;
 
 Route::get('/', function () {
     return view('welcome');
@@ -149,5 +150,6 @@ Route::get('/politica-privacidad', function() {
 
 // Ruta pública para About Quantum Metric
 Route::get('/about-quantum-metric', function() {
-    return view('publico.about');
+    $empresa = Empresa::with(['pais', 'departamento', 'municipio'])->first();
+    return view('publico.about', compact('empresa'));
 })->name('public.about');
