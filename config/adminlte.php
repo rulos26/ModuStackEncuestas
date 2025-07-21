@@ -486,6 +486,11 @@ return [
                         ],
                     ],
                 ],
+                [
+                    'text' => 'Privacidad de Datos',
+                    'route' => 'politicas-privacidad.index',
+                    'icon' => 'fas fa-user-shield',
+                ],
             ],
         ],
     ],

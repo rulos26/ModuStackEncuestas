@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Admin\MailPanelController;
 use App\Http\Controllers\EmpleadoController;
 use App\Http\Controllers\EmpleadoPlantillaController;
+use App\Models\PoliticaPrivacidad;
 
 Route::get('/', function () {
     return view('welcome');
@@ -136,3 +137,12 @@ Route::middleware(['auth'])->group(function () {
 });
 Route::get('empresa/departamentos/{pais_id}', [App\Http\Controllers\EmpresaController::class, 'getDepartamentos'])->name('empresa.departamentos');
 Route::get('empresa/municipios/{departamento_id}', [App\Http\Controllers\EmpresaController::class, 'getMunicipios'])->name('empresa.municipios');
+
+// CRUD de Políticas de Privacidad
+Route::resource('politicas-privacidad', App\Http\Controllers\PoliticaPrivacidadController::class);
+
+// Ruta pública para mostrar la última política de privacidad activa
+Route::get('/politica-privacidad', function() {
+    $politica = PoliticaPrivacidad::where('estado', true)->orderByDesc('fecha_publicacion')->first();
+    return view('publico.politica', compact('politica'));
+})->name('public.politica');
