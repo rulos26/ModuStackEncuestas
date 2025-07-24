@@ -21,8 +21,9 @@ class EncuestaController extends Controller
         return view('encuestas.index', compact('encuestas'));
     }
 
-    public function show(Encuesta $encuesta)
+    public function show($id)
     {
+        $encuesta = Encuesta::with('preguntas.respuestas')->findOrFail($id);
         return view('encuestas.show', compact('encuesta'));
     }
 
