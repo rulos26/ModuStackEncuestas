@@ -8,7 +8,7 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <form action="{{ route('preguntas.store', $encuesta->id) }}" method="POST">
+    <form action="{{ route('encuestas.preguntas.store', $encuesta->id) }}" method="POST">
         @csrf
 
         <div class="mb-3">
