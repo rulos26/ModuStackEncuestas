@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Empresa extends Model
 {
-    protected $table = 'empresa';
+    protected $table = 'empresas';
     protected $fillable = [
         'nombre_legal', 'nit', 'representante_legal', 'telefono', 'email', 'direccion',
         'pais_id', 'departamento_id', 'municipio_id', 'mision', 'vision', 'descripcion', 'fecha_creacion'
