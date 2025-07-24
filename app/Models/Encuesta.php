@@ -23,6 +23,11 @@ class Encuesta extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function preguntas()
+    {
+        return $this->hasMany(Pregunta::class);
+    }
+
     protected static function boot()
     {
         parent::boot();
