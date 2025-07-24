@@ -181,6 +181,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('encuestas', App\Http\Controllers\EncuestaController::class);
     Route::get('encuestas/create', [App\Http\Controllers\EncuestaController::class, 'create'])
         ->name('encuestas.create');
+    Route::post('encuestas/{encuesta}/clonar', [App\Http\Controllers\EncuestaController::class, 'clonar'])->name('encuestas.clone');
 });
 
 

@@ -58,4 +58,31 @@ class EncuestaController extends Controller
         $encuesta->delete();
         return redirect()->route('encuestas.index')->with('success', 'Encuesta eliminada correctamente.');
     }
+
+    public function clonar($id)
+    {
+        $original = Encuesta::with('preguntas.respuestas')->findOrFail($id);
+
+        // Clonar la encuesta
+        $nuevaEncuesta = $original->replicate();
+        $nuevaEncuesta->titulo = $original->titulo . ' (Copia)';
+        $nuevaEncuesta->slug = null; // Se generará automáticamente si tienes el boot en el modelo
+        $nuevaEncuesta->push();
+
+        // Clonar preguntas y respuestas
+        foreach ($original->preguntas as $pregunta) {
+            $nuevaPregunta = $pregunta->replicate();
+            $nuevaPregunta->encuesta_id = $nuevaEncuesta->id;
+            $nuevaPregunta->push();
+
+            foreach ($pregunta->respuestas as $respuesta) {
+                $nuevaRespuesta = $respuesta->replicate();
+                $nuevaRespuesta->pregunta_id = $nuevaPregunta->id;
+                $nuevaRespuesta->save();
+            }
+        }
+
+        return redirect()->route('encuestas.show', $nuevaEncuesta->id)
+            ->with('success', 'Encuesta clonada correctamente.');
+    }
 }
