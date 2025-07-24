@@ -179,6 +179,8 @@ Route::post('publica/{id}', [EncuestaPublicaController::class, 'responder'])->na
 
 Route::middleware(['auth'])->group(function () {
     Route::resource('encuestas', App\Http\Controllers\EncuestaController::class);
+    Route::get('encuestas/create', [App\Http\Controllers\EncuestaController::class, 'create'])
+        ->name('encuestas.create');
 });
 
 
