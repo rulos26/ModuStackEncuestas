@@ -9,6 +9,11 @@ use App\Http\Controllers\EmpleadoPlantillaController;
 use App\Models\PoliticaPrivacidad;
 use App\Models\Empresa;
 use App\Http\Controllers\EmpresasClienteController;
+use App\Http\Controllers\EncuestaLogicaController;
+use App\Http\Controllers\EncuestaPreviewController;
+use App\Http\Controllers\EncuestaPublicaController;
+use App\Http\Controllers\EncuestaRespuestaController;
+use App\Http\Controllers\PreguntaController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -159,3 +164,17 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('empresas_clientes', EmpresasClienteController::class);
     Route::get('empresas_clientes/{empresas_cliente}/pdf', [EmpresasClienteController::class, 'exportPdf'])->name('empresas_clientes.exportPdf');
 });
+
+Route::get('encuestas/{encuesta}/preguntas', [PreguntaController::class, 'create'])->name('encuestas.preguntas.create');
+Route::post('encuestas/{encuesta}/preguntas', [PreguntaController::class, 'store'])->name('encuestas.preguntas.store');
+Route::get('encuestas/{encuesta}/respuestas', [EncuestaRespuestaController::class, 'create'])->name('encuestas.respuestas.create');
+Route::post('encuestas/{encuesta}/respuestas', [EncuestaRespuestaController::class, 'store'])->name('encuestas.respuestas.store');
+Route::get('encuestas/{encuesta}/logica', [EncuestaLogicaController::class, 'create'])->name('encuestas.logica.create');
+Route::post('encuestas/{encuesta}/logica', [EncuestaLogicaController::class, 'store'])->name('encuestas.logica.store');
+
+Route::get('encuestas/{encuesta}/preview', [EncuestaPreviewController::class, 'preview'])->name('encuestas.preview');
+
+Route::get('publica/{slug}', [EncuestaPublicaController::class, 'mostrar'])->name('encuestas.publica');
+Route::post('publica/{id}', [EncuestaPublicaController::class, 'responder'])->name('encuestas.responder');
+
+

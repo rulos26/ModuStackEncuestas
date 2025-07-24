@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
 
 class Encuesta extends Model
 {
@@ -20,5 +21,14 @@ class Encuesta extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($encuesta) {
+            $encuesta->slug = Str::slug($encuesta->titulo) . '-' . Str::random(6);
+        });
     }
 }
