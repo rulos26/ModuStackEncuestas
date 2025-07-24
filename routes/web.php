@@ -177,4 +177,8 @@ Route::get('encuestas/{encuesta}/preview', [EncuestaPreviewController::class, 'p
 Route::get('publica/{slug}', [EncuestaPublicaController::class, 'mostrar'])->name('encuestas.publica');
 Route::post('publica/{id}', [EncuestaPublicaController::class, 'responder'])->name('encuestas.responder');
 
+Route::middleware(['auth'])->group(function () {
+    Route::resource('encuestas', App\Http\Controllers\EncuestaController::class);
+});
+
 
