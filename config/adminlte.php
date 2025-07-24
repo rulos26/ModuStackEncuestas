@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Title
@@ -498,6 +497,33 @@ return [
                             ],
                         ],
                     ],
+                ],
+            ],
+        ],
+        // Gestión de Encuestas
+        [
+            'text' => 'Gestión de Encuestas',
+            'icon' => 'fas fa-poll',
+            'submenu' => [
+                [
+                    'text' => 'Crear Encuesta',
+                    'route' => 'encuestas.create',
+                    'icon' => 'fas fa-plus',
+                ],
+                [
+                    'text' => 'Listar Encuestas',
+                    'route' => 'encuestas.index',
+                    'icon' => 'fas fa-list',
+                ],
+                [
+                    'text' => 'Respuestas',
+                    'url'  => '#', // Cambia por la ruta real si tienes un módulo de respuestas
+                    'icon' => 'fas fa-check-circle',
+                ],
+                [
+                    'text' => 'Vista Previa',
+                    'url'  => '#', // Cambia por la ruta real si tienes una vista previa general
+                    'icon' => 'fas fa-eye',
                 ],
             ],
         ],
