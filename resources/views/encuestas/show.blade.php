@@ -31,6 +31,12 @@
         </div>
     @endforeach
 
-    <a href="{{ route('encuestas.index') }}" class="btn btn-secondary mt-3">Volver al listado</a>
+    <div class="mt-4">
+        <a href="{{ route('encuestas.preguntas.create', $encuesta->id) }}" class="btn btn-primary me-2">Agregar Preguntas</a>
+        <a href="{{ route('encuestas.respuestas.create', $encuesta->id) }}" class="btn btn-info me-2">Agregar Respuestas</a>
+        <a href="{{ route('encuestas.logica.create', $encuesta->id) }}" class="btn btn-warning me-2">Configurar Lógica</a>
+        <a href="{{ route('encuestas.preview', $encuesta->id) }}" class="btn btn-success me-2">Previsualizar Encuesta</a>
+        <a href="{{ route('encuestas.index') }}" class="btn btn-secondary">Volver al listado</a>
+    </div>
 </div>
 @endsection
