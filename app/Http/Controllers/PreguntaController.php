@@ -76,7 +76,7 @@ class PreguntaController extends Controller
                 'texto' => 'required|string|max:500|min:3',
                 'tipo' => 'required|in:texto,seleccion_unica,seleccion_multiple,numero,fecha',
                 'orden' => 'required|integer|min:1',
-                'obligatoria' => 'boolean',
+                'obligatoria' => 'nullable|in:on,1,true',
             ], [
                 'texto.required' => 'El texto de la pregunta es obligatorio.',
                 'texto.max' => 'El texto de la pregunta no puede exceder 500 caracteres.',
@@ -86,6 +86,7 @@ class PreguntaController extends Controller
                 'orden.required' => 'El orden es obligatorio.',
                 'orden.integer' => 'El orden debe ser un número entero.',
                 'orden.min' => 'El orden debe ser mayor a 0.',
+                'obligatoria.in' => 'El valor del campo obligatoria no es válido.',
             ]);
 
             // Verificar que el orden no esté duplicado
