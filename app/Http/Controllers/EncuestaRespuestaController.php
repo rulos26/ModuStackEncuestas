@@ -27,7 +27,7 @@ class EncuestaRespuestaController extends Controller
                 return $this->redirectIfNoAccess('No tienes permisos para agregar respuestas.');
             }
 
-            $encuesta = Encuesta::with('preguntas')->findOrFail($encuestaId);
+            $encuesta = Encuesta::with(['preguntas.respuestas'])->findOrFail($encuestaId);
 
             // Verificar que el usuario es el propietario o tiene permisos de admin
             if ($encuesta->user_id !== Auth::id() && !$this->isAdmin()) {
@@ -35,8 +35,11 @@ class EncuestaRespuestaController extends Controller
                 return $this->redirectIfNoAccess('No tienes permisos para modificar esta encuesta.');
             }
 
-            // Obtener preguntas de selección
-            $preguntas = $encuesta->preguntas()->whereIn('tipo', ['seleccion_unica', 'seleccion_multiple'])->get();
+            // Obtener preguntas de selección con sus respuestas
+            $preguntas = $encuesta->preguntas()
+                ->whereIn('tipo', ['seleccion_unica', 'seleccion_multiple'])
+                ->with('respuestas')
+                ->get();
 
             if ($preguntas->isEmpty()) {
                 Log::warning('Intento de agregar respuestas a encuesta sin preguntas de selección', [
@@ -50,13 +53,30 @@ class EncuestaRespuestaController extends Controller
                     ->with('show_add_questions_modal', true);
             }
 
+            // Separar preguntas con y sin respuestas
+            $preguntasSinRespuestas = $preguntas->filter(function($pregunta) {
+                return $pregunta->respuestas->isEmpty();
+            });
+
+            $preguntasConRespuestas = $preguntas->filter(function($pregunta) {
+                return $pregunta->respuestas->isNotEmpty();
+            });
+
             Log::info('Acceso exitoso a agregar respuestas', [
                 'user_id' => Auth::id(),
                 'encuesta_id' => $encuestaId,
-                'preguntas_count' => $preguntas->count()
+                'preguntas_total' => $preguntas->count(),
+                'preguntas_sin_respuestas' => $preguntasSinRespuestas->count(),
+                'preguntas_con_respuestas' => $preguntasConRespuestas->count()
             ]);
 
-            return view('encuestas.respuestas.create', compact('preguntas', 'encuestaId', 'encuesta'));
+            return view('encuestas.respuestas.create', compact(
+                'preguntas',
+                'preguntasSinRespuestas',
+                'preguntasConRespuestas',
+                'encuestaId',
+                'encuesta'
+            ));
         } catch (Exception $e) {
             Log::error('Error accediendo a agregar respuestas', [
                 'user_id' => Auth::id(),
