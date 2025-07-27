@@ -124,8 +124,8 @@ Route::middleware(['auth'])->group(function () {
     Route::put('empresa', [App\Http\Controllers\EmpresaController::class, 'update'])->name('empresa.update');
     Route::get('empresa/export/pdf', [App\Http\Controllers\EmpresaController::class, 'exportPdf'])->name('empresa.export.pdf');
     // AJAX para selects encadenados
-    //Route::get('empresa/departamentos/{pais_id}', [App\Http\Controllers\EmpresaController::class, 'getDepartamentos'])->name('empresa.departamentos');
-    //Route::get('empresa/municipios/{departamento_id}', [App\Http\Controllers\EmpresaController::class, 'getMunicipios'])->name('empresa.municipios');
+    Route::get('empresa/departamentos/{pais_id}', [App\Http\Controllers\EmpresaController::class, 'getDepartamentos'])->name('empresa.departamentos');
+    Route::get('empresa/municipios/{departamento_id}', [App\Http\Controllers\EmpresaController::class, 'getMunicipios'])->name('empresa.municipios');
 });
 
 // CRUD de Países
@@ -142,8 +142,6 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::resource('municipios', App\Http\Controllers\MunicipioController::class);
 });
-Route::get('empresa/departamentos/{pais_id}', [App\Http\Controllers\EmpresaController::class, 'getDepartamentos'])->name('empresa.departamentos');
-Route::get('empresa/municipios/{departamento_id}', [App\Http\Controllers\EmpresaController::class, 'getMunicipios'])->name('empresa.municipios');
 
 // CRUD de Políticas de Privacidad
 Route::resource('politicas-privacidad', App\Http\Controllers\PoliticaPrivacidadController::class);
@@ -165,23 +163,37 @@ Route::middleware(['auth'])->group(function () {
     Route::get('empresas_clientes/{empresas_cliente}/pdf', [EmpresasClienteController::class, 'exportPdf'])->name('empresas_clientes.exportPdf');
 });
 
-Route::get('encuestas/{encuesta}/preguntas', [PreguntaController::class, 'create'])->name('encuestas.preguntas.create');
-Route::post('encuestas/{encuesta}/preguntas', [PreguntaController::class, 'store'])->name('encuestas.preguntas.store');
-Route::get('encuestas/{encuesta}/respuestas', [EncuestaRespuestaController::class, 'create'])->name('encuestas.respuestas.create');
-Route::post('encuestas/{encuesta}/respuestas', [EncuestaRespuestaController::class, 'store'])->name('encuestas.respuestas.store');
-Route::get('encuestas/{encuesta}/logica', [EncuestaLogicaController::class, 'create'])->name('encuestas.logica.create');
-Route::post('encuestas/{encuesta}/logica', [EncuestaLogicaController::class, 'store'])->name('encuestas.logica.store');
+// ============================================================================
+// RUTAS DEL MÓDULO DE ENCUESTAS
+// ============================================================================
 
-Route::get('encuestas/{encuesta}/preview', [EncuestaPreviewController::class, 'preview'])->name('encuestas.preview');
+// Rutas públicas de encuestas (sin autenticación)
+Route::prefix('publica')->name('encuestas.')->group(function () {
+    Route::get('{slug}', [EncuestaPublicaController::class, 'mostrar'])->name('publica');
+    Route::post('{id}', [EncuestaPublicaController::class, 'responder'])->name('responder');
+});
 
-Route::get('publica/{slug}', [EncuestaPublicaController::class, 'mostrar'])->name('encuestas.publica');
-Route::post('publica/{id}', [EncuestaPublicaController::class, 'responder'])->name('encuestas.responder');
+// Rutas protegidas de encuestas (con autenticación)
+Route::middleware(['auth'])->prefix('encuestas')->name('encuestas.')->group(function () {
+    // CRUD principal de encuestas
+    Route::resource('/', App\Http\Controllers\EncuestaController::class)->parameters(['' => 'encuesta']);
+    Route::post('{encuesta}/clonar', [App\Http\Controllers\EncuestaController::class, 'clonar'])->name('clone');
 
-Route::middleware(['auth'])->group(function () {
-    Route::resource('encuestas', App\Http\Controllers\EncuestaController::class);
-    Route::get('encuestas/create', [App\Http\Controllers\EncuestaController::class, 'create'])
-        ->name('encuestas.create');
-    Route::post('encuestas/{encuesta}/clonar', [App\Http\Controllers\EncuestaController::class, 'clonar'])->name('encuestas.clone');
+    // Gestión de preguntas
+    Route::get('{encuesta}/preguntas', [PreguntaController::class, 'create'])->name('preguntas.create');
+    Route::post('{encuesta}/preguntas', [PreguntaController::class, 'store'])->name('preguntas.store');
+    Route::delete('{encuesta}/preguntas/{pregunta}', [PreguntaController::class, 'destroy'])->name('preguntas.destroy');
+
+    // Gestión de respuestas
+    Route::get('{encuesta}/respuestas', [EncuestaRespuestaController::class, 'create'])->name('respuestas.create');
+    Route::post('{encuesta}/respuestas', [EncuestaRespuestaController::class, 'store'])->name('respuestas.store');
+
+    // Configuración de lógica
+    Route::get('{encuesta}/logica', [EncuestaLogicaController::class, 'create'])->name('logica.create');
+    Route::post('{encuesta}/logica', [EncuestaLogicaController::class, 'store'])->name('logica.store');
+
+    // Vista previa
+    Route::get('{encuesta}/preview', [EncuestaPreviewController::class, 'preview'])->name('preview');
 });
 
 
