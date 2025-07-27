@@ -13,6 +13,16 @@ class Empresa extends Model
         'pais_id', 'departamento_id', 'municipio_id', 'mision', 'vision', 'descripcion', 'fecha_creacion'
     ];
 
+    /**
+     * Get the table associated with the model.
+     *
+     * @return string
+     */
+    public function getTable()
+    {
+        return 'empresa';
+    }
+
     public function pais(): BelongsTo
     {
         return $this->belongsTo(Pais::class, 'pais_id');

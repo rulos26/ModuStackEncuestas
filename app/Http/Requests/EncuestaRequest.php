@@ -16,7 +16,7 @@ class EncuestaRequest extends FormRequest
     {
         $rules = [
             'titulo' => 'required|string|max:255|min:3',
-            'empresa_id' => 'required|exists:empresas,id',
+            'empresa_id' => 'required|exists:empresa,id',
             'numero_encuestas' => 'nullable|integer|min:0|max:10000',
             'tiempo_disponible' => 'nullable|date|after:now',
             'enviar_por_correo' => 'boolean',
