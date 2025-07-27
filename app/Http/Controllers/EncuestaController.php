@@ -72,7 +72,7 @@ class EncuestaController extends Controller
                 return $this->redirectIfNoAccess('No tienes permisos para crear encuestas.');
             }
 
-            $empresas = Empresa::orderBy('nombre')->get();
+            $empresas = Empresa::orderBy('nombre_legal')->get();
 
             if ($empresas->isEmpty()) {
                 return redirect()->back()->with('warning', 'Debes crear una empresa antes de crear encuestas.');
@@ -143,7 +143,7 @@ class EncuestaController extends Controller
                 return $this->redirectIfNoAccess('No tienes permisos para editar esta encuesta.');
             }
 
-            $empresas = Empresa::orderBy('nombre')->get();
+            $empresas = Empresa::orderBy('nombre_legal')->get();
 
             return view('encuestas.edit', compact('encuesta', 'empresas'));
         } catch (Exception $e) {
