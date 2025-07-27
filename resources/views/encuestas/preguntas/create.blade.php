@@ -82,18 +82,33 @@
                             <label for="tipo" class="form-label">
                                 <i class="fas fa-list"></i> Tipo de pregunta
                             </label>
-                            <select name="tipo" id="tipo"
-                                    class="form-control @error('tipo') is-invalid @enderror"
-                                    required>
-                                <option value="">Selecciona el tipo de pregunta</option>
-                                @foreach(App\Models\Pregunta::getTiposDisponibles() as $tipo => $config)
-                                    <option value="{{ $tipo }}" {{ old('tipo') == $tipo ? 'selected' : '' }}>
-                                        {{ $config['icono'] }} {{ $config['nombre'] }}
-                                    </option>
-                                @endforeach
-                            </select>
+
+                            <!-- Dropdown personalizado para mostrar iconos -->
+                            <div class="dropdown">
+                                <button class="btn btn-outline-secondary dropdown-toggle w-100 text-left"
+                                        type="button"
+                                        id="tipoDropdown"
+                                        data-toggle="dropdown"
+                                        aria-haspopup="true"
+                                        aria-expanded="false">
+                                    <span id="tipoSeleccionado">
+                                        <i class="fas fa-question-circle"></i> Selecciona el tipo de pregunta
+                                    </span>
+                                </button>
+                                <div class="dropdown-menu w-100" aria-labelledby="tipoDropdown">
+                                    @foreach(App\Models\Pregunta::getTiposDisponibles() as $tipo => $config)
+                                        <a class="dropdown-item" href="#" data-tipo="{{ $tipo }}" data-icono="{{ $config['icono'] }}" data-nombre="{{ $config['nombre'] }}">
+                                            <i class="{{ $config['icono'] }}"></i> {{ $config['nombre'] }}
+                                        </a>
+                                    @endforeach
+                                </div>
+                            </div>
+
+                            <!-- Campo oculto para el valor real -->
+                            <input type="hidden" name="tipo" id="tipo" value="{{ old('tipo') }}" required>
+
                             @error('tipo')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
                             <small class="form-text text-muted">
                                 El tipo determina cómo se mostrará y validará la respuesta
@@ -376,13 +391,31 @@ $(document).ready(function() {
         $('.alert').fadeOut('slow');
     }, 5000);
 
-    // Mostrar configuraciones específicas según el tipo seleccionado
-    $('#tipo').on('change', function() {
-        const tipo = $(this).val();
+    // Manejar el dropdown personalizado de tipos
+    $('.dropdown-item').on('click', function(e) {
+        e.preventDefault();
 
+        const tipo = $(this).data('tipo');
+        const icono = $(this).data('icono');
+        const nombre = $(this).data('nombre');
+
+        // Actualizar el botón del dropdown
+        $('#tipoSeleccionado').html(`<i class="${icono}"></i> ${nombre}`);
+
+        // Actualizar el campo oculto
+        $('#tipo').val(tipo);
+
+        // Mostrar configuraciones específicas según el tipo seleccionado
+        mostrarConfiguracionesEspecificas(tipo);
+
+        // Mostrar información del tipo
+        mostrarInformacionTipo(tipo);
+    });
+
+    // Función para mostrar configuraciones específicas
+    function mostrarConfiguracionesEspecificas(tipo) {
         // Ocultar todas las configuraciones
         $('.config-tipo').hide();
-        $('.tipo-info').hide();
 
         if (tipo) {
             // Mostrar configuración específica
@@ -396,13 +429,19 @@ $(document).ready(function() {
                 $('#config-ubicacion').show();
             }
 
-            // Mostrar información del tipo
-            $(`.tipo-info[data-tipo="${tipo}"]`).show();
             $('#configuraciones-especificas').show();
         } else {
             $('#configuraciones-especificas').hide();
         }
-    });
+    }
+
+    // Función para mostrar información del tipo
+    function mostrarInformacionTipo(tipo) {
+        $('.tipo-info').hide();
+        if (tipo) {
+            $(`.tipo-info[data-tipo="${tipo}"]`).show();
+        }
+    }
 
     // Validación del formulario
     $('form').on('submit', function(e) {
@@ -453,10 +492,76 @@ $(document).ready(function() {
         }
     });
 
-    // Trigger change event on load if tipo is already selected
-    if ($('#tipo').val()) {
-        $('#tipo').trigger('change');
+    // Inicializar con el valor anterior si existe
+    const tipoAnterior = $('#tipo').val();
+    if (tipoAnterior) {
+        const itemSeleccionado = $(`.dropdown-item[data-tipo="${tipoAnterior}"]`);
+        if (itemSeleccionado.length) {
+            const icono = itemSeleccionado.data('icono');
+            const nombre = itemSeleccionado.data('nombre');
+            $('#tipoSeleccionado').html(`<i class="${icono}"></i> ${nombre}`);
+            mostrarConfiguracionesEspecificas(tipoAnterior);
+            mostrarInformacionTipo(tipoAnterior);
+        }
     }
 });
 </script>
+@endsection
+
+@section('css')
+<style>
+.dropdown-item {
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa;
+}
+
+.dropdown-item i {
+    margin-right: 0.5rem;
+    width: 16px;
+    text-align: center;
+}
+
+#tipoDropdown {
+    text-align: left;
+    position: relative;
+    padding: 0.375rem 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    background-color: #fff;
+    color: #495057;
+}
+
+#tipoDropdown:hover {
+    background-color: #e9ecef;
+    border-color: #adb5bd;
+}
+
+#tipoDropdown:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.dropdown-menu {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ced4da;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.dropdown-toggle::after {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+}
+</style>
 @endsection
