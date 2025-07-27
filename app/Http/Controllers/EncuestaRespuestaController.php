@@ -8,6 +8,7 @@ use App\Models\Encuesta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Exception;
 
 class EncuestaRespuestaController extends Controller
@@ -20,35 +21,71 @@ class EncuestaRespuestaController extends Controller
     public function create($encuestaId)
     {
         try {
-            $encuesta = Encuesta::with('preguntas')->findOrFail($encuestaId);
-
-            // Verificar permisos - solo el propietario puede modificar
-            if ($encuesta->user_id !== Auth::id()) {
-                return redirect()->route('encuestas.index')->with('error', 'No tienes permisos para modificar esta encuesta.');
+            // Verificar permisos de acceso
+            if (!$this->checkUserAccess(['respuestas.create'])) {
+                $this->logAccessDenied('respuestas.create', ['Superadmin', 'Admin', 'Cliente'], ['respuestas.create']);
+                return $this->redirectIfNoAccess('No tienes permisos para agregar respuestas.');
             }
 
+            $encuesta = Encuesta::with('preguntas')->findOrFail($encuestaId);
+
+            // Verificar que el usuario es el propietario o tiene permisos de admin
+            if ($encuesta->user_id !== Auth::id() && !$this->isAdmin()) {
+                $this->logAccessDenied('respuestas.create', ['Superadmin', 'Admin'], ['respuestas.create']);
+                return $this->redirectIfNoAccess('No tienes permisos para modificar esta encuesta.');
+            }
+
+            // Obtener preguntas de selección
             $preguntas = $encuesta->preguntas()->whereIn('tipo', ['seleccion_unica', 'seleccion_multiple'])->get();
 
             if ($preguntas->isEmpty()) {
-                return redirect()->back()->with('warning', 'No hay preguntas de selección para agregar respuestas.');
+                Log::warning('Intento de agregar respuestas a encuesta sin preguntas de selección', [
+                    'user_id' => Auth::id(),
+                    'encuesta_id' => $encuestaId,
+                    'encuesta_titulo' => $encuesta->titulo
+                ]);
+
+                return redirect()->route('encuestas.show', $encuestaId)
+                    ->with('warning', 'Esta encuesta no tiene preguntas de selección (única o múltiple). Primero debes agregar preguntas de este tipo para poder configurar respuestas.')
+                    ->with('show_add_questions_modal', true);
             }
+
+            Log::info('Acceso exitoso a agregar respuestas', [
+                'user_id' => Auth::id(),
+                'encuesta_id' => $encuestaId,
+                'preguntas_count' => $preguntas->count()
+            ]);
 
             return view('encuestas.respuestas.create', compact('preguntas', 'encuestaId', 'encuesta'));
         } catch (Exception $e) {
-            return redirect()->route('encuestas.index')->with('error', 'Encuesta no encontrada.');
+            Log::error('Error accediendo a agregar respuestas', [
+                'user_id' => Auth::id(),
+                'encuesta_id' => $encuestaId,
+                'error' => $e->getMessage()
+            ]);
+
+            return redirect()->route('encuestas.index')
+                ->with('error', 'Error al cargar la página de respuestas: ' . $e->getMessage());
         }
     }
 
     public function store(Request $request, $encuestaId)
     {
         try {
+            // Verificar permisos de acceso
+            if (!$this->checkUserAccess(['respuestas.store'])) {
+                $this->logAccessDenied('respuestas.store', ['Superadmin', 'Admin', 'Cliente'], ['respuestas.store']);
+                return $this->redirectIfNoAccess('No tienes permisos para guardar respuestas.');
+            }
+
             DB::beginTransaction();
 
             $encuesta = Encuesta::findOrFail($encuestaId);
 
-            // Verificar permisos - solo el propietario puede modificar
-            if ($encuesta->user_id !== Auth::id()) {
-                return redirect()->route('encuestas.index')->with('error', 'No tienes permisos para modificar esta encuesta.');
+            // Verificar que el usuario es el propietario o tiene permisos de admin
+            if ($encuesta->user_id !== Auth::id() && !$this->isAdmin()) {
+                $this->logAccessDenied('respuestas.store', ['Superadmin', 'Admin'], ['respuestas.store']);
+                return $this->redirectIfNoAccess('No tienes permisos para modificar esta encuesta.');
             }
 
             // Validar que se enviaron respuestas
@@ -119,13 +156,131 @@ class EncuestaRespuestaController extends Controller
 
             DB::commit();
 
+            Log::info('Respuestas guardadas exitosamente', [
+                'user_id' => Auth::id(),
+                'encuesta_id' => $encuestaId,
+                'respuestas_count' => count($respuestasAplanadas)
+            ]);
+
             return redirect()->route('encuestas.logica.create', $encuestaId)
                 ->with('success', 'Respuestas guardadas correctamente.');
         } catch (Exception $e) {
             DB::rollBack();
+
+            Log::error('Error guardando respuestas', [
+                'user_id' => Auth::id(),
+                'encuesta_id' => $encuestaId,
+                'error' => $e->getMessage()
+            ]);
+
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Error al guardar las respuestas: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Verificar acceso del usuario basado en roles y permisos
+     */
+    private function checkUserAccess(array $requiredPermissions = []): bool
+    {
+        if (!Auth::check()) {
+            return false;
+        }
+
+        $user = Auth::user();
+
+        // Superadmin tiene acceso total
+        if ($this->userHasRole('Superadmin')) {
+            return true;
+        }
+
+        // Verificar permisos específicos
+        if (!empty($requiredPermissions)) {
+            foreach ($requiredPermissions as $permission) {
+                if ($this->userHasPermission($permission)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Verificar si el usuario tiene un rol específico
+     */
+    private function userHasRole(string $role): bool
+    {
+        if (!Auth::check()) {
+            return false;
+        }
+
+        $user = Auth::user();
+
+        try {
+            return $user->hasRole($role);
+        } catch (\Exception $e) {
+            Log::error('Error verificando rol del usuario', [
+                'user_id' => $user->id,
+                'role' => $role,
+                'error' => $e->getMessage()
+            ]);
+            return false;
+        }
+    }
+
+    /**
+     * Verificar si el usuario tiene un permiso específico
+     */
+    private function userHasPermission(string $permission): bool
+    {
+        if (!Auth::check()) {
+            return false;
+        }
+
+        $user = Auth::user();
+
+        try {
+            return $user->hasPermissionTo($permission);
+        } catch (\Exception $e) {
+            Log::error('Error verificando permiso del usuario', [
+                'user_id' => $user->id,
+                'permission' => $permission,
+                'error' => $e->getMessage()
+            ]);
+            return false;
+        }
+    }
+
+    /**
+     * Verificar si el usuario es admin
+     */
+    private function isAdmin(): bool
+    {
+        return $this->userHasRole('Superadmin') || $this->userHasRole('Admin');
+    }
+
+    /**
+     * Redirigir si no tiene acceso
+     */
+    private function redirectIfNoAccess(string $message): \Illuminate\Http\RedirectResponse
+    {
+        return redirect()->route('encuestas.index')->with('error', $message);
+    }
+
+    /**
+     * Registrar intento de acceso denegado
+     */
+    private function logAccessDenied(string $action, array $requiredRoles = [], array $requiredPermissions = []): void
+    {
+        Log::warning('Acceso denegado a respuestas', [
+            'user_id' => Auth::id(),
+            'action' => $action,
+            'required_roles' => $requiredRoles,
+            'required_permissions' => $requiredPermissions,
+            'user_roles' => Auth::user()->roles->pluck('name')->toArray(),
+            'user_permissions' => Auth::user()->permissions->pluck('name')->toArray()
+        ]);
     }
 }
