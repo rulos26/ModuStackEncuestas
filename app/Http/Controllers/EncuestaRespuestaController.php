@@ -51,27 +51,54 @@ class EncuestaRespuestaController extends Controller
                 return redirect()->route('encuestas.index')->with('error', 'No tienes permisos para modificar esta encuesta.');
             }
 
-            $request->validate([
-                'respuestas' => 'required|array',
-                'respuestas.*.pregunta_id' => 'required|exists:preguntas,id',
-                'respuestas.*.texto' => 'required|string|max:255|min:1',
-                'respuestas.*.orden' => 'nullable|integer|min:1',
-            ], [
-                'respuestas.required' => 'Debe agregar al menos una respuesta.',
-                'respuestas.*.pregunta_id.required' => 'La pregunta es obligatoria.',
-                'respuestas.*.pregunta_id.exists' => 'La pregunta seleccionada no existe.',
-                'respuestas.*.texto.required' => 'El texto de la respuesta es obligatorio.',
-                'respuestas.*.texto.max' => 'El texto de la respuesta no puede exceder 255 caracteres.',
-                'respuestas.*.texto.min' => 'El texto de la respuesta debe tener al menos 1 carácter.',
-                'respuestas.*.orden.integer' => 'El orden debe ser un número entero.',
-                'respuestas.*.orden.min' => 'El orden debe ser mayor a 0.',
-            ]);
+            // Validar que se enviaron respuestas
+            if (empty($request->respuestas)) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Debe agregar al menos una respuesta.');
+            }
+
+            // Aplanar la estructura de respuestas
+            $respuestasAplanadas = [];
+            foreach ($request->respuestas as $preguntaId => $respuestasPregunta) {
+                foreach ($respuestasPregunta as $respuesta) {
+                    if (!empty($respuesta['texto'])) {
+                        $respuestasAplanadas[] = [
+                            'pregunta_id' => $preguntaId,
+                            'texto' => trim($respuesta['texto']),
+                            'orden' => $respuesta['orden'] ?? 1,
+                        ];
+                    }
+                }
+            }
+
+            if (empty($respuestasAplanadas)) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Debe agregar al menos una respuesta válida.');
+            }
+
+            // Validar datos
+            foreach ($respuestasAplanadas as $respuesta) {
+                if (strlen($respuesta['texto']) < 1 || strlen($respuesta['texto']) > 255) {
+                    return redirect()->back()
+                        ->withInput()
+                        ->with('error', 'El texto de la respuesta debe tener entre 1 y 255 caracteres.');
+                }
+
+                if ($respuesta['orden'] < 1) {
+                    return redirect()->back()
+                        ->withInput()
+                        ->with('error', 'El orden debe ser mayor a 0.');
+                }
+            }
 
             // Verificar que las preguntas pertenecen a la encuesta
             $preguntasEncuesta = $encuesta->preguntas()->pluck('id')->toArray();
+            $preguntasEnRespuestas = array_unique(array_column($respuestasAplanadas, 'pregunta_id'));
 
-            foreach ($request->respuestas as $respuesta) {
-                if (!in_array($respuesta['pregunta_id'], $preguntasEncuesta)) {
+            foreach ($preguntasEnRespuestas as $preguntaId) {
+                if (!in_array($preguntaId, $preguntasEncuesta)) {
                     return redirect()->back()
                         ->withInput()
                         ->with('error', 'Una de las preguntas no pertenece a esta encuesta.');
@@ -79,18 +106,15 @@ class EncuestaRespuestaController extends Controller
             }
 
             // Eliminar respuestas existentes para las preguntas que se van a actualizar
-            $preguntasIds = collect($request->respuestas)->pluck('pregunta_id')->unique();
-            Respuesta::whereIn('pregunta_id', $preguntasIds)->delete();
+            Respuesta::whereIn('pregunta_id', $preguntasEnRespuestas)->delete();
 
             // Crear nuevas respuestas
-            foreach ($request->respuestas as $data) {
-                if (!empty($data['texto'])) {
-                    Respuesta::create([
-                        'pregunta_id' => $data['pregunta_id'],
-                        'texto' => trim($data['texto']),
-                        'orden' => $data['orden'] ?? 1,
-                    ]);
-                }
+            foreach ($respuestasAplanadas as $data) {
+                Respuesta::create([
+                    'pregunta_id' => $data['pregunta_id'],
+                    'texto' => $data['texto'],
+                    'orden' => $data['orden'],
+                ]);
             }
 
             DB::commit();
