@@ -37,7 +37,7 @@ class EncuestaRespuestaController extends Controller
 
             // Obtener preguntas de selección con sus respuestas
             $preguntas = $encuesta->preguntas()
-                ->whereIn('tipo', ['seleccion_unica', 'seleccion_multiple'])
+                ->necesitaRespuestas()
                 ->with('respuestas')
                 ->get();
 
