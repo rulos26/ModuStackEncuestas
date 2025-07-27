@@ -34,11 +34,11 @@
         <h3 class="card-title">Encuesta: {{ $encuesta->titulo ?? 'Sin título' }}</h3>
     </div>
     <div class="card-body">
-        <form method="POST" action="{{ route('encuestas.respuestas.store', $encuestaId) }}">
-            @csrf
+<form method="POST" action="{{ route('encuestas.respuestas.store', $encuestaId) }}">
+    @csrf
 
             @forelse($preguntas as $pregunta)
-                @if(in_array($pregunta->tipo, ['seleccion_unica', 'seleccion_multiple']))
+        @if(in_array($pregunta->tipo, ['seleccion_unica', 'seleccion_multiple']))
                     <div class="card mb-4">
                         <div class="card-header bg-primary text-white">
                             <h5 class="mb-0">
@@ -47,7 +47,7 @@
                             </h5>
                             <small>Tipo: {{ ucfirst(str_replace('_', ' ', $pregunta->tipo)) }}</small>
                         </div>
-                        <div class="card-body">
+                <div class="card-body">
                             <div class="respuestas-container" data-pregunta-id="{{ $pregunta->id }}">
                                 <!-- Respuesta 1 -->
                                 <div class="row mb-3">
@@ -161,9 +161,9 @@
                     <a href="{{ route('encuestas.show', $encuestaId) }}" class="btn btn-secondary btn-lg">
                         <i class="fas fa-arrow-left"></i> Volver
                     </a>
-                </div>
-            @endif
-        </form>
+            </div>
+        @endif
+</form>
     </div>
 </div>
 

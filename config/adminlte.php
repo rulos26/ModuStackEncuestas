@@ -333,6 +333,16 @@ return [
             'icon' => 'fas fa-fw fa-tachometer-alt',
         ],
 
+        ['header' => 'GESTIÓN DEL SISTEMA'],
+
+        // Panel de Gestión del Sistema
+        [
+            'text' => 'Panel de Gestión',
+            'route' => 'system.index',
+            'icon' => 'fas fa-fw fa-cogs',
+            'can' => 'system.manage',
+        ],
+
         ['header' => 'AJUSTES DE ENCUESTAS'],
 
         ['header' => 'AJUSTES GENERALES DEL SISTEMA'],
@@ -352,6 +362,12 @@ return [
                             'icon' => 'fas fa-fw fa-users',
                         ],
                         [
+                            'text' => 'Gestión de Roles',
+                            'route' => 'system.user-roles',
+                            'icon' => 'fas fa-fw fa-user-tag',
+                            'can' => 'system.user-roles',
+                        ],
+                        [
                             'text' => 'Empleados',
                             'route' => 'empleados.index',
                             'icon' => 'fas fa-id-badge',
@@ -365,6 +381,29 @@ return [
                             'text' => 'Roles y Permisos',
                             'route' => 'roles.index',
                             'icon' => 'fas fa-user-shield',
+                        ],
+                    ],
+                ],
+                [
+                    'text' => 'Gestión de Empresas',
+                    'icon' => 'fas fa-fw fa-building',
+                    'submenu' => [
+                        [
+                            'text' => 'Panel de Empresas',
+                            'route' => 'system.companies',
+                            'icon' => 'fas fa-fw fa-list',
+                            'can' => 'system.companies',
+                        ],
+                        [
+                            'text' => 'Información de la Empresa',
+                            'route' => 'empresa.show',
+                            'icon' => 'fas fa-building',
+                        ],
+                        [
+                            'text' => 'Crear Empresa de Prueba',
+                            'route' => 'system.create-test-company-page',
+                            'icon' => 'fas fa-fw fa-plus',
+                            'can' => 'system.create-test-company',
                         ],
                     ],
                 ],
@@ -473,6 +512,12 @@ return [
                             'text' => 'Módulo de Optimización',
                             'route' => 'system.optimizer.index',
                             'icon' => 'fas fa-fw fa-tools',
+                        ],
+                        [
+                            'text' => 'Configurar Sistema de Roles',
+                            'route' => 'system.setup-roles-page',
+                            'icon' => 'fas fa-fw fa-cog',
+                            'can' => 'system.setup-roles',
                         ],
                     ],
                 ],

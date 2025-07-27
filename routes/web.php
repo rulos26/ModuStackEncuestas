@@ -49,6 +49,21 @@ Route::prefix('system/optimizer')->name('system.optimizer.')->middleware(['auth'
     Route::post('/optimize-all', [App\Modules\SystemOptimizer\Controllers\SystemOptimizerController::class, 'optimizeAll'])->name('optimize-all');
 });
 
+// Rutas del módulo de gestión del sistema
+Route::prefix('system')->name('system.')->middleware(['auth'])->group(function () {
+    Route::get('/', [App\Http\Controllers\SystemManagementController::class, 'index'])->name('index');
+    Route::get('/user-roles', [App\Http\Controllers\SystemManagementController::class, 'userRoles'])->name('user-roles');
+    Route::post('/assign-role', [App\Http\Controllers\SystemManagementController::class, 'assignRole'])->name('assign-role');
+    Route::post('/assign-default-roles', [App\Http\Controllers\SystemManagementController::class, 'assignDefaultRoles'])->name('assign-default-roles');
+    Route::get('/companies', [App\Http\Controllers\SystemManagementController::class, 'companies'])->name('companies');
+    Route::post('/create-test-company', [App\Http\Controllers\SystemManagementController::class, 'createTestCompany'])->name('create-test-company');
+    Route::post('/setup-roles', [App\Http\Controllers\SystemManagementController::class, 'setupRoles'])->name('setup-roles');
+
+    // Rutas GET para el menú (redirigen a las páginas correspondientes)
+    Route::get('/setup-roles-page', [App\Http\Controllers\SystemManagementController::class, 'setupRolesPage'])->name('setup-roles-page');
+    Route::get('/create-test-company-page', [App\Http\Controllers\SystemManagementController::class, 'createTestCompanyPage'])->name('create-test-company-page');
+});
+
 // Módulo de testing
 Route::middleware(['auth'])->group(function () {
     Route::get('testing', [App\Http\Controllers\TestRunnerController::class, 'index'])->name('testing.index');

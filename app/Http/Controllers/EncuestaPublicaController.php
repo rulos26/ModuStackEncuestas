@@ -16,10 +16,10 @@ class EncuestaPublicaController extends Controller
     {
         try {
             $encuesta = Encuesta::with(['preguntas.respuestas', 'empresa'])
-                ->where('slug', $slug)
-                ->where('habilitada', true)
+                    ->where('slug', $slug)
+                    ->where('habilitada', true)
                 ->where('estado', 'publicada')
-                ->firstOrFail();
+                    ->firstOrFail();
 
             // Verificar si la encuesta está disponible
             if (!$encuesta->estaDisponible()) {
@@ -29,7 +29,7 @@ class EncuestaPublicaController extends Controller
                 ]);
             }
 
-            return view('encuestas.publica', compact('encuesta'));
+        return view('encuestas.publica', compact('encuesta'));
         } catch (Exception $e) {
             return view('encuestas.publica', [
                 'encuesta' => null,
@@ -100,8 +100,8 @@ class EncuestaPublicaController extends Controller
 
             DB::commit();
 
-            return redirect()->route('encuestas.publica', $encuesta->slug)
-                ->with('success', '¡Gracias por responder la encuesta!');
+        return redirect()->route('encuestas.publica', $encuesta->slug)
+            ->with('success', '¡Gracias por responder la encuesta!');
         } catch (Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Error al procesar las respuestas. Por favor, inténtelo de nuevo.');
