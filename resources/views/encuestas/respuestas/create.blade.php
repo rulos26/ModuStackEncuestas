@@ -3,286 +3,219 @@
 @section('title', 'Agregar Respuestas')
 
 @section('content_header')
-    <h1>Agregar Respuestas a las Preguntas</h1>
+    <h1>
+        <i class="fas fa-list-check"></i> Agregar Respuestas
+        <small>{{ $encuesta->titulo }}</small>
+    </h1>
 @endsection
 
 @section('content')
-@if(session('error'))
-    <div class="alert alert-danger">
-        {{ session('error') }}
-    </div>
-@endif
-
-@if(session('warning'))
-    <div class="alert alert-warning">
-        {{ session('warning') }}
-    </div>
-@endif
-
-@if($errors->any())
-    <div class="alert alert-danger">
-        <ul class="mb-0">
-            @foreach($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
-
-<div class="card">
-    <div class="card-header">
-        <h3 class="card-title">Encuesta: {{ $encuesta->titulo ?? 'Sin título' }}</h3>
-    </div>
-    <div class="card-body">
-        <!-- Resumen de preguntas -->
-        <div class="row mb-4">
-            <div class="col-md-4">
-                <div class="info-box bg-info">
-                    <span class="info-box-icon"><i class="fas fa-question-circle"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">Total Preguntas</span>
-                        <span class="info-box-number">{{ $preguntas->count() }}</span>
-                    </div>
+    <!-- DASHBOARD DE ESTADÍSTICAS -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-6">
+            <div class="small-box bg-info">
+                <div class="inner">
+                    <h3>{{ $totalPreguntas }}</h3>
+                    <p>Total de Preguntas</p>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="info-box bg-success">
-                    <span class="info-box-icon"><i class="fas fa-check-circle"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">Con Respuestas</span>
-                        <span class="info-box-number">{{ $preguntasConRespuestas->count() }}</span>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="info-box bg-warning">
-                    <span class="info-box-icon"><i class="fas fa-exclamation-triangle"></i></span>
-                    <div class="info-box-content">
-                        <span class="info-box-text">Sin Respuestas</span>
-                        <span class="info-box-number">{{ $preguntasSinRespuestas->count() }}</span>
-                    </div>
+                <div class="icon">
+                    <i class="fas fa-question-circle"></i>
                 </div>
             </div>
         </div>
-
-        @if($preguntasConRespuestas->isNotEmpty())
-            <div class="alert alert-info">
-                <h5><i class="icon fas fa-info"></i> Preguntas con respuestas configuradas</h5>
-                <p>Las siguientes preguntas ya tienen respuestas configuradas. Puedes editarlas o continuar con las que no tienen respuestas.</p>
-            </div>
-
-            @foreach($preguntasConRespuestas as $pregunta)
-                <div class="card mb-3 border-success">
-                    <div class="card-header bg-success text-white">
-                        <h5 class="mb-0">
-                            <i class="fas fa-check-circle"></i>
-                            Pregunta {{ $loop->iteration }}: {{ $pregunta->texto }}
-                        </h5>
-                        <small>Tipo: {{ ucfirst(str_replace('_', ' ', $pregunta->tipo)) }} | Respuestas: {{ $pregunta->respuestas->count() }}</small>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-8">
-                                <h6>Respuestas actuales:</h6>
-                                <ul class="list-group list-group-flush">
-                                    @foreach($pregunta->respuestas as $respuesta)
-                                        <li class="list-group-item">
-                                            <strong>{{ $respuesta->orden }}.</strong> {{ $respuesta->texto }}
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="text-center">
-                                    <button class="btn btn-warning btn-sm" onclick="editarRespuestas({{ $pregunta->id }})">
-                                        <i class="fas fa-edit"></i> Editar Respuestas
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        <div class="col-lg-3 col-6">
+            <div class="small-box bg-success">
+                <div class="inner">
+                    <h3>{{ $preguntasConRespuestas->count() }}</h3>
+                    <p>Preguntas con Respuestas</p>
                 </div>
-            @endforeach
-        @endif
-
-        @if($preguntasSinRespuestas->isNotEmpty())
-            <div class="alert alert-warning">
-                <h5><i class="icon fas fa-exclamation-triangle"></i> Preguntas sin respuestas configuradas</h5>
-                <p>Las siguientes preguntas necesitan respuestas para poder ser utilizadas en la encuesta.</p>
+                <div class="icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
             </div>
+        </div>
+        <div class="col-lg-3 col-6">
+            <div class="small-box bg-warning">
+                <div class="inner">
+                    <h3>{{ $preguntasSinRespuestas->count() }}</h3>
+                    <p>Preguntas sin Respuestas</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-6">
+            <div class="small-box {{ $puedeConfigurarLogica ? 'bg-primary' : 'bg-secondary' }}">
+                <div class="inner">
+                    <h3>{{ $puedeConfigurarLogica ? 'Sí' : 'No' }}</h3>
+                    <p>Puede Configurar Lógica</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-cogs"></i>
+                </div>
+            </div>
+        </div>
+    </div>
 
-            <form method="POST" action="{{ route('encuestas.respuestas.store', $encuestaId) }}">
-                @csrf
+    <!-- BREADCRUMBS DE NAVEGACIÓN -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ route('encuestas.index') }}">Encuestas</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('encuestas.show', $encuesta->id) }}">{{ $encuesta->titulo }}</a></li>
+            <li class="breadcrumb-item active">Agregar Respuestas</li>
+        </ol>
+    </nav>
 
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+            <h5><i class="icon fas fa-check"></i> ¡Éxito!</h5>
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+            <h5><i class="icon fas fa-ban"></i> Error</h5>
+            {{ session('error') }}
+        </div>
+    @endif
+
+    @if($preguntasSinRespuestas->isNotEmpty())
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-exclamation-triangle"></i> Preguntas que necesitan respuestas
+                </h3>
+            </div>
+            <div class="card-body">
                 @foreach($preguntasSinRespuestas as $pregunta)
-                    <div class="card mb-4 border-warning">
-                        <div class="card-header bg-warning text-dark">
-                            <h5 class="mb-0">
-                                <i class="fas fa-exclamation-triangle"></i>
-                                Pregunta {{ $loop->iteration }}: {{ $pregunta->texto }}
-                            </h5>
-                            <small>Tipo: {{ ucfirst(str_replace('_', ' ', $pregunta->tipo)) }} | Sin respuestas configuradas</small>
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <strong>{{ $loop->iteration }}. {{ $pregunta->texto }}</strong>
+                            <span class="badge badge-{{ $pregunta->obligatoria ? 'danger' : 'info' }} ml-2">
+                                {{ $pregunta->obligatoria ? 'Obligatoria' : 'Opcional' }}
+                            </span>
+                            <span class="badge badge-secondary ml-2">{{ $pregunta->getNombreTipo() }}</span>
                         </div>
                         <div class="card-body">
-                            <div class="respuestas-container" data-pregunta-id="{{ $pregunta->id }}">
-                                <!-- Respuesta 1 -->
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label">Respuesta 1:</label>
-                                        <input type="text" name="respuestas[{{ $pregunta->id }}][1][texto]"
-                                               class="form-control" placeholder="Ingrese la primera respuesta" required>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label class="form-label">Orden:</label>
-                                        <input type="number" name="respuestas[{{ $pregunta->id }}][1][orden]"
-                                               class="form-control" value="1" min="1">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label class="form-label">&nbsp;</label>
-                                        <input type="hidden" name="respuestas[{{ $pregunta->id }}][1][pregunta_id]" value="{{ $pregunta->id }}">
-                                    </div>
-                                </div>
-
-                                <!-- Respuesta 2 -->
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label">Respuesta 2:</label>
-                                        <input type="text" name="respuestas[{{ $pregunta->id }}][2][texto]"
-                                               class="form-control" placeholder="Ingrese la segunda respuesta" required>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label class="form-label">Orden:</label>
-                                        <input type="number" name="respuestas[{{ $pregunta->id }}][2][orden]"
-                                               class="form-control" value="2" min="1">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label class="form-label">&nbsp;</label>
-                                        <input type="hidden" name="respuestas[{{ $pregunta->id }}][2][pregunta_id]" value="{{ $pregunta->id }}">
+                            <form action="{{ route('encuestas.respuestas.store', $encuesta->id) }}" method="POST">
+                                @csrf
+                                <div class="respuestas-container" data-pregunta-id="{{ $pregunta->id }}">
+                                    <div class="respuesta-item mb-2">
+                                        <div class="input-group">
+                                            <input type="text" name="respuestas[{{ $pregunta->id }}][0][texto]"
+                                                   class="form-control" placeholder="Escriba la respuesta" required>
+                                            <input type="hidden" name="respuestas[{{ $pregunta->id }}][0][orden]" value="1">
+                                            <div class="input-group-append">
+                                                <button type="button" class="btn btn-success agregar-respuesta"
+                                                        data-pregunta-id="{{ $pregunta->id }}">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-
-                                <!-- Respuesta 3 -->
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label">Respuesta 3:</label>
-                                        <input type="text" name="respuestas[{{ $pregunta->id }}][3][texto]"
-                                               class="form-control" placeholder="Ingrese la tercera respuesta">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label class="form-label">Orden:</label>
-                                        <input type="number" name="respuestas[{{ $pregunta->id }}][3][orden]"
-                                               class="form-control" value="3" min="1">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label class="form-label">&nbsp;</label>
-                                        <input type="hidden" name="respuestas[{{ $pregunta->id }}][3][pregunta_id]" value="{{ $pregunta->id }}">
-                                    </div>
-                                </div>
-
-                                <!-- Respuesta 4 -->
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label">Respuesta 4:</label>
-                                        <input type="text" name="respuestas[{{ $pregunta->id }}][4][texto]"
-                                               class="form-control" placeholder="Ingrese la cuarta respuesta">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label class="form-label">Orden:</label>
-                                        <input type="number" name="respuestas[{{ $pregunta->id }}][4][orden]"
-                                               class="form-control" value="4" min="1">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label class="form-label">&nbsp;</label>
-                                        <input type="hidden" name="respuestas[{{ $pregunta->id }}][4][pregunta_id]" value="{{ $pregunta->id }}">
-                                    </div>
-                                </div>
-
-                                <!-- Respuesta 5 -->
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label">Respuesta 5:</label>
-                                        <input type="text" name="respuestas[{{ $pregunta->id }}][5][texto]"
-                                               class="form-control" placeholder="Ingrese la quinta respuesta">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label class="form-label">Orden:</label>
-                                        <input type="number" name="respuestas[{{ $pregunta->id }}][5][orden]"
-                                               class="form-control" value="5" min="1">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label class="form-label">&nbsp;</label>
-                                        <input type="hidden" name="respuestas[{{ $pregunta->id }}][5][pregunta_id]" value="{{ $pregunta->id }}">
-                                    </div>
-                                </div>
-                            </div>
+                                <button type="submit" class="btn btn-primary mt-2">
+                                    <i class="fas fa-save"></i> Guardar Respuestas
+                                </button>
+                            </form>
                         </div>
                     </div>
                 @endforeach
-
-                @if($preguntasSinRespuestas->isNotEmpty())
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-primary btn-lg">
-                            <i class="fas fa-save"></i> Guardar Respuestas
-                        </button>
-                        <a href="{{ route('encuestas.show', $encuestaId) }}" class="btn btn-secondary btn-lg">
-                            <i class="fas fa-arrow-left"></i> Volver
-                        </a>
-                    </div>
-                @endif
-            </form>
-        @endif
-
-        @if($preguntasSinRespuestas->isEmpty() && $preguntasConRespuestas->isNotEmpty())
-            <div class="alert alert-success">
-                <h5><i class="icon fas fa-check"></i> ¡Todas las preguntas tienen respuestas configuradas!</h5>
-                <p>Todas las preguntas de selección ya tienen respuestas configuradas. Puedes continuar con la configuración de lógica.</p>
-                <a href="{{ route('encuestas.logica.create', $encuestaId) }}" class="btn btn-success">
-                    <i class="fas fa-arrow-right"></i> Continuar: Configurar Lógica
-                </a>
             </div>
-        @endif
-    </div>
-</div>
+        </div>
+    @endif
 
-@if($preguntasSinRespuestas->isNotEmpty())
-    <div class="mt-3">
-        <a href="{{ route('encuestas.logica.create', $encuestaId) }}" class="btn btn-success">
-            <i class="fas fa-arrow-right"></i> Siguiente: Configurar Lógica
+    @if($preguntasConRespuestas->isNotEmpty())
+        <div class="card card-info mt-4">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-check-circle"></i> Preguntas con respuestas configuradas
+                </h3>
+            </div>
+            <div class="card-body">
+                @foreach($preguntasConRespuestas as $pregunta)
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <strong>{{ $loop->iteration }}. {{ $pregunta->texto }}</strong>
+                            <span class="badge badge-success ml-2">{{ $pregunta->respuestas->count() }} respuestas</span>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group">
+                                @foreach($pregunta->respuestas as $respuesta)
+                                    <li class="list-group-item">
+                                        <i class="fas fa-circle text-primary"></i> {{ $respuesta->texto }}
+                                    </li>
+                                @endforeach
+                            </ul>
+                            <button type="button" class="btn btn-warning btn-sm mt-2 editar-respuestas"
+                                    data-pregunta-id="{{ $pregunta->id }}">
+                                <i class="fas fa-edit"></i> Editar Respuestas
+                            </button>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
+    <!-- BOTONES DE NAVEGACIÓN -->
+    <div class="mt-4">
+        @if($puedeConfigurarLogica)
+            <a href="{{ route('encuestas.logica.create', $encuesta->id) }}" class="btn btn-primary">
+                <i class="fas fa-cogs"></i> Configurar Lógica
+            </a>
+        @else
+            <button type="button" class="btn btn-secondary" disabled title="Primero completa todas las respuestas">
+                <i class="fas fa-cogs"></i> Configurar Lógica
+            </button>
+        @endif
+
+        <a href="{{ route('encuestas.show', $encuesta->id) }}" class="btn btn-info">
+            <i class="fas fa-arrow-left"></i> Volver a la Encuesta
         </a>
     </div>
-@endif
 @endsection
 
 @section('js')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Validación simple del formulario
-    const form = document.querySelector('form');
-    if (form) {
-        form.addEventListener('submit', function(e) {
-            const requiredInputs = form.querySelectorAll('input[required]');
-            let isValid = true;
+$(document).ready(function() {
+    // Auto-hide alerts
+    setTimeout(function() {
+        $('.alert').fadeOut('slow');
+    }, 5000);
 
-            requiredInputs.forEach(input => {
-                if (input.value.trim() === '') {
-                    isValid = false;
-                    input.style.borderColor = 'red';
-                } else {
-                    input.style.borderColor = '';
-                }
-            });
+    // Agregar nueva respuesta
+    $('.agregar-respuesta').click(function() {
+        var preguntaId = $(this).data('pregunta-id');
+        var container = $('.respuestas-container[data-pregunta-id="' + preguntaId + '"]');
+        var itemCount = container.find('.respuesta-item').length;
 
-            if (!isValid) {
-                e.preventDefault();
-                alert('Por favor, complete todas las respuestas obligatorias (mínimo 2 por pregunta).');
-            }
-        });
-    }
+        var newItem = `
+            <div class="respuesta-item mb-2">
+                <div class="input-group">
+                    <input type="text" name="respuestas[${preguntaId}][${itemCount}][texto]"
+                           class="form-control" placeholder="Escriba la respuesta" required>
+                    <input type="hidden" name="respuestas[${preguntaId}][${itemCount}][orden]" value="${itemCount + 1}">
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-danger eliminar-respuesta">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        container.append(newItem);
+    });
+
+    // Eliminar respuesta
+    $(document).on('click', '.eliminar-respuesta', function() {
+        $(this).closest('.respuesta-item').remove();
+    });
 });
-
-function editarRespuestas(preguntaId) {
-    // Función para editar respuestas existentes
-    alert('Función de edición de respuestas en desarrollo. Por ahora, puedes eliminar y volver a crear las respuestas.');
-}
 </script>
 @endsection

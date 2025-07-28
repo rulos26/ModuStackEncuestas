@@ -4,6 +4,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Encuesta;
 use App\Models\Respuesta;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Logica;
 
 class Pregunta extends Model
 {
@@ -50,9 +52,14 @@ class Pregunta extends Model
         return $this->belongsTo(Encuesta::class);
     }
 
-    public function respuestas()
+    public function respuestas(): HasMany
     {
-        return $this->hasMany(Respuesta::class);
+        return $this->hasMany(Respuesta::class)->orderBy('orden');
+    }
+
+    public function logica(): HasMany
+    {
+        return $this->hasMany(Logica::class);
     }
 
     /**
@@ -252,5 +259,30 @@ class Pregunta extends Model
     public function scopeEsEscala($query)
     {
         return $query->where('tipo', 'escala_lineal');
+    }
+
+    /**
+     * Calcular automáticamente el orden de la pregunta
+     */
+    public static function calcularOrdenAutomatico($encuestaId)
+    {
+        $ultimaPregunta = self::where('encuesta_id', $encuestaId)
+            ->orderBy('orden', 'desc')
+            ->first();
+
+        return $ultimaPregunta ? $ultimaPregunta->orden + 1 : 1;
+    }
+
+    /**
+     * Verificar si todas las preguntas de selección tienen respuestas
+     */
+    public static function todasTienenRespuestas($encuestaId)
+    {
+        $preguntasSinRespuestas = self::where('encuesta_id', $encuestaId)
+            ->necesitaRespuestas()
+            ->whereDoesntHave('respuestas')
+            ->count();
+
+        return $preguntasSinRespuestas === 0;
     }
 }

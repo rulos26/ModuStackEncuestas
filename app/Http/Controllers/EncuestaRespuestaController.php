@@ -42,32 +42,37 @@ class EncuestaRespuestaController extends Controller
                 ->get();
 
             if ($preguntas->isEmpty()) {
-                Log::warning('Intento de agregar respuestas a encuesta sin preguntas de selección', [
+                Log::warning('No hay preguntas que necesiten respuestas', [
                     'user_id' => Auth::id(),
                     'encuesta_id' => $encuestaId,
-                    'encuesta_titulo' => $encuesta->titulo
+                    'total_preguntas' => $encuesta->preguntas->count()
                 ]);
 
                 return redirect()->route('encuestas.show', $encuestaId)
-                    ->with('warning', 'Esta encuesta no tiene preguntas de selección (única o múltiple). Primero debes agregar preguntas de este tipo para poder configurar respuestas.')
+                    ->with('warning', 'No hay preguntas de selección que requieran respuestas predefinidas.')
                     ->with('show_add_questions_modal', true);
             }
 
-            // Separar preguntas con y sin respuestas
+            // CALCULAR ESTADÍSTICAS DEL DASHBOARD
+            $totalPreguntas = $encuesta->preguntas->count();
+            $preguntasConRespuestas = $preguntas->filter(function($pregunta) {
+                return $pregunta->respuestas->isNotEmpty();
+            });
             $preguntasSinRespuestas = $preguntas->filter(function($pregunta) {
                 return $pregunta->respuestas->isEmpty();
             });
 
-            $preguntasConRespuestas = $preguntas->filter(function($pregunta) {
-                return $pregunta->respuestas->isNotEmpty();
-            });
+            // Verificar si todas las preguntas tienen respuestas para activar lógica
+            $todasTienenRespuestas = $preguntasSinRespuestas->isEmpty();
+            $puedeConfigurarLogica = $todasTienenRespuestas && $preguntas->isNotEmpty();
 
             Log::info('Acceso exitoso a agregar respuestas', [
                 'user_id' => Auth::id(),
                 'encuesta_id' => $encuestaId,
                 'preguntas_total' => $preguntas->count(),
                 'preguntas_sin_respuestas' => $preguntasSinRespuestas->count(),
-                'preguntas_con_respuestas' => $preguntasConRespuestas->count()
+                'preguntas_con_respuestas' => $preguntasConRespuestas->count(),
+                'puede_configurar_logica' => $puedeConfigurarLogica
             ]);
 
             return view('encuestas.respuestas.create', compact(
@@ -75,7 +80,9 @@ class EncuestaRespuestaController extends Controller
                 'preguntasSinRespuestas',
                 'preguntasConRespuestas',
                 'encuestaId',
-                'encuesta'
+                'encuesta',
+                'totalPreguntas',
+                'puedeConfigurarLogica'
             ));
         } catch (Exception $e) {
             Log::error('Error accediendo a agregar respuestas', [

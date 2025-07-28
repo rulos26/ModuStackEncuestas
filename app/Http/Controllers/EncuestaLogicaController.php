@@ -22,20 +22,32 @@ class EncuestaLogicaController extends Controller
     public function create($encuestaId)
     {
         try {
-            $encuesta = Encuesta::with('preguntas.respuestas')->findOrFail($encuestaId);
+            $encuesta = Encuesta::with('preguntas.respuestas.logica')->findOrFail($encuestaId);
 
             // Verificar permisos - solo el propietario puede modificar
             if ($encuesta->user_id !== Auth::id()) {
                 return redirect()->route('encuestas.index')->with('error', 'No tienes permisos para modificar esta encuesta.');
             }
 
-            $preguntas = $encuesta->preguntas()->with('respuestas')->get();
+            $preguntas = $encuesta->preguntas()->with('respuestas.logica')->get();
 
             if ($preguntas->isEmpty()) {
                 return redirect()->back()->with('warning', 'No hay preguntas configuradas para establecer lógica.');
             }
 
-            return view('encuestas.logica.create', compact('preguntas', 'encuestaId', 'encuesta'));
+            // Verificar que todas las preguntas tengan respuestas
+            $preguntasSinRespuestas = $preguntas->filter(function($pregunta) {
+                return $pregunta->necesitaRespuestas() && $pregunta->respuestas->isEmpty();
+            });
+
+            if ($preguntasSinRespuestas->isNotEmpty()) {
+                return redirect()->back()->with('warning', 'Algunas preguntas no tienen respuestas configuradas. Complete las respuestas antes de configurar la lógica.');
+            }
+
+            // Obtener lógica existente para mostrar en el resumen
+            $logicaExistente = Logica::whereIn('pregunta_id', $preguntas->pluck('id'))->get();
+
+            return view('encuestas.logica.create', compact('preguntas', 'encuestaId', 'encuesta', 'logicaExistente'));
         } catch (Exception $e) {
             return redirect()->route('encuestas.index')->with('error', 'Encuesta no encontrada.');
         }
@@ -98,26 +110,77 @@ class EncuestaLogicaController extends Controller
             Logica::whereIn('pregunta_id', $preguntasIds)->delete();
 
             // Crear nueva lógica
+            $logicasCreadas = [];
             foreach ($request->logicas as $data) {
                 if (!empty($data['pregunta_id']) && !empty($data['respuesta_id'])) {
-                    Logica::create([
+                    $logica = Logica::create([
                         'pregunta_id' => $data['pregunta_id'],
                         'respuesta_id' => $data['respuesta_id'],
                         'siguiente_pregunta_id' => $data['siguiente_pregunta_id'] ?? null,
                         'finalizar' => $data['finalizar'] ?? false,
                     ]);
+                    $logicasCreadas[] = $logica;
                 }
             }
 
             DB::commit();
 
-            return redirect()->route('encuestas.preview', $encuestaId)
-                ->with('success', 'Lógica configurada correctamente.');
+            // Guardar resumen de lógica para mostrar
+            $resumenLogica = $this->generarResumenLogica($logicasCreadas, $encuesta);
+            session(['resumen_logica' => $resumenLogica]);
+
+            return redirect()->route('encuestas.logica.resumen', $encuestaId)
+                ->with('success', 'Lógica configurada correctamente. Revise el resumen antes de continuar.');
         } catch (Exception $e) {
             DB::rollBack();
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Error al configurar la lógica: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Mostrar resumen de la lógica configurada
+     */
+    public function resumen($encuestaId)
+    {
+        try {
+            $encuesta = Encuesta::with('preguntas.respuestas.logica')->findOrFail($encuestaId);
+
+            if ($encuesta->user_id !== Auth::id()) {
+                return redirect()->route('encuestas.index')->with('error', 'No tienes permisos para ver esta encuesta.');
+            }
+
+            $logicaExistente = Logica::whereIn('pregunta_id', $encuesta->preguntas->pluck('id'))->get();
+            $resumenLogica = session('resumen_logica', $this->generarResumenLogica($logicaExistente, $encuesta));
+
+            return view('encuestas.logica.resumen', compact('encuesta', 'resumenLogica'));
+        } catch (Exception $e) {
+            return redirect()->route('encuestas.index')->with('error', 'Error al cargar el resumen.');
+        }
+    }
+
+    /**
+     * Generar resumen visual de la lógica
+     */
+    private function generarResumenLogica($logicas, $encuesta)
+    {
+        $resumen = [];
+
+        foreach ($logicas as $logica) {
+            $pregunta = $encuesta->preguntas->find($logica->pregunta_id);
+            $respuesta = $pregunta->respuestas->find($logica->respuesta_id);
+            $siguientePregunta = $logica->siguiente_pregunta_id ? $encuesta->preguntas->find($logica->siguiente_pregunta_id) : null;
+
+            $resumen[] = [
+                'pregunta_origen' => $pregunta->texto,
+                'respuesta' => $respuesta->texto,
+                'accion' => $logica->finalizar ? 'Finalizar encuesta' : ($siguientePregunta ? "Ir a: {$siguientePregunta->texto}" : 'Continuar secuencialmente'),
+                'siguiente_pregunta' => $siguientePregunta ? $siguientePregunta->texto : null,
+                'finalizar' => $logica->finalizar
+            ];
+        }
+
+        return $resumen;
     }
 }

@@ -121,9 +121,16 @@ class PreguntaController extends Controller
                 'zoom_default.between' => 'El zoom debe estar entre 1 y 20.',
             ]);
 
+            // Calcular orden automáticamente si no se proporciona
+            if (!$request->has('orden') || empty($request->orden)) {
+                $orden = Pregunta::calcularOrdenAutomatico($encuestaId);
+            } else {
+                $orden = $request->orden;
+            }
+
             // Verificar que el orden no esté duplicado
             $ordenExistente = Pregunta::where('encuesta_id', $encuestaId)
-                ->where('orden', $request->orden)
+                ->where('orden', $orden)
                 ->exists();
 
             if ($ordenExistente) {
@@ -139,7 +146,7 @@ class PreguntaController extends Controller
                 'descripcion' => $request->descripcion,
                 'placeholder' => $request->placeholder,
                 'tipo' => $request->tipo,
-                'orden' => $request->orden,
+                'orden' => $orden,
                 'obligatoria' => $request->has('obligatoria'),
                 'min_caracteres' => $request->min_caracteres,
                 'max_caracteres' => $request->max_caracteres,
@@ -163,7 +170,8 @@ class PreguntaController extends Controller
                 'tipo' => $pregunta->tipo
             ]);
 
-            return redirect()->back()->with('success', 'Pregunta agregada correctamente.');
+            return redirect()->route('encuestas.respuestas.create', $encuestaId)
+                ->with('success', 'Pregunta agregada correctamente. Ahora configura las respuestas.');
         } catch (Exception $e) {
             DB::rollBack();
 

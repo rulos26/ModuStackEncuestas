@@ -10,7 +10,12 @@ class SentMail extends Model
     use HasFactory;
 
     protected $fillable = [
-        'to', 'subject', 'body', 'attachments', 'sent_by',
+        'to',
+        'subject',
+        'body',
+        'attachments',
+        'sent_by',
+        'encuesta_id'
     ];
 
     protected $casts = [

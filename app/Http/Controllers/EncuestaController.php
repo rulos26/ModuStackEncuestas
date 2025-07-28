@@ -113,8 +113,9 @@ class EncuestaController extends Controller
                 'titulo' => $encuesta->titulo
             ]);
 
-            return redirect()->route('encuestas.show', $encuesta)
-                ->with('success', 'Encuesta creada correctamente.');
+            // REDIRECCIÓN AUTOMÁTICA A AGREGAR PREGUNTAS
+            return redirect()->route('encuestas.preguntas.create', $encuesta->id)
+                ->with('success', 'Encuesta creada correctamente. Ahora agrega las preguntas.');
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Error creando encuesta', [
@@ -175,6 +176,23 @@ class EncuestaController extends Controller
 
             $data = $request->validated();
             $data['habilitada'] = $request->has('habilitada');
+            $data['enviar_por_correo'] = $request->has('enviar_por_correo');
+            $data['envio_masivo_activado'] = $request->has('envio_masivo_activado');
+
+            // VALIDACIÓN DE INTEGRIDAD ANTES DE CAMBIAR ESTADO
+            $nuevoEstado = $request->input('estado');
+            if ($nuevoEstado !== $encuesta->estado && in_array($nuevoEstado, ['enviada', 'publicada'])) {
+                if (!$encuesta->puedeCambiarEstado($nuevoEstado)) {
+                    $errores = $encuesta->validarIntegridad();
+                    return redirect()->back()
+                        ->withInput()
+                        ->with('error', 'No se puede cambiar el estado. Errores de validación: ' . implode(', ', $errores));
+                }
+
+                // Marcar como validada
+                $data['validacion_completada'] = true;
+                $data['errores_validacion'] = null;
+            }
 
             $encuesta->update($data);
 
@@ -183,7 +201,9 @@ class EncuestaController extends Controller
             Log::info('Encuesta actualizada exitosamente', [
                 'user_id' => Auth::id(),
                 'encuesta_id' => $encuesta->id,
-                'titulo' => $encuesta->titulo
+                'titulo' => $encuesta->titulo,
+                'estado_anterior' => $encuesta->getOriginal('estado'),
+                'estado_nuevo' => $nuevoEstado
             ]);
 
             return redirect()->route('encuestas.show', $encuesta)
