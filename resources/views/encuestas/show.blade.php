@@ -33,17 +33,41 @@
 
     <h4>Preguntas</h4>
     @if($encuesta->preguntas->count() > 0)
+        <div class="mb-3">
+            <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteAllQuestionsModal">
+                <i class="fas fa-trash"></i> Eliminar Todas las Preguntas
+            </button>
+        </div>
+
         @foreach($encuesta->preguntas as $pregunta)
             <div class="card mb-2">
-                <div class="card-header">
-                    {{ $loop->iteration }}. {{ $pregunta->texto }}
-                    @if($pregunta->obligatoria)
-                        <span class="badge bg-success">Obligatoria</span>
-                    @endif
-                    <span class="badge bg-info">{{ ucfirst(str_replace('_', ' ', $pregunta->tipo)) }}</span>
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        {{ $loop->iteration }}. {{ $pregunta->texto }}
+                        @if($pregunta->obligatoria)
+                            <span class="badge bg-success">Obligatoria</span>
+                        @endif
+                        <span class="badge bg-info">{{ $pregunta->getNombreTipo() }}</span>
+                    </div>
+                    <div class="btn-group" role="group">
+                        <a href="{{ route('encuestas.preguntas.edit', [$encuesta->id, $pregunta->id]) }}"
+                           class="btn btn-warning btn-sm"
+                           title="Editar pregunta">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <button type="button"
+                                class="btn btn-danger btn-sm"
+                                onclick="confirmarEliminarPregunta({{ $pregunta->id }}, '{{ $pregunta->texto }}')"
+                                title="Eliminar pregunta">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="card-body">
-                    <strong>Tipo:</strong> {{ $pregunta->tipo }}<br>
+                    <strong>Tipo:</strong> {{ $pregunta->getNombreTipo() }}<br>
+                    @if($pregunta->descripcion)
+                        <strong>Descripción:</strong> {{ $pregunta->descripcion }}<br>
+                    @endif
                     @if($pregunta->respuestas->count())
                         <strong>Respuestas:</strong>
                         <ul>
@@ -149,6 +173,79 @@
     </div>
 </div>
 @endif
+
+<!-- Modal para eliminar pregunta individual -->
+<div class="modal fade" id="deleteQuestionModal" tabindex="-1" role="dialog" aria-labelledby="deleteQuestionModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteQuestionModalLabel">
+                    <i class="fas fa-exclamation-triangle text-danger"></i> Confirmar Eliminación
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que quieres eliminar la pregunta:</p>
+                <p><strong id="preguntaToDelete"></strong></p>
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>¡Atención!</strong> Esta acción también eliminará todas las respuestas asociadas a esta pregunta.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <form id="deleteQuestionForm" method="POST" style="display: inline;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Eliminar Pregunta
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para eliminar todas las preguntas -->
+<div class="modal fade" id="deleteAllQuestionsModal" tabindex="-1" role="dialog" aria-labelledby="deleteAllQuestionsModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteAllQuestionsModalLabel">
+                    <i class="fas fa-exclamation-triangle text-danger"></i> Confirmar Eliminación Masiva
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que quieres eliminar <strong>TODAS</strong> las preguntas de esta encuesta?</p>
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>¡ADVERTENCIA!</strong> Esta acción eliminará:
+                    <ul class="mb-0 mt-2">
+                        <li>Todas las preguntas de la encuesta</li>
+                        <li>Todas las respuestas asociadas</li>
+                        <li>Toda la lógica condicional configurada</li>
+                    </ul>
+                </div>
+                <p>Esta acción <strong>NO SE PUEDE DESHACER</strong>.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <form action="{{ route('encuestas.preguntas.destroyAll', $encuesta->id) }}" method="POST" style="display: inline;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Eliminar Todas las Preguntas
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @section('js')
@@ -164,5 +261,26 @@ $(document).ready(function() {
         $('#addQuestionsModal').modal('show');
     @endif
 });
+
+// Función para confirmar eliminación de pregunta individual
+function confirmarEliminarPregunta(preguntaId, preguntaTexto) {
+    // Actualizar el modal con la información de la pregunta
+    $('#preguntaToDelete').text(preguntaTexto);
+
+    // Actualizar el formulario con la URL correcta
+    $('#deleteQuestionForm').attr('action', '{{ route("encuestas.preguntas.destroy", ["encuesta" => $encuesta->id, "pregunta" => ":preguntaId"]) }}'.replace(':preguntaId', preguntaId));
+
+    // Mostrar el modal
+    $('#deleteQuestionModal').modal('show');
+}
+
+// Confirmar eliminación de todas las preguntas
+function confirmarEliminarTodasPreguntas() {
+    if (confirm('¿Estás seguro de que quieres eliminar TODAS las preguntas? Esta acción no se puede deshacer.')) {
+        // El formulario se enviará automáticamente
+        return true;
+    }
+    return false;
+}
 </script>
 @endsection

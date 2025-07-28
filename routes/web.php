@@ -197,7 +197,10 @@ Route::middleware(['auth'])->prefix('encuestas')->name('encuestas.')->group(func
     // Gestión de preguntas
     Route::get('{encuesta}/preguntas', [PreguntaController::class, 'create'])->name('preguntas.create');
     Route::post('{encuesta}/preguntas', [PreguntaController::class, 'store'])->name('preguntas.store');
+    Route::get('{encuesta}/preguntas/{pregunta}/edit', [PreguntaController::class, 'edit'])->name('preguntas.edit');
+    Route::put('{encuesta}/preguntas/{pregunta}', [PreguntaController::class, 'update'])->name('preguntas.update');
     Route::delete('{encuesta}/preguntas/{pregunta}', [PreguntaController::class, 'destroy'])->name('preguntas.destroy');
+    Route::delete('{encuesta}/preguntas', [PreguntaController::class, 'destroyAll'])->name('preguntas.destroyAll');
 
     // Gestión de respuestas
     Route::get('{encuesta}/respuestas', [EncuestaRespuestaController::class, 'create'])->name('respuestas.create');
