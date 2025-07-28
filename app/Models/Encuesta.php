@@ -35,6 +35,17 @@ class Encuesta extends Model
         'errores_validacion'
     ];
 
+    protected $attributes = [
+        'estado' => 'borrador',
+        'habilitada' => false,
+        'enviar_por_correo' => false,
+        'envio_masivo_activado' => false,
+        'validacion_completada' => false,
+        'encuestas_enviadas' => 0,
+        'encuestas_respondidas' => 0,
+        'encuestas_pendientes' => 0
+    ];
+
     protected $casts = [
         'fecha_inicio' => 'date',
         'fecha_fin' => 'date',
@@ -58,6 +69,8 @@ class Encuesta extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+
 
     public function preguntas(): HasMany
     {

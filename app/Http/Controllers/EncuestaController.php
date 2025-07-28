@@ -97,20 +97,41 @@ class EncuestaController extends Controller
                 return $this->redirectIfNoAccess('No tienes permisos para crear encuestas.');
             }
 
+            // Log de inicio
+            Log::info('Iniciando creación de encuesta', [
+                'user_id' => Auth::id(),
+                'data' => $request->all()
+            ]);
+
             DB::beginTransaction();
 
+            // Preparar datos
             $data = $request->validated();
             $data['user_id'] = Auth::id();
             $data['habilitada'] = $request->has('habilitada');
+            $data['estado'] = $data['estado'] ?? 'borrador';
 
+            // Log de datos preparados
+            Log::info('Datos preparados para crear encuesta', [
+                'user_id' => Auth::id(),
+                'data' => $data
+            ]);
+
+            // Crear encuesta
             $encuesta = Encuesta::create($data);
+
+            // Verificar que se creó correctamente
+            if (!$encuesta->id) {
+                throw new Exception('La encuesta no se creó correctamente - no se generó ID');
+            }
 
             DB::commit();
 
             Log::info('Encuesta creada exitosamente', [
                 'user_id' => Auth::id(),
                 'encuesta_id' => $encuesta->id,
-                'titulo' => $encuesta->titulo
+                'titulo' => $encuesta->titulo,
+                'estado' => $encuesta->estado
             ]);
 
             // REDIRECCIÓN AUTOMÁTICA A AGREGAR PREGUNTAS
@@ -120,8 +141,10 @@ class EncuestaController extends Controller
             DB::rollBack();
             Log::error('Error creando encuesta', [
                 'user_id' => Auth::id(),
-                'data' => $request->validated(),
-                'error' => $e->getMessage()
+                'data' => $request->all(),
+                'validated_data' => $request->validated(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ]);
             return redirect()->back()
                 ->withInput()
