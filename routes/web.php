@@ -184,8 +184,18 @@ Route::middleware(['auth'])->group(function () {
 
 // Rutas públicas de encuestas (sin autenticación)
 Route::prefix('publica')->name('encuestas.')->group(function () {
-    Route::get('{slug}', [EncuestaPublicaController::class, 'mostrar'])->name('publica');
+    Route::get('{slug}', [EncuestaPublicaController::class, 'mostrar'])
+        ->name('publica')
+        ->middleware('verificar.token.encuesta');
     Route::post('{id}', [EncuestaPublicaController::class, 'responder'])->name('responder');
+
+    // Rutas para renovación de enlaces
+    Route::get('{slug}/renovar', [App\Http\Controllers\EncuestaRenovarController::class, 'mostrarFormularioRenovacion'])
+        ->name('renovar.formulario');
+    Route::post('{slug}/renovar', [App\Http\Controllers\EncuestaRenovarController::class, 'renovarEnlace'])
+        ->name('renovar.enlace');
+    Route::post('verificar-token', [App\Http\Controllers\EncuestaRenovarController::class, 'verificarToken'])
+        ->name('verificar.token');
 });
 
 // Rutas protegidas de encuestas (con autenticación)
@@ -221,6 +231,14 @@ Route::middleware(['auth'])->prefix('encuestas')->name('encuestas.')->group(func
     Route::get('{encuesta}/envio', [App\Http\Controllers\EncuestaEnvioController::class, 'create'])->name('envio.create');
     Route::post('{encuesta}/envio', [App\Http\Controllers\EncuestaEnvioController::class, 'store'])->name('envio.store');
     Route::post('{encuesta}/envio/agregar-usuario', [App\Http\Controllers\EncuestaEnvioController::class, 'agregarUsuario'])->name('envio.agregar-usuario');
+
+    // Dashboard de seguimiento
+    Route::get('{encuesta}/seguimiento', [App\Http\Controllers\EncuestaSeguimientoController::class, 'dashboard'])->name('seguimiento.dashboard');
+    Route::get('{encuesta}/seguimiento/actualizar', [App\Http\Controllers\EncuestaSeguimientoController::class, 'actualizarDatos'])->name('seguimiento.actualizar');
+    Route::post('{encuesta}/seguimiento/pausar', [App\Http\Controllers\EncuestaSeguimientoController::class, 'pausarEnvio'])->name('seguimiento.pausar');
+    Route::post('{encuesta}/seguimiento/reanudar', [App\Http\Controllers\EncuestaSeguimientoController::class, 'reanudarEnvio'])->name('seguimiento.reanudar');
+    Route::post('{encuesta}/seguimiento/cancelar', [App\Http\Controllers\EncuestaSeguimientoController::class, 'cancelarEnvio'])->name('seguimiento.cancelar');
+    Route::get('{encuesta}/seguimiento/exportar', [App\Http\Controllers\EncuestaSeguimientoController::class, 'exportarReporte'])->name('seguimiento.exportar');
 });
 
 

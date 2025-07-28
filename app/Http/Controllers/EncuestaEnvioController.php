@@ -6,11 +6,13 @@ use App\Models\Encuesta;
 use App\Models\Empleado;
 use App\Models\User;
 use App\Models\SentMail;
+use App\Jobs\EnviarBloqueEncuestas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Exception;
 
 class EncuestaEnvioController extends Controller
@@ -120,42 +122,42 @@ class EncuestaEnvioController extends Controller
                 'estado' => 'enviada'
             ]);
 
-            // Enviar correos
-            $enviados = 0;
-            $errores = [];
+                                    // Crear bloques de envío en la base de datos
+            $encuesta->crearBloquesEnvio(7); // 7 minutos entre bloques
 
-            foreach ($destinatarios as $destinatario) {
-                try {
-                    $this->enviarCorreoEncuesta($encuesta, $destinatario, $request->asunto_correo, $request->plantilla_correo);
-                    $enviados++;
-                } catch (Exception $e) {
-                    $errores[] = "Error enviando a {$destinatario}: " . $e->getMessage();
-                    Log::error('Error enviando correo de encuesta', [
-                        'encuesta_id' => $encuestaId,
-                        'destinatario' => $destinatario,
-                        'error' => $e->getMessage()
-                    ]);
-                }
+            // Configurar envío en bloques
+            $encuesta->update([
+                'estado' => 'enviada',
+                'envio_masivo_activado' => true
+            ]);
+
+            // Programar primer bloque para envío inmediato
+            $primerBloque = $encuesta->obtenerSiguienteBloque();
+
+            if ($primerBloque) {
+                // Dispatch del primer job para envío inmediato
+                EnviarBloqueEncuestas::dispatch($encuestaId, $primerBloque->numero_bloque);
+
+                Log::info("Programando envío de {$encuesta->numero_encuestas} encuestas en bloques de 100", [
+                    'encuesta_id' => $encuestaId,
+                    'user_id' => Auth::id(),
+                    'primer_bloque' => $primerBloque->numero_bloque
+                ]);
             }
 
             DB::commit();
 
-            Log::info('Envío masivo de encuesta completado', [
+            Log::info('Configuración de envío masivo completada', [
                 'user_id' => Auth::id(),
                 'encuesta_id' => $encuestaId,
-                'total_destinatarios' => count($destinatarios),
-                'enviados_exitosos' => $enviados,
-                'errores' => count($errores)
+                'total_encuestas' => $encuesta->numero_encuestas,
+                'bloques_programados' => ceil($encuesta->numero_encuestas / 100)
             ]);
 
-            $mensaje = "Envío configurado correctamente. {$enviados} correos enviados exitosamente.";
-            if (!empty($errores)) {
-                $mensaje .= " Se encontraron " . count($errores) . " errores.";
-            }
+            $mensaje = "Envío configurado correctamente. Se programaron " . ceil($encuesta->numero_encuestas / 100) . " bloques de envío.";
 
             return redirect()->route('encuestas.show', $encuestaId)
-                ->with('success', $mensaje)
-                ->with('errores_envio', $errores);
+                ->with('success', $mensaje);
 
         } catch (Exception $e) {
             DB::rollBack();
@@ -188,7 +190,7 @@ class EncuestaEnvioController extends Controller
             $user = User::create([
                 'name' => $request->nombre,
                 'email' => $request->email,
-                'password' => bcrypt(str_random(10)), // Contraseña temporal
+                'password' => bcrypt(Str::random(10)), // Contraseña temporal
                 'email_verified_at' => now()
             ]);
 

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class Encuesta extends Model
 {
@@ -75,6 +76,22 @@ class Encuesta extends Model
                 $query->orderBy('orden');
             }])
             ->orderBy('orden');
+    }
+
+    /**
+     * Obtiene los bloques de envío de la encuesta
+     */
+    public function bloquesEnvio(): HasMany
+    {
+        return $this->hasMany(BloqueEnvio::class)->orderBy('numero_bloque');
+    }
+
+    /**
+     * Obtiene los tokens de acceso de la encuesta
+     */
+    public function tokensAcceso(): HasMany
+    {
+        return $this->hasMany(TokenEncuesta::class)->orderBy('created_at', 'desc');
     }
 
     /**
@@ -171,27 +188,33 @@ class Encuesta extends Model
     }
 
     /**
-     * Genera un token de acceso único para la encuesta
+     * Generar token único para un destinatario específico
      */
-    public function generarTokenAcceso(): string
+    public function generarTokenParaDestinatario(string $emailDestinatario, int $horasValidez = 24): TokenEncuesta
     {
-        return Str::random(32);
+        return TokenEncuesta::generarToken($emailDestinatario, $this->id, $horasValidez);
     }
 
     /**
-     * Verificar si el token de acceso es válido
+     * Verificar si un token es válido para esta encuesta
      */
     public function tokenValido(string $token): bool
     {
-        if ($this->token_acceso !== $token) {
-            return false;
-        }
+        $tokenEncuesta = $this->tokensAcceso()
+            ->where('token_acceso', $token)
+            ->first();
 
-        if ($this->token_expiracion && now()->gt($this->token_expiracion)) {
-            return false;
-        }
+        return $tokenEncuesta && $tokenEncuesta->esValido();
+    }
 
-        return true;
+    /**
+     * Obtener token por valor
+     */
+    public function obtenerToken(string $token): ?TokenEncuesta
+    {
+        return $this->tokensAcceso()
+            ->where('token_acceso', $token)
+            ->first();
     }
 
     /**
@@ -222,6 +245,165 @@ class Encuesta extends Model
                $this->envio_masivo_activado &&
                $this->estado === 'borrador' &&
                $this->validacion_completada;
+    }
+
+    /**
+     * Crear bloques de envío en la base de datos
+     */
+    public function crearBloquesEnvio(int $minutosEntreBloques = 7): void
+    {
+        // Eliminar bloques existentes si los hay
+        $this->bloquesEnvio()->delete();
+
+        $totalEncuestas = $this->numero_encuestas;
+        $tamanoBloque = 100;
+        $totalBloques = ceil($totalEncuestas / $tamanoBloque);
+
+        $bloques = [];
+        for ($i = 0; $i < $totalBloques; $i++) {
+            $inicio = $i * $tamanoBloque;
+            $fin = min(($i + 1) * $tamanoBloque, $totalEncuestas);
+            $cantidad = $fin - $inicio;
+
+            $bloques[] = [
+                'encuesta_id' => $this->id,
+                'numero_bloque' => $i + 1,
+                'cantidad_correos' => $cantidad,
+                'estado' => 'pendiente',
+                'fecha_programada' => now()->addMinutes(($i + 1) * $minutosEntreBloques),
+                'created_at' => now(),
+                'updated_at' => now()
+            ];
+        }
+
+        // Insertar todos los bloques
+        DB::table('bloques_envio')->insert($bloques);
+    }
+
+    /**
+     * Obtener bloques de envío desde la base de datos
+     */
+    public function obtenerBloquesEnvio(): \Illuminate\Database\Eloquent\Collection
+    {
+        return $this->bloquesEnvio()->orderBy('numero_bloque')->get();
+    }
+
+    /**
+     * Calcular bloques de envío (método legacy para compatibilidad)
+     */
+    public function calcularBloquesEnvio(): array
+    {
+        $bloques = $this->obtenerBloquesEnvio();
+
+        return $bloques->map(function($bloque) {
+            return [
+                'numero' => $bloque->numero_bloque,
+                'inicio' => ($bloque->numero_bloque - 1) * 100,
+                'fin' => min($bloque->numero_bloque * 100, $this->numero_encuestas),
+                'cantidad' => $bloque->cantidad_correos,
+                'estado' => $bloque->estado,
+                'fecha_programada' => $bloque->fecha_programada
+            ];
+        })->toArray();
+    }
+
+    /**
+     * Obtener estadísticas detalladas del envío
+     */
+    public function obtenerEstadisticasEnvioDetalladas(): array
+    {
+        $stats = $this->calcularEstadisticasEnvio();
+        $bloques = $this->obtenerBloquesEnvio();
+
+        $bloquesEnviados = $bloques->where('estado', 'enviado')->count();
+        $bloquesPendientes = $bloques->where('estado', 'pendiente')->count();
+        $bloquesEnProceso = $bloques->where('estado', 'en_proceso')->count();
+        $bloquesError = $bloques->where('estado', 'error')->count();
+
+        // Calcular tiempo estimado basado en bloques pendientes
+        $siguienteBloque = $bloques->where('estado', 'pendiente')->first();
+        $tiempoEstimado = $siguienteBloque ? $siguienteBloque->tiempoRestante() : 0;
+
+        return array_merge($stats, [
+            'total_bloques' => $bloques->count(),
+            'bloques_enviados' => $bloquesEnviados,
+            'bloques_pendientes' => $bloquesPendientes,
+            'bloques_en_proceso' => $bloquesEnProceso,
+            'bloques_error' => $bloquesError,
+            'progreso_porcentaje' => $bloques->count() > 0 ? round(($bloquesEnviados / $bloques->count()) * 100, 2) : 0,
+            'tiempo_estimado_minutos' => $tiempoEstimado,
+            'siguiente_envio' => $siguienteBloque ? $siguienteBloque->fecha_programada : null
+        ]);
+    }
+
+    /**
+     * Verificar si el envío está en progreso
+     */
+    public function envioEnProgreso(): bool
+    {
+        return $this->estado === 'enviada' && $this->encuestas_enviadas < $this->numero_encuestas;
+    }
+
+    /**
+     * Verificar si el envío está completado
+     */
+    public function envioCompletado(): bool
+    {
+        return $this->encuestas_enviadas >= $this->numero_encuestas;
+    }
+
+    /**
+     * Obtener el siguiente bloque a enviar
+     */
+    public function obtenerSiguienteBloque(): ?BloqueEnvio
+    {
+        return $this->bloquesEnvio()
+            ->where('estado', 'pendiente')
+            ->where('fecha_programada', '<=', now())
+            ->orderBy('numero_bloque')
+            ->first();
+    }
+
+    /**
+     * Marcar bloque como enviado
+     */
+    public function marcarBloqueEnviado(int $numeroBloque): void
+    {
+        $bloque = $this->bloquesEnvio()
+            ->where('numero_bloque', $numeroBloque)
+            ->first();
+
+        if ($bloque) {
+            $this->encuestas_enviadas += $bloque->cantidad_correos;
+            $this->encuestas_pendientes = max(0, $this->numero_encuestas - $this->encuestas_enviadas);
+            $this->save();
+        }
+    }
+
+    /**
+     * Generar enlace dinámico para un destinatario específico
+     */
+    public function generarEnlaceDinamico(string $emailDestinatario, int $horasValidez = 24): string
+    {
+        $token = $this->generarTokenParaDestinatario($emailDestinatario, $horasValidez);
+        return $token->obtenerEnlace();
+    }
+
+    /**
+     * Verificar si un enlace está vencido
+     */
+    public function enlaceVencido(string $token): bool
+    {
+        $tokenEncuesta = $this->obtenerToken($token);
+        return $tokenEncuesta ? $tokenEncuesta->haExpirado() : true;
+    }
+
+    /**
+     * Renovar enlace vencido para un destinatario específico
+     */
+    public function renovarEnlace(string $emailDestinatario, int $horasValidez = 24): string
+    {
+        return $this->generarEnlaceDinamico($emailDestinatario, $horasValidez);
     }
 
     /**
