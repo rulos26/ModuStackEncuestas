@@ -97,18 +97,7 @@
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="tiempo_disponible">Tiempo de disponibilidad (legacy)</label>
-                <input type="datetime-local" name="tiempo_disponible" id="tiempo_disponible"
-                       class="form-control @error('tiempo_disponible') is-invalid @enderror"
-                       value="{{ old('tiempo_disponible') }}">
-                @error('tiempo_disponible')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-                <small class="form-text text-muted">
-                    Fecha límite de disponibilidad (se recomienda usar fecha de inicio y fin)
-                </small>
-            </div>
+
 
             <div class="form-group">
                 <label for="estado">Estado</label>
@@ -203,18 +192,6 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Validación del tiempo disponible
-    const tiempoDisponible = document.getElementById('tiempo_disponible');
-    tiempoDisponible.addEventListener('change', function() {
-        const selectedDate = new Date(this.value);
-        const now = new Date();
-
-        if (selectedDate <= now) {
-            alert('El tiempo disponible debe ser posterior a la fecha y hora actual.');
-            this.value = '';
-        }
-    });
-
     // Validación del número de encuestas
     const numeroEncuestas = document.getElementById('numero_encuestas');
     numeroEncuestas.addEventListener('input', function() {

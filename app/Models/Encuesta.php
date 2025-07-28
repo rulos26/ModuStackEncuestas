@@ -19,7 +19,6 @@ class Encuesta extends Model
         'encuestas_enviadas',
         'encuestas_respondidas',
         'encuestas_pendientes',
-        'tiempo_disponible',
         'fecha_inicio',
         'fecha_fin',
         'enviar_por_correo',
@@ -37,7 +36,6 @@ class Encuesta extends Model
     ];
 
     protected $casts = [
-        'tiempo_disponible' => 'datetime',
         'fecha_inicio' => 'datetime',
         'fecha_fin' => 'datetime',
         'token_expiracion' => 'datetime',
@@ -126,11 +124,6 @@ class Encuesta extends Model
 
         // Verificar fecha de fin
         if ($this->fecha_fin && now()->gt($this->fecha_fin)) {
-            return false;
-        }
-
-        // Verificar tiempo de disponibilidad (legacy)
-        if ($this->tiempo_disponible && now()->gt($this->tiempo_disponible)) {
             return false;
         }
 
