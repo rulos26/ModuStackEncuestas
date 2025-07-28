@@ -101,15 +101,15 @@
                                 <i class="fas fa-list"></i> Tipo de pregunta
                             </label>
                             <div class="dropdown">
-                                <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" id="tipoDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" id="tipoDropdown" data-toggle="dropdown" aria-expanded="false">
                                     <span id="tipoSeleccionado">
                                         <i class="fas fa-question-circle"></i> Selecciona el tipo de pregunta
                                     </span>
                                 </button>
-                                <ul class="dropdown-menu" aria-labelledby="tipoDropdown">
+                                <ul class="dropdown-menu w-100" aria-labelledby="tipoDropdown">
                                     @foreach(App\Models\Pregunta::getTiposDisponibles() as $tipo => $config)
                                         <li>
-                                            <a class="dropdown-item" href="#" data-tipo="{{ $tipo }}" data-icono="{{ $config['icono'] }}" data-nombre="{{ $config['nombre'] }}">
+                                            <a class="dropdown-item tipo-option" href="#" data-tipo="{{ $tipo }}" data-icono="{{ $config['icono'] }}" data-nombre="{{ $config['nombre'] }}">
                                                 <i class="{{ $config['icono'] }}"></i> {{ $config['nombre'] }}
                                             </a>
                                         </li>
@@ -306,9 +306,14 @@ $(document).ready(function() {
         $('.alert').fadeOut('slow');
     }, 5000);
 
-    // Custom dropdown functionality
-    $('.dropdown-item').click(function(e) {
+    // Inicializar dropdown de Bootstrap
+    $('[data-toggle="dropdown"]').dropdown();
+
+        // Custom dropdown functionality
+    $('.tipo-option').on('click', function(e) {
         e.preventDefault();
+        e.stopPropagation();
+
         var tipo = $(this).data('tipo');
         var icono = $(this).data('icono');
         var nombre = $(this).data('nombre');
@@ -316,8 +321,28 @@ $(document).ready(function() {
         $('#tipo').val(tipo);
         $('#tipoSeleccionado').html('<i class="' + icono + '"></i> ' + nombre);
 
+        // Cerrar el dropdown manualmente
+        $('.dropdown-menu').removeClass('show');
+        $('#tipoDropdown').removeClass('show');
+
         mostrarConfiguracionesEspecificas(tipo);
         mostrarInformacionTipo(tipo);
+    });
+
+    // Asegurar que el dropdown funcione con Bootstrap 4
+    $('#tipoDropdown').on('click', function(e) {
+        e.preventDefault();
+        var $dropdown = $(this).next('.dropdown-menu');
+        $dropdown.toggleClass('show');
+        $(this).toggleClass('show');
+    });
+
+    // Cerrar dropdown al hacer clic fuera
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('.dropdown').length) {
+            $('.dropdown-menu').removeClass('show');
+            $('.dropdown-toggle').removeClass('show');
+        }
     });
 
     function mostrarConfiguracionesEspecificas(tipo) {
@@ -369,16 +394,73 @@ $(document).ready(function() {
 <style>
 .dropdown-item {
     cursor: pointer;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.dropdown-item:last-child {
+    border-bottom: none;
 }
 
 .dropdown-item:hover {
     background-color: #f8f9fa;
+    color: #495057;
 }
 
 .dropdown-item i {
     width: 20px;
     text-align: center;
     margin-right: 8px;
+}
+
+#tipoDropdown {
+    text-align: left;
+    position: relative;
+    padding: 0.375rem 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    background-color: #fff;
+    color: #495057;
+}
+
+#tipoDropdown:hover {
+    background-color: #e9ecef;
+    border-color: #adb5bd;
+}
+
+#tipoDropdown:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.dropdown-menu {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ced4da;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    width: 100%;
+    display: none;
+}
+
+.dropdown-menu.show {
+    display: block;
+}
+
+.dropdown-toggle::after {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#tipoSeleccionado {
+    display: flex;
+    align-items: center;
+}
+
+#tipoSeleccionado i {
+    margin-right: 0.5rem;
 }
 
 .progress {
