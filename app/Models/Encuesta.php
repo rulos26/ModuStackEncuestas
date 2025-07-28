@@ -439,4 +439,140 @@ class Encuesta extends Model
             }
         });
     }
+
+    /**
+     * Verificar si la encuesta está lista para el siguiente paso
+     */
+    public function puedeAvanzarA(string $paso): bool
+    {
+        switch ($paso) {
+            case 'preguntas':
+                return !empty($this->titulo) && !empty($this->empresa_id);
+
+            case 'respuestas':
+                return $this->preguntas()->count() > 0;
+
+            case 'logica':
+                $preguntasConRespuestas = $this->preguntas()
+                    ->necesitaRespuestas()
+                    ->whereHas('respuestas')
+                    ->count();
+                $totalPreguntasNecesitanRespuestas = $this->preguntas()
+                    ->necesitaRespuestas()
+                    ->count();
+                return $totalPreguntasNecesitanRespuestas === 0 || $preguntasConRespuestas === $totalPreguntasNecesitanRespuestas;
+
+            case 'preview':
+                return $this->preguntas()->count() > 0;
+
+            case 'envio':
+                return $this->preguntas()->count() > 0 && $this->estado !== 'borrador';
+
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Obtener el progreso del flujo de configuración
+     */
+    public function obtenerProgresoConfiguracion(): array
+    {
+        $pasos = [
+            'crear_encuesta' => [
+                'nombre' => 'Crear Encuesta',
+                'completado' => !empty($this->titulo) && !empty($this->empresa_id),
+                'ruta' => route('encuestas.edit', $this->id),
+                'icono' => 'fas fa-clipboard-list'
+            ],
+            'agregar_preguntas' => [
+                'nombre' => 'Agregar Preguntas',
+                'completado' => $this->preguntas()->count() > 0,
+                'ruta' => route('encuestas.preguntas.create', $this->id),
+                'icono' => 'fas fa-question-circle',
+                'cantidad' => $this->preguntas()->count()
+            ],
+            'configurar_respuestas' => [
+                'nombre' => 'Configurar Respuestas',
+                'completado' => $this->puedeAvanzarA('logica'),
+                'ruta' => route('encuestas.respuestas.create', $this->id),
+                'icono' => 'fas fa-list-check',
+                'cantidad' => $this->preguntas()->necesitaRespuestas()->whereHas('respuestas')->count()
+            ],
+            'configurar_logica' => [
+                'nombre' => 'Configurar Lógica',
+                'completado' => $this->preguntas()->whereHas('logica')->count() > 0,
+                'ruta' => route('encuestas.logica.create', $this->id),
+                'icono' => 'fas fa-cogs'
+            ],
+            'vista_previa' => [
+                'nombre' => 'Vista Previa',
+                'completado' => $this->preguntas()->count() > 0,
+                'ruta' => route('encuestas.preview', $this->id),
+                'icono' => 'fas fa-eye'
+            ],
+            'configurar_envio' => [
+                'nombre' => 'Configurar Envío',
+                'completado' => $this->estado !== 'borrador',
+                'ruta' => route('encuestas.envio.create', $this->id),
+                'icono' => 'fas fa-paper-plane'
+            ]
+        ];
+
+        $pasosCompletados = collect($pasos)->where('completado', true)->count();
+        $totalPasos = count($pasos);
+
+        return [
+            'pasos' => $pasos,
+            'completados' => $pasosCompletados,
+            'total' => $totalPasos,
+            'porcentaje' => $totalPasos > 0 ? round(($pasosCompletados / $totalPasos) * 100, 2) : 0,
+            'siguiente_paso' => $this->obtenerSiguientePaso($pasos)
+        ];
+    }
+
+    /**
+     * Obtener el siguiente paso a completar
+     */
+    private function obtenerSiguientePaso(array $pasos): ?string
+    {
+        foreach ($pasos as $clave => $paso) {
+            if (!$paso['completado']) {
+                return $clave;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Verificar si la encuesta está completamente configurada
+     */
+    public function estaCompletamenteConfigurada(): bool
+    {
+        return $this->preguntas()->count() > 0 &&
+               $this->puedeAvanzarA('logica') &&
+               $this->estado !== 'borrador';
+    }
+
+    /**
+     * Obtener estadísticas de configuración
+     */
+    public function obtenerEstadisticasConfiguracion(): array
+    {
+        $totalPreguntas = $this->preguntas()->count();
+        $preguntasObligatorias = $this->preguntas()->where('obligatoria', true)->count();
+        $preguntasConRespuestas = $this->preguntas()->necesitaRespuestas()->whereHas('respuestas')->count();
+        $preguntasSinRespuestas = $this->preguntas()->necesitaRespuestas()->whereDoesntHave('respuestas')->count();
+        $preguntasConLogica = $this->preguntas()->whereHas('logica')->count();
+
+        return [
+            'total_preguntas' => $totalPreguntas,
+            'preguntas_obligatorias' => $preguntasObligatorias,
+            'preguntas_opcionales' => $totalPreguntas - $preguntasObligatorias,
+            'preguntas_con_respuestas' => $preguntasConRespuestas,
+            'preguntas_sin_respuestas' => $preguntasSinRespuestas,
+            'preguntas_con_logica' => $preguntasConLogica,
+            'completada' => $this->estaCompletamenteConfigurada()
+        ];
+    }
 }

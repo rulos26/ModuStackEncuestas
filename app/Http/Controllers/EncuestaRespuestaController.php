@@ -189,8 +189,14 @@ class EncuestaRespuestaController extends Controller
                 'respuestas_count' => count($respuestasAplanadas)
             ]);
 
-            return redirect()->route('encuestas.logica.create', $encuestaId)
-                ->with('success', 'Respuestas guardadas correctamente.');
+            // Verificar si puede avanzar a lógica
+            if ($encuesta->puedeAvanzarA('logica')) {
+                return redirect()->route('encuestas.logica.create', $encuestaId)
+                    ->with('success', 'Respuestas guardadas correctamente. Ahora configura la lógica de la encuesta.');
+            } else {
+                return redirect()->route('encuestas.respuestas.create', $encuestaId)
+                    ->with('success', 'Respuestas guardadas correctamente. Completa todas las respuestas para continuar.');
+            }
         } catch (Exception $e) {
             DB::rollBack();
 

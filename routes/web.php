@@ -205,31 +205,49 @@ Route::middleware(['auth'])->prefix('encuestas')->name('encuestas.')->group(func
     Route::post('{encuesta}/clonar', [App\Http\Controllers\EncuestaController::class, 'clonar'])->name('clone');
 
     // Gestión de preguntas
-    Route::get('{encuesta}/preguntas', [PreguntaController::class, 'create'])->name('preguntas.create');
-    Route::post('{encuesta}/preguntas', [PreguntaController::class, 'store'])->name('preguntas.store');
+    Route::get('{encuesta}/preguntas', [PreguntaController::class, 'create'])
+        ->name('preguntas.create')
+        ->middleware('validar.flujo.encuesta:preguntas');
+    Route::post('{encuesta}/preguntas', [PreguntaController::class, 'store'])
+        ->name('preguntas.store')
+        ->middleware('validar.flujo.encuesta:preguntas');
     Route::get('{encuesta}/preguntas/{pregunta}/edit', [PreguntaController::class, 'edit'])->name('preguntas.edit');
     Route::put('{encuesta}/preguntas/{pregunta}', [PreguntaController::class, 'update'])->name('preguntas.update');
     Route::delete('{encuesta}/preguntas/{pregunta}', [PreguntaController::class, 'destroy'])->name('preguntas.destroy');
     Route::delete('{encuesta}/preguntas', [PreguntaController::class, 'destroyAll'])->name('preguntas.destroyAll');
 
     // Gestión de respuestas
-    Route::get('{encuesta}/respuestas', [EncuestaRespuestaController::class, 'create'])->name('respuestas.create');
-    Route::post('{encuesta}/respuestas', [EncuestaRespuestaController::class, 'store'])->name('respuestas.store');
+    Route::get('{encuesta}/respuestas', [EncuestaRespuestaController::class, 'create'])
+        ->name('respuestas.create')
+        ->middleware('validar.flujo.encuesta:respuestas');
+    Route::post('{encuesta}/respuestas', [EncuestaRespuestaController::class, 'store'])
+        ->name('respuestas.store')
+        ->middleware('validar.flujo.encuesta:respuestas');
 
     // Configuración de lógica
-    Route::get('{encuesta}/logica', [EncuestaLogicaController::class, 'create'])->name('logica.create');
-    Route::post('{encuesta}/logica', [EncuestaLogicaController::class, 'store'])->name('logica.store');
+    Route::get('{encuesta}/logica', [EncuestaLogicaController::class, 'create'])
+        ->name('logica.create')
+        ->middleware('validar.flujo.encuesta:logica');
+    Route::post('{encuesta}/logica', [EncuestaLogicaController::class, 'store'])
+        ->name('logica.store')
+        ->middleware('validar.flujo.encuesta:logica');
     Route::get('{encuesta}/logica/resumen', [EncuestaLogicaController::class, 'resumen'])->name('logica.resumen');
 
     // Vista previa
-    Route::get('{encuesta}/preview', [EncuestaPreviewController::class, 'preview'])->name('preview');
+    Route::get('{encuesta}/preview', [EncuestaPreviewController::class, 'preview'])
+        ->name('preview')
+        ->middleware('validar.flujo.encuesta:preview');
     Route::get('{encuesta}/preview/preguntas/{pregunta}/editar', [EncuestaPreviewController::class, 'editarPregunta'])->name('preview.editar-pregunta');
     Route::delete('{encuesta}/preview/preguntas/{pregunta}/eliminar', [EncuestaPreviewController::class, 'eliminarPregunta'])->name('preview.eliminar-pregunta');
     Route::get('{encuesta}/preview/estadisticas', [EncuestaPreviewController::class, 'estadisticas'])->name('preview.estadisticas');
 
     // Configuración de envío
-    Route::get('{encuesta}/envio', [App\Http\Controllers\EncuestaEnvioController::class, 'create'])->name('envio.create');
-    Route::post('{encuesta}/envio', [App\Http\Controllers\EncuestaEnvioController::class, 'store'])->name('envio.store');
+    Route::get('{encuesta}/envio', [App\Http\Controllers\EncuestaEnvioController::class, 'create'])
+        ->name('envio.create')
+        ->middleware('validar.flujo.encuesta:envio');
+    Route::post('{encuesta}/envio', [App\Http\Controllers\EncuestaEnvioController::class, 'store'])
+        ->name('envio.store')
+        ->middleware('validar.flujo.encuesta:envio');
     Route::post('{encuesta}/envio/agregar-usuario', [App\Http\Controllers\EncuestaEnvioController::class, 'agregarUsuario'])->name('envio.agregar-usuario');
 
     // Dashboard de seguimiento

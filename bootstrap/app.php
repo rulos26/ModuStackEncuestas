@@ -13,6 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'verificar.token.encuesta' => \App\Http\Middleware\VerificarTokenEncuesta::class,
+            'validar.flujo.encuesta' => \App\Http\Middleware\ValidarFlujoEncuesta::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

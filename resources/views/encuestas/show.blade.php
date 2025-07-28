@@ -88,6 +88,9 @@
         </div>
     @endif
 
+    <!-- PROGRESO DE CONFIGURACIÓN -->
+    <x-progreso-encuesta :encuesta="$encuesta" />
+
     <div class="mt-4">
         <a href="{{ route('encuestas.preguntas.create', $encuesta->id) }}" class="btn btn-primary me-2">
             <i class="fas fa-plus"></i> Agregar Preguntas

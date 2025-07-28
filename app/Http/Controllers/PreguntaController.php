@@ -170,8 +170,14 @@ class PreguntaController extends Controller
                 'tipo' => $pregunta->tipo
             ]);
 
-            return redirect()->route('encuestas.respuestas.create', $encuestaId)
-                ->with('success', 'Pregunta agregada correctamente. Ahora configura las respuestas.');
+            // Verificar si puede avanzar a respuestas
+            if ($encuesta->puedeAvanzarA('respuestas')) {
+                return redirect()->route('encuestas.respuestas.create', $encuestaId)
+                    ->with('success', 'Pregunta agregada correctamente. Ahora configura las respuestas.');
+            } else {
+                return redirect()->route('encuestas.show', $encuestaId)
+                    ->with('success', 'Pregunta agregada correctamente. Continúa agregando preguntas o configura las respuestas.');
+            }
         } catch (Exception $e) {
             DB::rollBack();
 
