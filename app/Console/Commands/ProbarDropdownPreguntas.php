@@ -9,14 +9,14 @@ use Illuminate\Console\Command;
 class ProbarDropdownPreguntas extends Command
 {
     protected $signature = 'encuestas:probar-dropdown {encuesta_id}';
-    protected $description = 'Prueba la funcionalidad del dropdown de tipos de preguntas';
+    protected $description = 'Prueba la funcionalidad del select de tipos de preguntas';
 
     public function handle()
     {
         $encuestaId = $this->argument('encuesta_id');
 
-        $this->info('🧪 PROBANDO DROPDOWN DE TIPOS DE PREGUNTAS');
-        $this->info('==============================================');
+        $this->info('🧪 PROBANDO SELECT DE TIPOS DE PREGUNTAS');
+        $this->info('==========================================');
 
         try {
             // Verificar que la encuesta existe
@@ -47,8 +47,8 @@ class ProbarDropdownPreguntas extends Command
                 $this->error("❌ Error en ruta de creación: " . $e->getMessage());
             }
 
-            // Verificar configuración del dropdown
-            $this->info("\n⚙️ CONFIGURACIÓN DEL DROPDOWN:");
+            // Verificar configuración del select
+            $this->info("\n⚙️ CONFIGURACIÓN DEL SELECT:");
             $tiposConfigurados = [];
             foreach ($tipos as $tipo => $config) {
                 $tiposConfigurados[] = [
@@ -101,7 +101,7 @@ class ProbarDropdownPreguntas extends Command
             // Instrucciones para el usuario
             $this->info("\n📝 INSTRUCCIONES PARA PROBAR:");
             $this->info("1. Abre el navegador y ve a: {$rutaCrear}");
-            $this->info("2. Haz clic en el dropdown 'Tipo de pregunta'");
+            $this->info("2. Haz clic en el select 'Tipo de pregunta'");
             $this->info("3. Verifica que aparezcan todas las opciones");
             $this->info("4. Selecciona un tipo y verifica que se actualice el campo");
             $this->info("5. Verifica que se muestren las configuraciones específicas");
@@ -121,7 +121,7 @@ class ProbarDropdownPreguntas extends Command
             }
 
             $this->info("\n🎉 PRUEBA CONFIGURADA EXITOSAMENTE");
-            $this->info("El dropdown debería funcionar correctamente en el navegador.");
+            $this->info("El select debería funcionar correctamente en el navegador.");
 
             return 0;
 

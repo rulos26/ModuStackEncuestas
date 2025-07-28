@@ -8,12 +8,12 @@ use Illuminate\Console\Command;
 class VerificarDropdownPreguntas extends Command
 {
     protected $signature = 'encuestas:verificar-dropdown';
-    protected $description = 'Verifica que el dropdown de tipos de preguntas funciona correctamente';
+    protected $description = 'Verifica que el select de tipos de preguntas funciona correctamente';
 
     public function handle()
     {
-        $this->info('🔍 VERIFICANDO DROPDOWN DE TIPOS DE PREGUNTAS');
-        $this->info('================================================');
+        $this->info('🔍 VERIFICANDO SELECT DE TIPOS DE PREGUNTAS');
+        $this->info('==============================================');
 
         try {
             // Verificar que el modelo Pregunta existe
@@ -140,7 +140,7 @@ class VerificarDropdownPreguntas extends Command
             }
 
             $this->info("\n🎉 VERIFICACIÓN COMPLETADA EXITOSAMENTE");
-            $this->info("El dropdown de tipos de preguntas debería funcionar correctamente.");
+            $this->info("El select de tipos de preguntas debería funcionar correctamente.");
 
             return 0;
 
