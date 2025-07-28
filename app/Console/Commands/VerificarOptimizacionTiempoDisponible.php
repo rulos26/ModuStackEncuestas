@@ -176,7 +176,7 @@ class VerificarOptimizacionTiempoDisponible extends Command
         }
     }
 
-    /**
+        /**
      * Verificar funcionalidad
      */
     private function verificarFuncionalidad()
@@ -189,8 +189,8 @@ class VerificarOptimizacionTiempoDisponible extends Command
             $encuesta->titulo = 'Encuesta de Prueba';
             $encuesta->empresa_id = 1;
             $encuesta->habilitada = true;
-            $encuesta->fecha_inicio = now()->addDay();
-            $encuesta->fecha_fin = now()->addDays(7);
+            $encuesta->fecha_inicio = now()->addDay()->toDateString();
+            $encuesta->fecha_fin = now()->addDays(7)->toDateString();
 
             // Verificar método estaDisponible
             $disponible = $encuesta->estaDisponible();
@@ -219,8 +219,57 @@ class VerificarOptimizacionTiempoDisponible extends Command
                 $this->info("   ✅ No se encontraron referencias a 'tiempo_disponible' en los métodos");
             }
 
+            // Verificar validación de fechas
+            $this->verificarValidacionFechas();
+
         } catch (\Exception $e) {
             $this->error("   ❌ Error verificando funcionalidad: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Verificar validación de fechas
+     */
+    private function verificarValidacionFechas()
+    {
+        $this->info("\n📅 VERIFICANDO VALIDACIÓN DE FECHAS:");
+
+        try {
+            $request = new \App\Http\Requests\EncuestaRequest();
+            $rules = $request->rules();
+
+            // Verificar reglas de fecha_inicio
+            if (isset($rules['fecha_inicio']) && strpos($rules['fecha_inicio'], 'after_or_equal:today') !== false) {
+                $this->info("   ✅ Validación de fecha_inicio optimizada (solo fecha)");
+            } else {
+                $this->error("   ❌ Validación de fecha_inicio no optimizada");
+            }
+
+            // Verificar reglas de fecha_fin
+            if (isset($rules['fecha_fin']) && strpos($rules['fecha_fin'], 'after_or_equal:fecha_inicio') !== false) {
+                $this->info("   ✅ Validación de fecha_fin optimizada");
+            } else {
+                $this->error("   ❌ Validación de fecha_fin no optimizada");
+            }
+
+            // Verificar casts del modelo
+            $encuesta = new Encuesta();
+            $casts = $encuesta->getCasts();
+
+            if (isset($casts['fecha_inicio']) && $casts['fecha_inicio'] === 'date') {
+                $this->info("   ✅ Cast de fecha_inicio optimizado a 'date'");
+            } else {
+                $this->error("   ❌ Cast de fecha_inicio no optimizado");
+            }
+
+            if (isset($casts['fecha_fin']) && $casts['fecha_fin'] === 'date') {
+                $this->info("   ✅ Cast de fecha_fin optimizado a 'date'");
+            } else {
+                $this->error("   ❌ Cast de fecha_fin no optimizado");
+            }
+
+        } catch (\Exception $e) {
+            $this->error("   ❌ Error verificando validación de fechas: " . $e->getMessage());
         }
     }
 }

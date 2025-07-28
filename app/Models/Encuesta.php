@@ -36,8 +36,8 @@ class Encuesta extends Model
     ];
 
     protected $casts = [
-        'fecha_inicio' => 'datetime',
-        'fecha_fin' => 'datetime',
+        'fecha_inicio' => 'date',
+        'fecha_fin' => 'date',
         'token_expiracion' => 'datetime',
         'enviar_por_correo' => 'boolean',
         'habilitada' => 'boolean',
@@ -118,12 +118,12 @@ class Encuesta extends Model
         }
 
         // Verificar fecha de inicio
-        if ($this->fecha_inicio && now()->lt($this->fecha_inicio)) {
+        if ($this->fecha_inicio && now()->toDateString() < $this->fecha_inicio->toDateString()) {
             return false;
         }
 
         // Verificar fecha de fin
-        if ($this->fecha_fin && now()->gt($this->fecha_fin)) {
+        if ($this->fecha_fin && now()->toDateString() > $this->fecha_fin->toDateString()) {
             return false;
         }
 

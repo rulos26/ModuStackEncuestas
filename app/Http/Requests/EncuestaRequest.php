@@ -18,7 +18,7 @@ class EncuestaRequest extends FormRequest
             'titulo' => 'required|string|max:255|min:3',
             'empresa_id' => 'required|exists:empresa,id',
             'numero_encuestas' => 'nullable|integer|min:1|max:10000',
-            'fecha_inicio' => 'nullable|date|after_or_equal:now',
+            'fecha_inicio' => 'nullable|date|after_or_equal:today',
             'fecha_fin' => 'nullable|date|after:fecha_inicio',
             'enviar_por_correo' => 'boolean',
             'plantilla_correo' => 'nullable|string|max:5000',
@@ -35,7 +35,7 @@ class EncuestaRequest extends FormRequest
 
         // Validar fechas si ambas están presentes
         if ($this->input('fecha_inicio') && $this->input('fecha_fin')) {
-            $rules['fecha_fin'] = 'required|date|after:fecha_inicio';
+            $rules['fecha_fin'] = 'required|date|after_or_equal:fecha_inicio';
         }
 
         return $rules;
@@ -53,9 +53,9 @@ class EncuestaRequest extends FormRequest
             'numero_encuestas.min' => 'El número de encuestas debe ser al menos 1.',
             'numero_encuestas.max' => 'El número de encuestas no puede exceder 10,000.',
             'fecha_inicio.date' => 'La fecha de inicio debe ser una fecha válida.',
-            'fecha_inicio.after_or_equal' => 'La fecha de inicio debe ser igual o posterior a la fecha actual.',
+            'fecha_inicio.after_or_equal' => 'La fecha de inicio debe ser igual o posterior a hoy.',
             'fecha_fin.date' => 'La fecha de fin debe ser una fecha válida.',
-            'fecha_fin.after' => 'La fecha de fin debe ser posterior a la fecha de inicio.',
+            'fecha_fin.after_or_equal' => 'La fecha de fin debe ser igual o posterior a la fecha de inicio.',
             'estado.required' => 'Debe seleccionar un estado.',
             'estado.in' => 'El estado seleccionado no es válido.',
             'plantilla_correo.max' => 'La plantilla de correo no puede exceder 5000 caracteres.',

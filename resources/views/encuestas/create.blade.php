@@ -70,9 +70,10 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="fecha_inicio">Fecha de inicio</label>
-                        <input type="datetime-local" name="fecha_inicio" id="fecha_inicio"
+                        <input type="date" name="fecha_inicio" id="fecha_inicio"
                                class="form-control @error('fecha_inicio') is-invalid @enderror"
-                               value="{{ old('fecha_inicio') }}">
+                               value="{{ old('fecha_inicio') }}"
+                               min="{{ date('Y-m-d') }}">
                         @error('fecha_inicio')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -84,13 +85,14 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="fecha_fin">Fecha de fin</label>
-                        <input type="datetime-local" name="fecha_fin" id="fecha_fin"
+                        <input type="date" name="fecha_fin" id="fecha_fin"
                                class="form-control @error('fecha_fin') is-invalid @enderror"
-                               value="{{ old('fecha_fin') }}">
+                               value="{{ old('fecha_fin') }}"
+                               min="{{ date('Y-m-d') }}">
                         @error('fecha_fin')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <small class="form-text text-muted">
+                        <small class="text-muted">
                             Cuándo dejará de estar disponible
                         </small>
                     </div>
@@ -202,6 +204,39 @@ document.addEventListener('DOMContentLoaded', function() {
             this.value = 10000;
         }
     });
+
+    // Validación de fechas
+    const fechaInicio = document.getElementById('fecha_inicio');
+    const fechaFin = document.getElementById('fecha_fin');
+
+    // Validar fecha de inicio
+    fechaInicio.addEventListener('change', function() {
+        const fechaSeleccionada = new Date(this.value);
+        const hoy = new Date();
+        hoy.setHours(0, 0, 0, 0);
+
+        if (fechaSeleccionada < hoy) {
+            alert('La fecha de inicio debe ser igual o posterior a hoy.');
+            this.value = '';
+        }
+
+        // Actualizar fecha mínima de fin
+        if (fechaFin) {
+            fechaFin.min = this.value;
+        }
+    });
+
+    // Validar fecha de fin
+    if (fechaFin) {
+        fechaFin.addEventListener('change', function() {
+            const fechaInicioValor = fechaInicio.value;
+
+            if (fechaInicioValor && this.value < fechaInicioValor) {
+                alert('La fecha de fin debe ser igual o posterior a la fecha de inicio.');
+                this.value = '';
+            }
+        });
+    }
 });
 </script>
 @endsection
