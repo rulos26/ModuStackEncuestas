@@ -24,7 +24,7 @@ class EncuestaSeguimientoController extends Controller
      */
     public function dashboard($encuestaId)
     {
-        dd($encuestaId);
+        dd('dashboard', $encuestaId);
         try {
             $encuesta = Encuesta::with(['bloquesEnvio', 'preguntas'])->findOrFail($encuestaId);
 
@@ -72,7 +72,7 @@ class EncuestaSeguimientoController extends Controller
      */
     public function actualizarDatos($encuestaId)
     {
-        dd($encuestaId);
+        dd('actualizarDatos', $encuestaId);
         try {
             $encuesta = Encuesta::with(['bloquesEnvio'])->findOrFail($encuestaId);
 
@@ -120,7 +120,7 @@ class EncuestaSeguimientoController extends Controller
      */
     public function pausarEnvio($encuestaId)
     {
-        dd($encuestaId);
+        dd('pausarEnvio', $encuestaId);
         try {
             $encuesta = Encuesta::findOrFail($encuestaId);
 
@@ -154,7 +154,7 @@ class EncuestaSeguimientoController extends Controller
      */
     public function reanudarEnvio($encuestaId)
     {
-        dd($encuestaId);
+        dd('reanudarEnvio', $encuestaId);
         try {
             $encuesta = Encuesta::findOrFail($encuestaId);
 
@@ -188,7 +188,7 @@ class EncuestaSeguimientoController extends Controller
      */
     public function cancelarEnvio($encuestaId)
     {
-        dd($encuestaId);
+        dd('cancelarEnvio', $encuestaId);
         try {
             $encuesta = Encuesta::findOrFail($encuestaId);
 
@@ -231,7 +231,7 @@ class EncuestaSeguimientoController extends Controller
      */
     private function obtenerEstadisticasEnvio($encuesta)
     {
-        dd($encuesta);
+        dd('obtenerEstadisticasEnvio', $encuesta);
         $bloques = $encuesta->obtenerBloquesEnvio();
 
         $totalBloques = $bloques->count();
