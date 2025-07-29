@@ -63,6 +63,9 @@
                         <option value="probar_dashboard" {{ $tipo === 'probar_dashboard' ? 'selected' : '' }}>
                             Probar Dashboard de Seguimiento
                         </option>
+                        <option value="diagnosticar_dashboard" {{ $tipo === 'diagnosticar_dashboard' ? 'selected' : '' }}>
+                            Diagnosticar Dashboard de Seguimiento
+                        </option>
                                     <option value="limpiar_cache" {{ $tipo === 'limpiar_cache' ? 'selected' : '' }}>
                                         Limpiar Caché del Sistema
                                     </option>
@@ -403,6 +406,21 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-orange">
+                            <div class="card-body text-center">
+                                <i class="fas fa-search fa-2x mb-2"></i>
+                                <h6>Diagnosticar Dashboard</h6>
+                                <p class="card-text">Diagnostica problemas del dashboard</p>
+                                <ul class="text-left small">
+                                    <li>Verifica rutas y modelos</li>
+                                    <li>Analiza tablas y vistas</li>
+                                    <li>Identifica errores</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -489,7 +507,7 @@ $(document).ready(function() {
     // Mostrar/ocultar campo encuesta_id según el tipo seleccionado
     $('#tipo_prueba').change(function() {
         const selectedValue = $(this).val();
-        const needsEncuestaId = ['preguntas', 'creacion_preguntas', 'simular_pregunta', 'estado_encuesta', 'probar_envio', 'diagnosticar_tipos', 'diagnosticar_progreso', 'forzar_validaciones', 'probar_dashboard'].includes(selectedValue);
+        const needsEncuestaId = ['preguntas', 'creacion_preguntas', 'simular_pregunta', 'estado_encuesta', 'probar_envio', 'diagnosticar_tipos', 'diagnosticar_progreso', 'forzar_validaciones', 'probar_dashboard', 'diagnosticar_dashboard'].includes(selectedValue);
         const needsDebug = ['diagnosticar_tipos', 'diagnosticar_progreso'].includes(selectedValue);
 
         if (needsEncuestaId) {
@@ -507,6 +525,8 @@ $(document).ready(function() {
                 $('#encuesta_id').attr('placeholder', 'ID de la encuesta para forzar validaciones');
             } else if (selectedValue === 'probar_dashboard') {
                 $('#encuesta_id').attr('placeholder', 'ID de la encuesta para probar dashboard');
+            } else if (selectedValue === 'diagnosticar_dashboard') {
+                $('#encuesta_id').attr('placeholder', 'ID de la encuesta para diagnosticar dashboard');
             } else if (selectedValue === 'probar_envio') {
                 $('#encuesta_id').attr('placeholder', 'ID de la encuesta para probar envío');
             } else {

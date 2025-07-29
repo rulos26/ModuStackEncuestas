@@ -256,7 +256,6 @@ Route::middleware(['auth'])->prefix('encuestas')->name('encuestas.')->group(func
     Route::post('{encuesta}/seguimiento/pausar', [App\Http\Controllers\EncuestaSeguimientoController::class, 'pausarEnvio'])->name('seguimiento.pausar');
     Route::post('{encuesta}/seguimiento/reanudar', [App\Http\Controllers\EncuestaSeguimientoController::class, 'reanudarEnvio'])->name('seguimiento.reanudar');
     Route::post('{encuesta}/seguimiento/cancelar', [App\Http\Controllers\EncuestaSeguimientoController::class, 'cancelarEnvio'])->name('seguimiento.cancelar');
-    Route::get('{encuesta}/seguimiento/exportar', [App\Http\Controllers\EncuestaSeguimientoController::class, 'exportarReporte'])->name('seguimiento.exportar');
 });
 
 // ============================================================================
