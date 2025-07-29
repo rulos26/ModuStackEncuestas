@@ -47,7 +47,7 @@ class EncuestaSeguimientoController extends Controller
 
             // Actualizar estado según progreso
             $encuesta->actualizarEstadoSegunProgreso();
-            dd('dashboard', $encuestaId, $encuesta, $estadisticas, $bloques, $correosEnviados, $encuesta->estado, $encuesta->encuestas_enviadas, $encuesta->encuestas_pendientes, $encuesta->encuestas_respondidas);
+            dd('dashboard', $encuestaId, $encuesta /* $estadisticas */, $bloques, $correosEnviados, $encuesta->estado, $encuesta->encuestas_enviadas, $encuesta->encuestas_pendientes, $encuesta->encuestas_respondidas);
             return view('encuestas.seguimiento.dashboard', compact(
                 'encuesta',
                 'estadisticas',
