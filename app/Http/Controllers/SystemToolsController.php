@@ -146,6 +146,9 @@ class SystemToolsController extends Controller
                     case 'fechas_encuestas':
                         $resultado = $this->ejecutarComando('migrate', ['--path' => 'database/migrations/2025_07_13_091000_agregar_fechas_encuestas.php']);
                         break;
+                    case 'limpiar_encuestas':
+                        $resultado = $this->ejecutarComando('migraciones:limpiar-encuestas', ['--ejecutar' => true]);
+                        break;
                 }
             }
 
@@ -223,6 +226,9 @@ class SystemToolsController extends Controller
                         break;
                     case 'fechas':
                         $resultado = $this->ejecutarComando('encuestas:diagnosticar-fechas');
+                        break;
+                    case 'limpiar':
+                        $resultado = $this->ejecutarComando('migraciones:limpiar-encuestas');
                         break;
                 }
             }

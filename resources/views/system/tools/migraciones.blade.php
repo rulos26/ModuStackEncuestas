@@ -87,9 +87,9 @@
                     </div>
                 </div>
 
-                <!-- Migraciones Específicas -->
+                                <!-- Migraciones Específicas -->
                 <div class="row mt-3">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="card bg-primary">
                             <div class="card-body text-center">
                                 <i class="fas fa-question-circle fa-2x mb-2"></i>
@@ -106,7 +106,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <div class="card bg-success">
                             <div class="card-body text-center">
                                 <i class="fas fa-calendar-alt fa-2x mb-2"></i>
@@ -117,6 +117,24 @@
                                     <input type="hidden" name="tipo" value="fechas_encuestas">
                                     <button type="submit" name="ejecutar" class="btn btn-light">
                                         <i class="fas fa-calendar-plus"></i> Agregar Fechas
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card bg-warning">
+                            <div class="card-body text-center">
+                                <i class="fas fa-broom fa-2x mb-2"></i>
+                                <h6>Limpiar Migraciones Duplicadas</h6>
+                                <p class="card-text">Elimina migraciones duplicadas y ejecuta la migración consolidada del sistema de encuestas</p>
+                                <form method="POST" action="{{ route('system.tools.migraciones') }}">
+                                    @csrf
+                                    <input type="hidden" name="tipo" value="limpiar_encuestas">
+                                    <button type="submit" name="ejecutar" class="btn btn-light"
+                                            onclick="return confirm('¿Estás seguro? Esto eliminará migraciones duplicadas y recreará las tablas.')">
+                                        <i class="fas fa-trash"></i> Limpiar y Consolidar
                                     </button>
                                 </form>
                             </div>
@@ -206,6 +224,7 @@
                         <li><strong>Rollback:</strong> Revierte la última migración ejecutada.</li>
                         <li><strong>Refresh:</strong> Revierte todas las migraciones y las vuelve a ejecutar (¡CUIDADO! Elimina datos).</li>
                         <li><strong>Actualizar Preguntas:</strong> Ejecuta la migración específica para corregir la estructura de la tabla preguntas.</li>
+                        <li><strong>Limpiar y Consolidar:</strong> Elimina migraciones duplicadas y ejecuta la migración consolidada (¡CUIDADO! Recrea tablas).</li>
                     </ul>
                 </div>
 

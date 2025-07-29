@@ -33,6 +33,9 @@
                                     <option value="fechas" {{ $tipo === 'fechas' ? 'selected' : '' }}>
                                         Diagnosticar Columnas de Fecha
                                     </option>
+                                    <option value="limpiar" {{ $tipo === 'limpiar' ? 'selected' : '' }}>
+                                        Limpiar Migraciones Duplicadas
+                                    </option>
                                 </select>
                                 <small class="form-text text-muted">
                                     Selecciona el tipo de prueba que deseas ejecutar.
@@ -187,6 +190,21 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-danger">
+                            <div class="card-body text-center">
+                                <i class="fas fa-broom fa-2x mb-2"></i>
+                                <h6>Limpiar Migraciones</h6>
+                                <p class="card-text">Limpia migraciones duplicadas</p>
+                                <ul class="text-left small">
+                                    <li>Elimina migraciones duplicadas</li>
+                                    <li>Ejecuta migración consolidada</li>
+                                    <li>Optimiza estructura de BD</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -208,6 +226,7 @@
                         <li><strong>Prueba de Preguntas:</strong> Crea diferentes tipos de preguntas para verificar que la funcionalidad esté operativa.</li>
                         <li><strong>Prueba del Sistema:</strong> Ejecuta una batería completa de pruebas para verificar la integridad del sistema.</li>
                         <li><strong>Diagnóstico de Fechas:</strong> Verifica y diagnostica problemas con las columnas de fecha en la tabla encuestas.</li>
+                        <li><strong>Limpiar Migraciones:</strong> Elimina migraciones duplicadas y ejecuta la migración consolidada del sistema de encuestas.</li>
                     </ul>
                 </div>
 
