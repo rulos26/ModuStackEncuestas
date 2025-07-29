@@ -256,6 +256,14 @@ class SystemToolsController extends Controller
                             $resultado = $this->ejecutarComando('encuesta:diagnosticar-estado', ['encuesta_id' => $encuestaId]);
                         }
                         break;
+                    case 'probar_envio':
+                        $encuestaId = $request->get('encuesta_id');
+                        if (!$encuestaId) {
+                            $resultado = "❌ Error: Debes proporcionar el ID de la encuesta";
+                        } else {
+                            $resultado = $this->ejecutarComando('envio:probar-configuracion', ['encuesta_id' => $encuestaId]);
+                        }
+                        break;
                     case 'limpiar_cache':
                         $resultado = $this->ejecutarComando('config:clear');
                         $resultado .= "\n\n" . $this->ejecutarComando('route:clear');

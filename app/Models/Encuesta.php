@@ -580,7 +580,7 @@ class Encuesta extends Model
                 return $this->preguntas()->count() > 0;
 
             case 'envio':
-                return $this->preguntas()->count() > 0 && $this->estado !== 'borrador';
+                return $this->preguntas()->count() > 0 && $this->estado === 'borrador';
 
             default:
                 return false;
@@ -627,7 +627,7 @@ class Encuesta extends Model
             ],
             'configurar_envio' => [
                 'nombre' => 'Configurar Envío',
-                'completado' => $this->estado !== 'borrador',
+                'completado' => $this->puedeAvanzarA('envio'),
                 'ruta' => route('encuestas.envio.create', $this->id),
                 'icono' => 'fas fa-paper-plane'
             ]

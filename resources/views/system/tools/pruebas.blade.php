@@ -45,9 +45,12 @@
                                     <option value="verificar_bd" {{ $tipo === 'verificar_bd' ? 'selected' : '' }}>
                                         Verificar Configuración BD
                                     </option>
-                                    <option value="estado_encuesta" {{ $tipo === 'estado_encuesta' ? 'selected' : '' }}>
-                                        Diagnosticar Estado de Encuesta
-                                    </option>
+                                                            <option value="estado_encuesta" {{ $tipo === 'estado_encuesta' ? 'selected' : '' }}>
+                            Diagnosticar Estado de Encuesta
+                        </option>
+                        <option value="probar_envio" {{ $tipo === 'probar_envio' ? 'selected' : '' }}>
+                            Probar Configuración de Envío
+                        </option>
                                     <option value="limpiar_cache" {{ $tipo === 'limpiar_cache' ? 'selected' : '' }}>
                                         Limpiar Caché del Sistema
                                     </option>
