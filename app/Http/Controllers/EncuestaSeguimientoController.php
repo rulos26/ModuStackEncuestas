@@ -34,7 +34,7 @@ class EncuestaSeguimientoController extends Controller
             // }
 
             // Obtener estadísticas de envío
-            $estadisticas = $this->obtenerEstadisticasEnvio($encuesta);
+            //$estadisticas = $this->obtenerEstadisticasEnvio($encuesta);
 
             // Obtener bloques de envío
             $bloques = $encuesta->obtenerBloquesEnvio();
