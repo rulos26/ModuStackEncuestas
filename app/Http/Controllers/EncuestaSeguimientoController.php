@@ -24,10 +24,10 @@ class EncuestaSeguimientoController extends Controller
      */
     public function dashboard($encuestaId)
     {
-        dd('dashboard', $encuestaId);
+
         try {
             $encuesta = Encuesta::with(['bloquesEnvio', 'preguntas'])->findOrFail($encuestaId);
-
+            dd('dashboard', $encuestaId, $encuesta);
             // PERMISOS DESHABILITADOS - Acceso directo sin verificación
             // if ($encuesta->user_id !== Auth::id()) {
             //     return redirect()->route('encuestas.index')->with('error', 'No tienes permisos para ver el seguimiento de esta encuesta.');
