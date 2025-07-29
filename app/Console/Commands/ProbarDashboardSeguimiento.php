@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Encuesta;
 use App\Models\SentMail;
 use App\Models\BloqueEnvio;
@@ -135,6 +136,7 @@ class ProbarDashboardSeguimiento extends Command
                     'subject' => "Encuesta: {$encuesta->titulo}",
                     'body' => "Contenido del correo de prueba",
                     'status' => 'sent',
+                    'sent_by' => Auth::id() ?? 1, // Usar usuario autenticado o ID 1 por defecto
                     'created_at' => now()->subMinutes($i * 2)
                 ]);
             }
