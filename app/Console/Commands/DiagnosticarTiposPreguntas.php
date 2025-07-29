@@ -32,7 +32,7 @@ class DiagnosticarTiposPreguntas extends Command
                 $permiteLogica = $config['necesita_opciones'] ? 'Sí' : 'No';
 
                 $this->line("   📝 {$config['nombre']} ({$tipo})");
-                $this->line("      Descripción: {$config['descripción']}");
+                $this->line("      Descripción: {$config['descripcion']}");
                 $this->line("      Necesita respuestas: {$necesitaRespuestas}");
                 $this->line("      Necesita opciones: {$necesitaOpciones}");
                 $this->line("      Permite lógica: {$permiteLogica}");
