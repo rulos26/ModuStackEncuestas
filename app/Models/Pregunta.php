@@ -181,6 +181,31 @@ class Pregunta extends Model
     }
 
     /**
+     * Verificar si el tipo de pregunta permite lógica condicional
+     */
+    public function permiteLogica()
+    {
+        // Solo preguntas con opciones pueden tener lógica condicional
+        return $this->necesitaOpciones();
+    }
+
+    /**
+     * Verificar si el tipo de pregunta es de texto libre
+     */
+    public function esTextoLibre()
+    {
+        return in_array($this->tipo, ['respuesta_corta', 'parrafo']);
+    }
+
+    /**
+     * Verificar si el tipo de pregunta es de entrada de datos
+     */
+    public function esEntradaDatos()
+    {
+        return in_array($this->tipo, ['respuesta_corta', 'parrafo', 'fecha', 'hora', 'carga_archivos', 'ubicacion_mapa']);
+    }
+
+    /**
      * Obtener la configuración del tipo de pregunta
      */
     public function getConfiguracionTipo()

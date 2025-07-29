@@ -256,14 +256,27 @@ class SystemToolsController extends Controller
                             $resultado = $this->ejecutarComando('encuesta:diagnosticar-estado', ['encuesta_id' => $encuestaId]);
                         }
                         break;
-                    case 'probar_envio':
-                        $encuestaId = $request->get('encuesta_id');
-                        if (!$encuestaId) {
-                            $resultado = "❌ Error: Debes proporcionar el ID de la encuesta";
-                        } else {
-                            $resultado = $this->ejecutarComando('envio:probar-configuracion', ['encuesta_id' => $encuestaId]);
-                        }
-                        break;
+                            case 'probar_envio':
+            $encuestaId = $request->get('encuesta_id');
+            if (!$encuestaId) {
+                $resultado = "❌ Error: Debes proporcionar el ID de la encuesta";
+            } else {
+                $resultado = $this->ejecutarComando('envio:probar-configuracion', ['encuesta_id' => $encuestaId]);
+            }
+            break;
+        case 'diagnosticar_tipos':
+            $encuestaId = $request->get('encuesta_id');
+            $debug = $request->get('debug', false);
+            if (!$encuestaId) {
+                $resultado = "❌ Error: Debes proporcionar el ID de la encuesta";
+            } else {
+                $params = ['encuesta_id' => $encuestaId];
+                if ($debug) {
+                    $params['debug'] = true;
+                }
+                $resultado = $this->ejecutarComando('preguntas:diagnosticar-tipos', $params);
+            }
+            break;
                     case 'limpiar_cache':
                         $resultado = $this->ejecutarComando('config:clear');
                         $resultado .= "\n\n" . $this->ejecutarComando('route:clear');

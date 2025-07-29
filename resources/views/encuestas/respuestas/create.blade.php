@@ -98,6 +98,14 @@
                             <span class="badge badge-{{ $pregunta->obligatoria ? 'danger' : 'info' }} ml-2">
                                 {{ $pregunta->obligatoria ? 'Obligatoria' : 'Opcional' }}
                             </span>
+                            <span class="badge badge-secondary ml-2">
+                                {{ $pregunta->getNombreTipo() }}
+                            </span>
+                            @if(!$pregunta->necesitaRespuestas())
+                                <span class="badge badge-warning ml-2">
+                                    <i class="fas fa-info-circle"></i> No necesita respuestas
+                                </span>
+                            @endif
                             <span class="badge badge-secondary ml-2">{{ $pregunta->getNombreTipo() }}</span>
                         </div>
                         <div class="card-body">

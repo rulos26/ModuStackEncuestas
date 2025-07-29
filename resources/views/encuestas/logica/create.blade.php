@@ -76,14 +76,33 @@
                         @csrf
 
                         @foreach($preguntas as $pregunta)
-                            @if($pregunta->respuestas->isNotEmpty())
+                            @if($pregunta->respuestas->isNotEmpty() && $pregunta->permiteLogica())
                                 <div class="card mb-3 border-primary">
                                     <div class="card-header bg-primary text-white">
                                         <h5 class="mb-0">
                                             <i class="fas fa-question-circle"></i>
                                             Pregunta {{ $pregunta->orden }}: {{ $pregunta->texto }}
+                                            <span class="badge badge-light ml-2">{{ $pregunta->getNombreTipo() }}</span>
                                         </h5>
                                     </div>
+                            @elseif($pregunta->respuestas->isNotEmpty() && !$pregunta->permiteLogica())
+                                <div class="card mb-3 border-secondary">
+                                    <div class="card-header bg-secondary text-white">
+                                        <h5 class="mb-0">
+                                            <i class="fas fa-info-circle"></i>
+                                            Pregunta {{ $pregunta->orden }}: {{ $pregunta->texto }}
+                                            <span class="badge badge-light ml-2">{{ $pregunta->getNombreTipo() }}</span>
+                                            <span class="badge badge-warning ml-2">No permite lógica</span>
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="alert alert-info">
+                                            <i class="fas fa-info-circle"></i>
+                                            <strong>Información:</strong> Las preguntas de tipo "{{ $pregunta->getNombreTipo() }}" no permiten configuración de lógica condicional porque son de entrada de datos libre.
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
                                     <div class="card-body">
                                         @foreach($pregunta->respuestas as $respuesta)
                                             <div class="row mb-3 align-items-center">

@@ -51,6 +51,9 @@
                         <option value="probar_envio" {{ $tipo === 'probar_envio' ? 'selected' : '' }}>
                             Probar Configuración de Envío
                         </option>
+                        <option value="diagnosticar_tipos" {{ $tipo === 'diagnosticar_tipos' ? 'selected' : '' }}>
+                            Diagnosticar Tipos de Preguntas
+                        </option>
                                     <option value="limpiar_cache" {{ $tipo === 'limpiar_cache' ? 'selected' : '' }}>
                                         Limpiar Caché del Sistema
                                     </option>
@@ -63,13 +66,27 @@
                                 </small>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="form-group">
-                                <label for="encuesta_id">ID de Encuesta (Para preguntas):</label>
+                                <label for="encuesta_id">ID de Encuesta:</label>
                                 <input type="number" class="form-control" id="encuesta_id" name="encuesta_id"
-                                       placeholder="Opcional para pruebas de preguntas">
+                                       placeholder="Opcional para pruebas específicas">
                                 <small class="form-text text-muted">
-                                    Solo necesario para pruebas de preguntas específicas y diagnóstico de estado de encuesta.
+                                    Solo necesario para pruebas de preguntas específicas.
+                                </small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>&nbsp;</label>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="debug" name="debug" value="1">
+                                    <label class="custom-control-label" for="debug">
+                                        <i class="fas fa-bug"></i> Modo Debug
+                                    </label>
+                                </div>
+                                <small class="form-text text-muted">
+                                    Activa información adicional de debug.
                                 </small>
                             </div>
                         </div>
@@ -317,6 +334,21 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-indigo">
+                            <div class="card-body text-center">
+                                <i class="fas fa-list-check fa-2x mb-2"></i>
+                                <h6>Diagnosticar Tipos</h6>
+                                <p class="card-text">Analiza tipos de preguntas</p>
+                                <ul class="text-left small">
+                                    <li>Verifica configuración</li>
+                                    <li>Analiza necesidades</li>
+                                    <li>Identifica problemas</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -345,6 +377,7 @@
                         <li><strong>Diagnóstico de Estado de Encuesta:</strong> Verifica por qué una encuesta no puede enviarse masivamente, revisando todas las condiciones requeridas.</li>
                         <li><strong>Limpiar Caché del Sistema:</strong> Ejecuta todos los comandos de limpieza de caché (config, route, view, cache).</li>
                         <li><strong>Optimizar Todo el Sistema:</strong> Ejecuta optimize:clear para limpiar y optimizar todo el sistema.</li>
+                        <li><strong>Diagnosticar Tipos de Preguntas:</strong> Analiza la configuración de tipos de preguntas, verifica qué tipos necesitan respuestas y cuáles permiten lógica condicional.</li>
                     </ul>
                 </div>
 
@@ -400,9 +433,10 @@ $(document).ready(function() {
     }
 
     // Mostrar/ocultar campo encuesta_id según el tipo seleccionado
-    $('#tipo').change(function() {
+    $('#tipo_prueba').change(function() {
         const selectedValue = $(this).val();
-        const needsEncuestaId = ['preguntas', 'creacion_preguntas', 'simular_pregunta', 'estado_encuesta'].includes(selectedValue);
+        const needsEncuestaId = ['preguntas', 'creacion_preguntas', 'simular_pregunta', 'estado_encuesta', 'probar_envio', 'diagnosticar_tipos'].includes(selectedValue);
+        const needsDebug = ['diagnosticar_tipos'].includes(selectedValue);
 
         if (needsEncuestaId) {
             $('#encuesta_id').closest('.form-group').show();
@@ -411,6 +445,10 @@ $(document).ready(function() {
             // Actualizar placeholder según la opción
             if (selectedValue === 'estado_encuesta') {
                 $('#encuesta_id').attr('placeholder', 'ID de la encuesta para diagnosticar');
+            } else if (selectedValue === 'diagnosticar_tipos') {
+                $('#encuesta_id').attr('placeholder', 'ID de la encuesta para analizar tipos');
+            } else if (selectedValue === 'probar_envio') {
+                $('#encuesta_id').attr('placeholder', 'ID de la encuesta para probar envío');
             } else {
                 $('#encuesta_id').attr('placeholder', 'ID de la encuesta para pruebas');
             }
@@ -418,10 +456,17 @@ $(document).ready(function() {
             $('#encuesta_id').closest('.form-group').hide();
             $('#encuesta_id').prop('required', false);
         }
+
+        // Mostrar/ocultar debug
+        if (needsDebug) {
+            $('#debug').closest('.form-group').show();
+        } else {
+            $('#debug').closest('.form-group').hide();
+        }
     });
 
     // Ejecutar al cargar la página
-    $('#tipo').trigger('change');
+    $('#tipo_prueba').trigger('change');
 });
 </script>
 @endsection
