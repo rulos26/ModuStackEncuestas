@@ -256,6 +256,13 @@ class Encuesta extends Model
      */
     public function puedeEnviarseMasivamente(): bool
     {
+        // En modo desarrollo, ser más permisivo
+        if (config('app.env') === 'local' || config('app.debug')) {
+            return $this->preguntas()->count() > 0 &&
+                   $this->estado === 'borrador';
+        }
+
+        // En producción, validación completa
         return $this->enviar_por_correo &&
                $this->envio_masivo_activado &&
                $this->estado === 'borrador' &&
@@ -564,9 +571,17 @@ class Encuesta extends Model
                 return !empty($this->titulo) && !empty($this->empresa_id);
 
             case 'respuestas':
+                // En modo desarrollo, ser más permisivo
+                if (config('app.env') === 'local' || config('app.debug')) {
+                    return $this->preguntas()->count() > 0;
+                }
                 return $this->preguntas()->count() > 0;
 
             case 'logica':
+                // En modo desarrollo, ser más permisivo
+                if (config('app.env') === 'local' || config('app.debug')) {
+                    return $this->preguntas()->count() > 0;
+                }
                 $preguntasConRespuestas = $this->preguntas()
                     ->necesitaRespuestas()
                     ->whereHas('respuestas')
@@ -580,6 +595,10 @@ class Encuesta extends Model
                 return $this->preguntas()->count() > 0;
 
             case 'envio':
+                // En modo desarrollo, ser más permisivo
+                if (config('app.env') === 'local' || config('app.debug')) {
+                    return $this->preguntas()->count() > 0;
+                }
                 return $this->preguntas()->count() > 0 && $this->estado === 'borrador';
 
             default:
