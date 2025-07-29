@@ -38,13 +38,13 @@ class EncuestaSeguimientoController extends Controller
 
             // Obtener bloques de envío
             $bloques = $encuesta->obtenerBloquesEnvio();
-            dd('bloques', $bloques);
+
             // Obtener correos enviados
             $correosEnviados = SentMail::where('encuesta_id', $encuestaId)
                 ->orderBy('created_at', 'desc')
                 ->limit(50)
                 ->get();
-
+                dd('CORREOS ENVIADOS', $correosEnviados);
             // Actualizar estado según progreso
             $encuesta->actualizarEstadoSegunProgreso();
             dd('dashboard', $encuestaId, $encuesta /* $estadisticas */, $bloques, $correosEnviados, $encuesta->estado, $encuesta->encuestas_enviadas, $encuesta->encuestas_pendientes, $encuesta->encuestas_respondidas);
