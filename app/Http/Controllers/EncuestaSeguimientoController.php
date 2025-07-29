@@ -30,6 +30,9 @@ class EncuestaSeguimientoController extends Controller
                 return redirect()->route('encuestas.index')->with('error', 'No tienes permisos para ver el seguimiento de esta encuesta.');
             }
 
+            // Actualizar estado automáticamente según el progreso
+            $encuesta->actualizarEstadoSegunProgreso();
+
             // Obtener estadísticas detalladas
             $estadisticas = $encuesta->obtenerEstadisticasEnvioDetalladas();
             $bloques = $encuesta->obtenerBloquesEnvio();
@@ -74,6 +77,9 @@ class EncuestaSeguimientoController extends Controller
                 return response()->json(['error' => 'No tienes permisos'], 403);
             }
 
+            // Actualizar estado automáticamente según el progreso
+            $encuesta->actualizarEstadoSegunProgreso();
+
             $estadisticas = $encuesta->obtenerEstadisticasEnvioDetalladas();
             $bloques = $encuesta->obtenerBloquesEnvio();
 
@@ -108,10 +114,7 @@ class EncuestaSeguimientoController extends Controller
                 return redirect()->back()->with('warning', 'La encuesta no está en proceso de envío.');
             }
 
-            $encuesta->update([
-                'estado' => 'borrador',
-                'envio_masivo_activado' => false
-            ]);
+            $encuesta->pausarEnvio();
 
             DB::commit();
 
@@ -153,10 +156,7 @@ class EncuestaSeguimientoController extends Controller
                 return redirect()->back()->with('warning', 'La encuesta no puede ser reanudada.');
             }
 
-            $encuesta->update([
-                'estado' => 'enviada',
-                'envio_masivo_activado' => true
-            ]);
+            $encuesta->reanudarEnvio();
 
             DB::commit();
 
@@ -194,7 +194,7 @@ class EncuestaSeguimientoController extends Controller
             }
 
             $encuesta->update([
-                'estado' => 'borrador',
+                'estado' => Encuesta::ESTADO_BORRADOR,
                 'envio_masivo_activado' => false,
                 'encuestas_enviadas' => 0,
                 'encuestas_pendientes' => $encuesta->numero_encuestas

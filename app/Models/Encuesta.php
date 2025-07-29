@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class Encuesta extends Model
 {
@@ -59,6 +60,14 @@ class Encuesta extends Model
         'encuestas_pendientes' => 'integer',
         'errores_validacion' => 'array'
     ];
+
+    // Estados disponibles para encuestas
+    const ESTADO_BORRADOR = 'borrador';
+    const ESTADO_EN_PROGRESO = 'en_progreso';
+    const ESTADO_ENVIADA = 'enviada';
+    const ESTADO_PAUSADA = 'pausada';
+    const ESTADO_COMPLETADA = 'completada';
+    const ESTADO_PUBLICADA = 'publicada';
 
     public function empresa(): BelongsTo
     {
@@ -356,6 +365,105 @@ class Encuesta extends Model
     public function envioCompletado(): bool
     {
         return $this->encuestas_enviadas >= $this->numero_encuestas;
+    }
+
+    /**
+     * Actualizar estado automáticamente según el progreso del envío
+     */
+    public function actualizarEstadoSegunProgreso(): void
+    {
+        $estadoAnterior = $this->estado;
+        $nuevoEstado = $this->determinarEstadoSegunProgreso();
+
+        if ($estadoAnterior !== $nuevoEstado) {
+            $this->update(['estado' => $nuevoEstado]);
+
+            Log::info('Estado de encuesta actualizado automáticamente', [
+                'encuesta_id' => $this->id,
+                'estado_anterior' => $estadoAnterior,
+                'estado_nuevo' => $nuevoEstado,
+                'encuestas_enviadas' => $this->encuestas_enviadas,
+                'numero_encuestas' => $this->numero_encuestas
+            ]);
+        }
+    }
+
+    /**
+     * Determinar el estado correcto según el progreso del envío
+     */
+    private function determinarEstadoSegunProgreso(): string
+    {
+        // Si no está configurada para envío masivo
+        if (!$this->envio_masivo_activado) {
+            return self::ESTADO_BORRADOR;
+        }
+
+        // Si está pausada
+        if ($this->estado === self::ESTADO_PAUSADA) {
+            return self::ESTADO_PAUSADA;
+        }
+
+        // Si se completó el envío
+        if ($this->envioCompletado()) {
+            return self::ESTADO_COMPLETADA;
+        }
+
+        // Si está en proceso de envío
+        if ($this->encuestas_enviadas > 0 && $this->encuestas_enviadas < $this->numero_encuestas) {
+            return self::ESTADO_EN_PROGRESO;
+        }
+
+        // Si está lista para enviar
+        if ($this->encuestas_enviadas === 0 && $this->envio_masivo_activado) {
+            return self::ESTADO_ENVIADA;
+        }
+
+        // Estado por defecto
+        return self::ESTADO_BORRADOR;
+    }
+
+    /**
+     * Pausar envío masivo
+     */
+    public function pausarEnvio(): void
+    {
+        $this->update([
+            'estado' => self::ESTADO_PAUSADA,
+            'envio_masivo_activado' => false
+        ]);
+    }
+
+    /**
+     * Reanudar envío masivo
+     */
+    public function reanudarEnvio(): void
+    {
+        $this->update([
+            'estado' => self::ESTADO_EN_PROGRESO,
+            'envio_masivo_activado' => true
+        ]);
+    }
+
+    /**
+     * Finalizar envío masivo
+     */
+    public function finalizarEnvio(): void
+    {
+        $this->update([
+            'estado' => self::ESTADO_COMPLETADA,
+            'envio_masivo_activado' => false
+        ]);
+    }
+
+    /**
+     * Publicar encuesta
+     */
+    public function publicar(): void
+    {
+        $this->update([
+            'estado' => self::ESTADO_PUBLICADA,
+            'habilitada' => true
+        ]);
     }
 
     /**

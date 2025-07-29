@@ -24,14 +24,14 @@ class EncuestaRequest extends FormRequest
             'plantilla_correo' => 'nullable|string|max:5000',
             'asunto_correo' => 'nullable|string|max:255',
             'envio_masivo_activado' => 'boolean',
-            'estado' => 'required|in:borrador,enviada,publicada',
+            // 'estado' => 'required|in:borrador,enviada,publicada', // Removido: se maneja automáticamente
             'habilitada' => 'boolean',
         ];
 
-        // Validaciones adicionales según el estado
-        if ($this->input('estado') === 'publicada') {
-            $rules['titulo'] .= '|unique:encuestas,titulo,' . $this->route('encuesta');
-        }
+        // Validaciones adicionales (estado se maneja automáticamente)
+        // if ($this->input('estado') === 'publicada') {
+        //     $rules['titulo'] .= '|unique:encuestas,titulo,' . $this->route('encuesta');
+        // }
 
         // Validar fechas si ambas están presentes
         if ($this->input('fecha_inicio') && $this->input('fecha_fin')) {
@@ -56,8 +56,8 @@ class EncuestaRequest extends FormRequest
             'fecha_inicio.after_or_equal' => 'La fecha de inicio debe ser igual o posterior a hoy.',
             'fecha_fin.date' => 'La fecha de fin debe ser una fecha válida.',
             'fecha_fin.after_or_equal' => 'La fecha de fin debe ser igual o posterior a la fecha de inicio.',
-            'estado.required' => 'Debe seleccionar un estado.',
-            'estado.in' => 'El estado seleccionado no es válido.',
+            // 'estado.required' => 'Debe seleccionar un estado.', // Removido
+            // 'estado.in' => 'El estado seleccionado no es válido.', // Removido
             'plantilla_correo.max' => 'La plantilla de correo no puede exceder 5000 caracteres.',
             'asunto_correo.max' => 'El asunto del correo no puede exceder 255 caracteres.',
         ];
@@ -70,7 +70,7 @@ class EncuestaRequest extends FormRequest
             'empresa_id' => 'empresa',
             'numero_encuestas' => 'número de encuestas',
             'enviar_por_correo' => 'enviar por correo',
-            'estado' => 'estado',
+            // 'estado' => 'estado', // Removido
             'habilitada' => 'habilitada',
         ];
     }

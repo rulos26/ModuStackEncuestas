@@ -101,18 +101,8 @@
 
 
 
-            <div class="form-group">
-                <label for="estado">Estado</label>
-                <select name="estado" id="estado" class="form-control @error('estado') is-invalid @enderror" required>
-                    <option value="">Seleccione un estado</option>
-                    <option value="borrador" {{ old('estado') == 'borrador' ? 'selected' : '' }}>Borrador</option>
-                    <option value="enviada" {{ old('estado') == 'enviada' ? 'selected' : '' }}>Enviada</option>
-                    <option value="publicada" {{ old('estado') == 'publicada' ? 'selected' : '' }}>Publicada</option>
-                </select>
-                @error('estado')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
+            {{-- Estado se maneja automáticamente en el backend --}}
+            {{-- No se muestra en el formulario para evitar errores --}}
 
             <div class="form-group">
                 <div class="form-check">

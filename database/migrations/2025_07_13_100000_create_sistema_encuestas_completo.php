@@ -38,7 +38,7 @@ return new class extends Migration
             $table->boolean('envio_masivo_activado')->default(false);
 
             // Estado y validación
-            $table->enum('estado', ['borrador', 'enviada', 'publicada'])->default('borrador');
+            $table->enum('estado', ['borrador', 'en_progreso', 'enviada', 'pausada', 'completada', 'publicada'])->default('borrador');
             $table->boolean('validacion_completada')->default(false);
             $table->text('errores_validacion')->nullable();
 
