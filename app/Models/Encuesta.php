@@ -615,9 +615,11 @@ class Encuesta extends Model
             ],
             'configurar_logica' => [
                 'nombre' => 'Configurar Lógica',
-                'completado' => $this->preguntas()->whereHas('logica')->count() > 0,
+                'completado' => $this->necesitaConfigurarLogica() ? $this->preguntas()->whereHas('logica')->count() > 0 : true,
                 'ruta' => route('encuestas.logica.create', $this->id),
-                'icono' => 'fas fa-cogs'
+                'icono' => 'fas fa-cogs',
+                'necesario' => $this->necesitaConfigurarLogica(),
+                'mensaje' => $this->necesitaConfigurarLogica() ? null : 'No necesario (preguntas de texto libre)'
             ],
             'vista_previa' => [
                 'nombre' => 'Vista Previa',
@@ -666,6 +668,30 @@ class Encuesta extends Model
         return $this->preguntas()->count() > 0 &&
                $this->puedeAvanzarA('logica') &&
                $this->estado !== 'borrador';
+    }
+
+    /**
+     * Verificar si la encuesta necesita configurar lógica
+     */
+    public function necesitaConfigurarLogica(): bool
+    {
+        // Solo necesita lógica si tiene preguntas que permiten lógica
+        return $this->preguntas()->whereHas('respuestas')->whereHas('respuestas', function($query) {
+            $query->whereHas('pregunta', function($q) {
+                $q->whereIn('tipo', ['seleccion_unica', 'casillas_verificacion', 'lista_desplegable', 'cuadricula_opcion_multiple', 'cuadricula_casillas']);
+            });
+        })->exists();
+    }
+
+    /**
+     * Verificar si todas las preguntas son de texto libre
+     */
+    public function todasLasPreguntasSonTextoLibre(): bool
+    {
+        $totalPreguntas = $this->preguntas()->count();
+        $preguntasTextoLibre = $this->preguntas()->whereIn('tipo', ['respuesta_corta', 'parrafo'])->count();
+
+        return $totalPreguntas > 0 && $totalPreguntas === $preguntasTextoLibre;
     }
 
     /**

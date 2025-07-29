@@ -56,12 +56,20 @@
                                 <small class="text-primary">
                                     <i class="fas fa-info-circle"></i> Siguiente paso
                                 </small>
+                            @elseif(isset($paso['mensaje']))
+                                <small class="text-muted">
+                                    <i class="fas fa-info-circle"></i> {{ $paso['mensaje'] }}
+                                </small>
                             @endif
                         </div>
                         @if($paso['completado'])
                             <a href="{{ $paso['ruta'] }}" class="btn btn-sm btn-outline-success ml-2" title="Ver/Editar">
                                 <i class="fas fa-edit"></i>
                             </a>
+                        @elseif(isset($paso['necesario']) && !$paso['necesario'])
+                            <span class="badge badge-secondary ml-2" title="No necesario">
+                                <i class="fas fa-info-circle"></i> No necesario
+                            </span>
                         @else
                             <a href="{{ $paso['ruta'] }}" class="btn btn-sm btn-primary ml-2" title="Completar">
                                 <i class="fas fa-arrow-right"></i>

@@ -54,6 +54,9 @@
                         <option value="diagnosticar_tipos" {{ $tipo === 'diagnosticar_tipos' ? 'selected' : '' }}>
                             Diagnosticar Tipos de Preguntas
                         </option>
+                        <option value="diagnosticar_progreso" {{ $tipo === 'diagnosticar_progreso' ? 'selected' : '' }}>
+                            Diagnosticar Progreso de Encuesta
+                        </option>
                                     <option value="limpiar_cache" {{ $tipo === 'limpiar_cache' ? 'selected' : '' }}>
                                         Limpiar Caché del Sistema
                                     </option>
@@ -349,6 +352,21 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-purple">
+                            <div class="card-body text-center">
+                                <i class="fas fa-tasks fa-2x mb-2"></i>
+                                <h6>Diagnosticar Progreso</h6>
+                                <p class="card-text">Analiza progreso de encuesta</p>
+                                <ul class="text-left small">
+                                    <li>Verifica pasos completados</li>
+                                    <li>Analiza lógica de flujo</li>
+                                    <li>Identifica inconsistencias</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -435,8 +453,8 @@ $(document).ready(function() {
     // Mostrar/ocultar campo encuesta_id según el tipo seleccionado
     $('#tipo_prueba').change(function() {
         const selectedValue = $(this).val();
-        const needsEncuestaId = ['preguntas', 'creacion_preguntas', 'simular_pregunta', 'estado_encuesta', 'probar_envio', 'diagnosticar_tipos'].includes(selectedValue);
-        const needsDebug = ['diagnosticar_tipos'].includes(selectedValue);
+        const needsEncuestaId = ['preguntas', 'creacion_preguntas', 'simular_pregunta', 'estado_encuesta', 'probar_envio', 'diagnosticar_tipos', 'diagnosticar_progreso'].includes(selectedValue);
+        const needsDebug = ['diagnosticar_tipos', 'diagnosticar_progreso'].includes(selectedValue);
 
         if (needsEncuestaId) {
             $('#encuesta_id').closest('.form-group').show();
@@ -447,6 +465,8 @@ $(document).ready(function() {
                 $('#encuesta_id').attr('placeholder', 'ID de la encuesta para diagnosticar');
             } else if (selectedValue === 'diagnosticar_tipos') {
                 $('#encuesta_id').attr('placeholder', 'ID de la encuesta para analizar tipos');
+            } else if (selectedValue === 'diagnosticar_progreso') {
+                $('#encuesta_id').attr('placeholder', 'ID de la encuesta para analizar progreso');
             } else if (selectedValue === 'probar_envio') {
                 $('#encuesta_id').attr('placeholder', 'ID de la encuesta para probar envío');
             } else {

@@ -277,6 +277,19 @@ class SystemToolsController extends Controller
                 $resultado = $this->ejecutarComando('preguntas:diagnosticar-tipos', $params);
             }
             break;
+        case 'diagnosticar_progreso':
+            $encuestaId = $request->get('encuesta_id');
+            $debug = $request->get('debug', false);
+            if (!$encuestaId) {
+                $resultado = "❌ Error: Debes proporcionar el ID de la encuesta";
+            } else {
+                $params = ['encuesta_id' => $encuestaId];
+                if ($debug) {
+                    $params['--debug'] = true;
+                }
+                $resultado = $this->ejecutarComando('encuesta:diagnosticar-progreso', $params);
+            }
+            break;
                     case 'limpiar_cache':
                         $resultado = $this->ejecutarComando('config:clear');
                         $resultado .= "\n\n" . $this->ejecutarComando('route:clear');
