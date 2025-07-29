@@ -56,6 +56,13 @@ class PreguntaController extends Controller
     public function store(Request $request, $encuestaId)
     {
         try {
+            // Log de inicio
+            Log::info('Iniciando creación de pregunta', [
+                'user_id' => Auth::id(),
+                'encuesta_id' => $encuestaId,
+                'data' => $request->all()
+            ]);
+
             // Verificar permisos de acceso
             if (!$this->checkUserAccess(['preguntas.store'])) {
                 $this->logAccessDenied('preguntas.store', ['Superadmin', 'Admin', 'Cliente'], ['preguntas.store']);
@@ -121,32 +128,13 @@ class PreguntaController extends Controller
                 'zoom_default.between' => 'El zoom debe estar entre 1 y 20.',
             ]);
 
-            // Calcular orden automáticamente si no se proporciona
-            if (!$request->has('orden') || empty($request->orden)) {
-                $orden = Pregunta::calcularOrdenAutomatico($encuestaId);
-            } else {
-                $orden = $request->orden;
-            }
-
-            // Verificar que el orden no esté duplicado
-            $ordenExistente = Pregunta::where('encuesta_id', $encuestaId)
-                ->where('orden', $orden)
-                ->exists();
-
-            if ($ordenExistente) {
-                return redirect()->back()
-                    ->withInput()
-                    ->with('error', 'Ya existe una pregunta con ese orden. Por favor, elige otro orden.');
-            }
-
-            // Crear la pregunta
-            $pregunta = Pregunta::create([
+            // Preparar datos para la pregunta
+            $datosPregunta = [
                 'encuesta_id' => $encuestaId,
                 'texto' => $request->texto,
                 'descripcion' => $request->descripcion,
                 'placeholder' => $request->placeholder,
                 'tipo' => $request->tipo,
-                'orden' => $orden,
                 'obligatoria' => $request->has('obligatoria'),
                 'min_caracteres' => $request->min_caracteres,
                 'max_caracteres' => $request->max_caracteres,
@@ -159,7 +147,40 @@ class PreguntaController extends Controller
                 'latitud_default' => $request->latitud_default,
                 'longitud_default' => $request->longitud_default,
                 'zoom_default' => $request->zoom_default,
+            ];
+
+            // Calcular orden automáticamente si no se proporciona
+            if (!$request->has('orden') || empty($request->orden)) {
+                $datosPregunta['orden'] = Pregunta::calcularOrdenAutomatico($encuestaId);
+            } else {
+                $datosPregunta['orden'] = $request->orden;
+            }
+
+            // Log de datos preparados
+            Log::info('Datos preparados para crear pregunta', [
+                'user_id' => Auth::id(),
+                'encuesta_id' => $encuestaId,
+                'datos' => $datosPregunta
             ]);
+
+            // Verificar que el orden no esté duplicado
+            $ordenExistente = Pregunta::where('encuesta_id', $encuestaId)
+                ->where('orden', $datosPregunta['orden'])
+                ->exists();
+
+            if ($ordenExistente) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Ya existe una pregunta con ese orden. Por favor, elige otro orden.');
+            }
+
+            // Crear la pregunta
+            $pregunta = Pregunta::create($datosPregunta);
+
+            // Verificar que se creó correctamente
+            if (!$pregunta->id) {
+                throw new Exception('La pregunta no se creó correctamente - no se generó ID');
+            }
 
             DB::commit();
 
@@ -185,7 +206,8 @@ class PreguntaController extends Controller
                 'user_id' => Auth::id(),
                 'encuesta_id' => $encuestaId,
                 'data' => $request->all(),
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ]);
 
             return redirect()->back()

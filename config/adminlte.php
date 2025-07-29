@@ -489,6 +489,12 @@ return [
                                     'route' => 'test.index',
                                     'icon' => 'fas fa-vials',
                                 ],
+                                [
+                                    'text' => 'Herramientas del Sistema',
+                                    'route' => 'system.tools.dashboard',
+                                    'icon' => 'fas fa-tools',
+                                    'can' => 'Superadmin|Admin',
+                                ],
                             ],
                         ],
                     ],

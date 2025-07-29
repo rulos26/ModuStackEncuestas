@@ -259,4 +259,17 @@ Route::middleware(['auth'])->prefix('encuestas')->name('encuestas.')->group(func
     Route::get('{encuesta}/seguimiento/exportar', [App\Http\Controllers\EncuestaSeguimientoController::class, 'exportarReporte'])->name('seguimiento.exportar');
 });
 
+// ============================================================================
+// RUTAS PARA HERRAMIENTAS DEL SISTEMA
+// ============================================================================
+
+Route::middleware(['auth'])->prefix('system/tools')->name('system.tools.')->group(function () {
+    Route::get('/', [App\Http\Controllers\SystemToolsController::class, 'dashboard'])->name('dashboard');
+    Route::get('diagnosticar-encuestas', [App\Http\Controllers\SystemToolsController::class, 'diagnosticarEncuestas'])->name('diagnosticar-encuestas');
+    Route::get('diagnosticar-preguntas', [App\Http\Controllers\SystemToolsController::class, 'diagnosticarPreguntas'])->name('diagnosticar-preguntas');
+    Route::match(['GET', 'POST'], 'migraciones', [App\Http\Controllers\SystemToolsController::class, 'migraciones'])->name('migraciones');
+    Route::match(['GET', 'POST'], 'seeders', [App\Http\Controllers\SystemToolsController::class, 'seeders'])->name('seeders');
+    Route::match(['GET', 'POST'], 'pruebas', [App\Http\Controllers\SystemToolsController::class, 'pruebas'])->name('pruebas');
+});
+
 
