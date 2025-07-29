@@ -66,6 +66,9 @@
                         <option value="diagnosticar_dashboard" {{ $tipo === 'diagnosticar_dashboard' ? 'selected' : '' }}>
                             Diagnosticar Dashboard de Seguimiento
                         </option>
+                        <option value="migracion_sent_mails" {{ $tipo === 'migracion_sent_mails' ? 'selected' : '' }}>
+                            Migración Sent Mails (Status)
+                        </option>
                                     <option value="limpiar_cache" {{ $tipo === 'limpiar_cache' ? 'selected' : '' }}>
                                         Limpiar Caché del Sistema
                                     </option>
@@ -421,6 +424,21 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-maroon">
+                            <div class="card-body text-center">
+                                <i class="fas fa-database fa-2x mb-2"></i>
+                                <h6>Migración Sent Mails</h6>
+                                <p class="card-text">Agrega columnas status a sent_mails</p>
+                                <ul class="text-left small">
+                                    <li>Agrega columna status</li>
+                                    <li>Agrega error_message</li>
+                                    <li>Actualiza registros</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -527,6 +545,8 @@ $(document).ready(function() {
                 $('#encuesta_id').attr('placeholder', 'ID de la encuesta para probar dashboard');
             } else if (selectedValue === 'diagnosticar_dashboard') {
                 $('#encuesta_id').attr('placeholder', 'ID de la encuesta para diagnosticar dashboard');
+            } else if (selectedValue === 'migracion_sent_mails') {
+                $('#encuesta_id').attr('placeholder', 'No requiere ID - Ejecuta migración');
             } else if (selectedValue === 'probar_envio') {
                 $('#encuesta_id').attr('placeholder', 'ID de la encuesta para probar envío');
             } else {

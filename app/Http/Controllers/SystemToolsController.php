@@ -329,6 +329,14 @@ class SystemToolsController extends Controller
                 $resultado = $this->ejecutarComando('dashboard:diagnosticar', $params);
             }
             break;
+        case 'migracion_sent_mails':
+            $debug = $request->get('debug', false);
+            $params = [];
+            if ($debug) {
+                $params['--debug'] = true;
+            }
+            $resultado = $this->ejecutarComando('migracion:sent-mails', $params);
+            break;
                     case 'limpiar_cache':
                         $resultado = $this->ejecutarComando('config:clear');
                         $resultado .= "\n\n" . $this->ejecutarComando('route:clear');

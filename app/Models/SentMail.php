@@ -13,6 +13,8 @@ class SentMail extends Model
         'to',
         'subject',
         'body',
+        'status',
+        'error_message',
         'attachments',
         'sent_by',
         'encuesta_id'
