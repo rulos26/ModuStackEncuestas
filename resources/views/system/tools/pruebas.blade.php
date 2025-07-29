@@ -69,6 +69,9 @@
                         <option value="migracion_sent_mails" {{ $tipo === 'migracion_sent_mails' ? 'selected' : '' }}>
                             Migración Sent Mails (Status)
                         </option>
+                        <option value="corregir_user_id" {{ $tipo === 'corregir_user_id' ? 'selected' : '' }}>
+                            Corregir User ID de Encuesta
+                        </option>
                                     <option value="limpiar_cache" {{ $tipo === 'limpiar_cache' ? 'selected' : '' }}>
                                         Limpiar Caché del Sistema
                                     </option>

@@ -9,6 +9,7 @@ use App\Models\Encuesta;
 use App\Models\BloqueEnvio;
 use App\Models\SentMail;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 
 class DiagnosticarDashboardSeguimiento extends Command
 {
@@ -71,6 +72,9 @@ class DiagnosticarDashboardSeguimiento extends Command
         $this->line("   - Estado: {$encuesta->estado}");
         $this->line("   - Preguntas: {$encuesta->preguntas()->count()}");
         $this->line("   - Envío masivo: " . ($encuesta->envio_masivo_activado ? 'Activado' : 'Desactivado'));
+        $this->line("   - User ID: {$encuesta->user_id}");
+        $this->line("   - Usuario autenticado: " . (Auth::id() ?? 'No autenticado'));
+        $this->line("   - ¿Coinciden?: " . ($encuesta->user_id == Auth::id() ? 'Sí' : 'No'));
         $this->line('');
     }
 
