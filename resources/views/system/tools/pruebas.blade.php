@@ -45,6 +45,9 @@
                                     <option value="verificar_bd" {{ $tipo === 'verificar_bd' ? 'selected' : '' }}>
                                         Verificar Configuración BD
                                     </option>
+                                    <option value="estado_encuesta" {{ $tipo === 'estado_encuesta' ? 'selected' : '' }}>
+                                        Diagnosticar Estado de Encuesta
+                                    </option>
                                 </select>
                                 <small class="form-text text-muted">
                                     Selecciona el tipo de prueba que deseas ejecutar.
@@ -57,7 +60,7 @@
                                 <input type="number" class="form-control" id="encuesta_id" name="encuesta_id"
                                        placeholder="Opcional para pruebas de preguntas">
                                 <small class="form-text text-muted">
-                                    Solo necesario para pruebas de preguntas específicas.
+                                    Solo necesario para pruebas de preguntas específicas y diagnóstico de estado de encuesta.
                                 </small>
                             </div>
                         </div>
@@ -259,6 +262,21 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-info">
+                            <div class="card-body text-center">
+                                <i class="fas fa-clipboard-check fa-2x mb-2"></i>
+                                <h6>Estado Encuesta</h6>
+                                <p class="card-text">Diagnostica estado</p>
+                                <ul class="text-left small">
+                                    <li>Verifica condiciones</li>
+                                    <li>Revisa preguntas/respuestas</li>
+                                    <li>Identifica problemas</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -284,6 +302,7 @@
                         <li><strong>Diagnóstico de Preguntas:</strong> Verifica y diagnostica problemas específicos en la creación de preguntas, incluyendo estructura de tabla, modelo y métodos.</li>
                         <li><strong>Simulación de Pregunta:</strong> Simula el proceso completo de creación de una pregunta, mostrando cada paso y posibles errores.</li>
                         <li><strong>Verificación de BD:</strong> Verifica y corrige la configuración de la base de datos para desarrollo local.</li>
+                        <li><strong>Diagnóstico de Estado de Encuesta:</strong> Verifica por qué una encuesta no puede enviarse masivamente, revisando todas las condiciones requeridas.</li>
                     </ul>
                 </div>
 
@@ -340,10 +359,22 @@ $(document).ready(function() {
 
     // Mostrar/ocultar campo encuesta_id según el tipo seleccionado
     $('#tipo').change(function() {
-        if ($(this).val() === 'preguntas') {
+        const selectedValue = $(this).val();
+        const needsEncuestaId = ['preguntas', 'creacion_preguntas', 'simular_pregunta', 'estado_encuesta'].includes(selectedValue);
+
+        if (needsEncuestaId) {
             $('#encuesta_id').closest('.form-group').show();
+            $('#encuesta_id').prop('required', true);
+
+            // Actualizar placeholder según la opción
+            if (selectedValue === 'estado_encuesta') {
+                $('#encuesta_id').attr('placeholder', 'ID de la encuesta para diagnosticar');
+            } else {
+                $('#encuesta_id').attr('placeholder', 'ID de la encuesta para pruebas');
+            }
         } else {
             $('#encuesta_id').closest('.form-group').hide();
+            $('#encuesta_id').prop('required', false);
         }
     });
 

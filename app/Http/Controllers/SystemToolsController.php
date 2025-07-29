@@ -248,6 +248,14 @@ class SystemToolsController extends Controller
                         if ($request->get('corregir')) $opciones['--corregir'] = true;
                         $resultado = $this->ejecutarComando('bd:verificar-configuracion', $opciones);
                         break;
+                    case 'estado_encuesta':
+                        $encuestaId = $request->get('encuesta_id');
+                        if (!$encuestaId) {
+                            $resultado = "❌ Error: Debes proporcionar el ID de la encuesta";
+                        } else {
+                            $resultado = $this->ejecutarComando('encuesta:diagnosticar-estado', ['encuesta_id' => $encuestaId]);
+                        }
+                        break;
                 }
             }
 
