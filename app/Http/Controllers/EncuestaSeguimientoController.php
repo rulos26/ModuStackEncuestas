@@ -45,8 +45,21 @@ class EncuestaSeguimientoController extends Controller
                 ->limit(50)
                 ->get();
 
-            // Actualizar estado según progreso
-            $encuesta->actualizarEstadoSegunProgreso();
+                        // Actualizar estado según progreso
+            $resultadoActualizacion = $encuesta->actualizarEstadoSegunProgreso();
+
+            // DEBUG: Mostrar resultado de actualización
+            if (config('app.debug')) {
+                dd('DEBUG - RESULTADO ACTUALIZACIÓN ESTADO:', $resultadoActualizacion);
+            }
+
+            // Log del resultado de actualización
+            if (!$resultadoActualizacion['success']) {
+                Log::warning('Error actualizando estado de encuesta en dashboard', [
+                    'encuesta_id' => $encuestaId,
+                    'error' => $resultadoActualizacion['error']
+                ]);
+            }
             dd('ENCUESTA', $encuesta);
 
             return view('encuestas.seguimiento.dashboard', compact(
@@ -94,8 +107,21 @@ class EncuestaSeguimientoController extends Controller
                 ->limit(10)
                 ->get();
 
-            // Actualizar estado
-            $encuesta->actualizarEstadoSegunProgreso();
+                        // Actualizar estado
+            $resultadoActualizacion = $encuesta->actualizarEstadoSegunProgreso();
+
+            // DEBUG: Mostrar resultado de actualización
+            if (config('app.debug')) {
+                dd('DEBUG - ACTUALIZAR DATOS:', $resultadoActualizacion);
+            }
+
+            // Log del resultado de actualización
+            if (!$resultadoActualizacion['success']) {
+                Log::warning('Error actualizando estado de encuesta en actualizarDatos', [
+                    'encuesta_id' => $encuestaId,
+                    'error' => $resultadoActualizacion['error']
+                ]);
+            }
 
             return response()->json([
                 'estadisticas' => $estadisticas,

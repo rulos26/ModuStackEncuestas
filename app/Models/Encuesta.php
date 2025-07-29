@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Exception;
 
 class Encuesta extends Model
 {
@@ -377,21 +378,68 @@ class Encuesta extends Model
     /**
      * Actualizar estado automáticamente según el progreso del envío
      */
-    public function actualizarEstadoSegunProgreso(): void
+        public function actualizarEstadoSegunProgreso(): array
     {
-        $estadoAnterior = $this->estado;
-        $nuevoEstado = $this->determinarEstadoSegunProgreso();
+        try {
+            // DEBUG: Mostrar información de debug
+            if (config('app.debug')) {
+                Log::info('DEBUG - ACTUALIZANDO ESTADO ENCUESTA', [
+                    'encuesta_id' => $this->id,
+                    'estado_actual' => $this->estado,
+                    'envio_masivo_activado' => $this->envio_masivo_activado,
+                    'encuestas_enviadas' => $this->encuestas_enviadas,
+                    'numero_encuestas' => $this->numero_encuestas
+                ]);
+            }
 
-        if ($estadoAnterior !== $nuevoEstado) {
-            $this->update(['estado' => $nuevoEstado]);
+            $estadoAnterior = $this->estado;
+            $nuevoEstado = $this->determinarEstadoSegunProgreso();
 
-            Log::info('Estado de encuesta actualizado automáticamente', [
-                'encuesta_id' => $this->id,
+            // DEBUG: Mostrar determinación de estado
+            if (config('app.debug')) {
+                Log::info('DEBUG - DETERMINACIÓN DE ESTADO', [
+                    'estado_anterior' => $estadoAnterior,
+                    'nuevo_estado' => $nuevoEstado,
+                    'cambio_necesario' => $estadoAnterior !== $nuevoEstado
+                ]);
+            }
+
+            if ($estadoAnterior !== $nuevoEstado) {
+                $this->update(['estado' => $nuevoEstado]);
+
+                Log::info('Estado de encuesta actualizado automáticamente', [
+                    'encuesta_id' => $this->id,
+                    'estado_anterior' => $estadoAnterior,
+                    'estado_nuevo' => $nuevoEstado,
+                    'encuestas_enviadas' => $this->encuestas_enviadas,
+                    'numero_encuestas' => $this->numero_encuestas
+                ]);
+            }
+
+            return [
+                'success' => true,
                 'estado_anterior' => $estadoAnterior,
                 'estado_nuevo' => $nuevoEstado,
-                'encuestas_enviadas' => $this->encuestas_enviadas,
-                'numero_encuestas' => $this->numero_encuestas
+                'cambio_realizado' => $estadoAnterior !== $nuevoEstado,
+                'mensaje' => $estadoAnterior !== $nuevoEstado
+                    ? "Estado actualizado de '{$estadoAnterior}' a '{$nuevoEstado}'"
+                    : "Estado sin cambios: '{$estadoAnterior}'"
+            ];
+
+        } catch (Exception $e) {
+            Log::error('Error actualizando estado de encuesta', [
+                'encuesta_id' => $this->id,
+                'estado_actual' => $this->estado,
+                'error' => $e->getMessage(),
+                'stack_trace' => $e->getTraceAsString()
             ]);
+
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+                'estado_actual' => $this->estado,
+                'mensaje' => "Error actualizando estado: " . $e->getMessage()
+            ];
         }
     }
 

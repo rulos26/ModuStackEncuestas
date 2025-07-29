@@ -10,6 +10,21 @@
 @endsection
 
 @section('content')
+    <!-- DEBUG: Mostrar información de debug si está habilitado -->
+    @if(config('app.debug'))
+        <div class="alert alert-info">
+            <h5><i class="fas fa-bug"></i> Modo Debug Activo</h5>
+            <p><strong>Encuesta ID:</strong> {{ $encuesta->id }}</p>
+            <p><strong>Estado Actual:</strong> {{ $encuesta->estado }}</p>
+            <p><strong>User ID:</strong> {{ $encuesta->user_id }}</p>
+            <p><strong>Usuario Autenticado:</strong> {{ auth()->id() }}</p>
+            <p><strong>¿Coinciden?:</strong> {{ $encuesta->user_id == auth()->id() ? 'Sí' : 'No' }}</p>
+            <p><strong>Enviar por correo:</strong> {{ $encuesta->enviar_por_correo ? 'Sí' : 'No' }}</p>
+            <p><strong>Envío masivo activado:</strong> {{ $encuesta->envio_masivo_activado ? 'Sí' : 'No' }}</p>
+            <p><strong>Validación completada:</strong> {{ $encuesta->validacion_completada ? 'Sí' : 'No' }}</p>
+        </div>
+    @endif
+
     <!-- BREADCRUMBS -->
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">

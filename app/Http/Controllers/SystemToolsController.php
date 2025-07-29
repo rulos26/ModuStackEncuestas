@@ -354,6 +354,23 @@ class SystemToolsController extends Controller
                 $resultado = $this->ejecutarComando('encuesta:corregir-user-id', $params);
             }
             break;
+        case 'debug_dashboard':
+            $encuestaId = $request->get('encuesta_id');
+            $userId = $request->get('user_id');
+            $debug = $request->get('debug', false);
+            if (!$encuestaId) {
+                $resultado = "❌ Error: Debes proporcionar el ID de la encuesta";
+            } else {
+                $params = ['encuesta_id' => $encuestaId];
+                if ($userId) {
+                    $params['--user_id'] = $userId;
+                }
+                if ($debug) {
+                    $params['--debug'] = true;
+                }
+                $resultado = $this->ejecutarComando('debug:dashboard-encuesta', $params);
+            }
+            break;
                     case 'limpiar_cache':
                         $resultado = $this->ejecutarComando('config:clear');
                         $resultado .= "\n\n" . $this->ejecutarComando('route:clear');
