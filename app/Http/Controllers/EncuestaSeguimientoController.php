@@ -15,7 +15,8 @@ class EncuestaSeguimientoController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        // MIDDLEWARE DESHABILITADO - Acceso directo sin autenticación
+        // $this->middleware('auth');
     }
 
     /**
@@ -26,10 +27,10 @@ class EncuestaSeguimientoController extends Controller
         try {
             $encuesta = Encuesta::with(['bloquesEnvio', 'preguntas'])->findOrFail($encuestaId);
 
-            // Verificar permisos
-            if ($encuesta->user_id !== Auth::id()) {
-                return redirect()->route('encuestas.index')->with('error', 'No tienes permisos para ver el seguimiento de esta encuesta.');
-            }
+            // PERMISOS DESHABILITADOS - Acceso directo sin verificación
+            // if ($encuesta->user_id !== Auth::id()) {
+            //     return redirect()->route('encuestas.index')->with('error', 'No tienes permisos para ver el seguimiento de esta encuesta.');
+            // }
 
             // Obtener estadísticas de envío
             $estadisticas = $this->obtenerEstadisticasEnvio($encuesta);
@@ -73,10 +74,10 @@ class EncuestaSeguimientoController extends Controller
         try {
             $encuesta = Encuesta::with(['bloquesEnvio'])->findOrFail($encuestaId);
 
-            // Verificar permisos
-            if ($encuesta->user_id !== Auth::id()) {
-                return response()->json(['error' => 'No tienes permisos'], 403);
-            }
+            // PERMISOS DESHABILITADOS - Acceso directo sin verificación
+            // if ($encuesta->user_id !== Auth::id()) {
+            //     return response()->json(['error' => 'No tienes permisos'], 403);
+            // }
 
             // Obtener estadísticas actualizadas
             $estadisticas = $this->obtenerEstadisticasEnvio($encuesta);
@@ -120,10 +121,10 @@ class EncuestaSeguimientoController extends Controller
         try {
             $encuesta = Encuesta::findOrFail($encuestaId);
 
-            // Verificar permisos
-            if ($encuesta->user_id !== Auth::id()) {
-                return redirect()->back()->with('error', 'No tienes permisos para pausar el envío.');
-            }
+            // PERMISOS DESHABILITADOS - Acceso directo sin verificación
+            // if ($encuesta->user_id !== Auth::id()) {
+            //     return redirect()->back()->with('error', 'No tienes permisos para pausar el envío.');
+            // }
 
             $encuesta->pausarEnvio();
 
@@ -153,10 +154,10 @@ class EncuestaSeguimientoController extends Controller
         try {
             $encuesta = Encuesta::findOrFail($encuestaId);
 
-            // Verificar permisos
-            if ($encuesta->user_id !== Auth::id()) {
-                return redirect()->back()->with('error', 'No tienes permisos para reanudar el envío.');
-            }
+            // PERMISOS DESHABILITADOS - Acceso directo sin verificación
+            // if ($encuesta->user_id !== Auth::id()) {
+            //     return redirect()->back()->with('error', 'No tienes permisos para reanudar el envío.');
+            // }
 
             $encuesta->reanudarEnvio();
 
@@ -186,10 +187,10 @@ class EncuestaSeguimientoController extends Controller
         try {
             $encuesta = Encuesta::findOrFail($encuestaId);
 
-            // Verificar permisos
-            if ($encuesta->user_id !== Auth::id()) {
-                return redirect()->back()->with('error', 'No tienes permisos para cancelar el envío.');
-            }
+            // PERMISOS DESHABILITADOS - Acceso directo sin verificación
+            // if ($encuesta->user_id !== Auth::id()) {
+            //     return redirect()->back()->with('error', 'No tienes permisos para cancelar el envío.');
+            // }
 
             // Marcar como cancelado
             $encuesta->update([
