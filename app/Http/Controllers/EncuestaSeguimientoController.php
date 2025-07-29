@@ -38,7 +38,7 @@ class EncuestaSeguimientoController extends Controller
 
             // Obtener bloques de envío
             $bloques = $encuesta->obtenerBloquesEnvio();
-
+            dd('bloques', $bloques);
             // Obtener correos enviados
             $correosEnviados = SentMail::where('encuesta_id', $encuestaId)
                 ->orderBy('created_at', 'desc')
