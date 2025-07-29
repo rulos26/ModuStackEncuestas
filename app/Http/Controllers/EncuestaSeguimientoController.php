@@ -44,10 +44,11 @@ class EncuestaSeguimientoController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->limit(50)
                 ->get();
-                dd('CORREOS ENVIADOS', $correosEnviados);
+
             // Actualizar estado según progreso
             $encuesta->actualizarEstadoSegunProgreso();
-            dd('dashboard', $encuestaId, $encuesta /* $estadisticas */, $bloques, $correosEnviados, $encuesta->estado, $encuesta->encuestas_enviadas, $encuesta->encuestas_pendientes, $encuesta->encuestas_respondidas);
+            dd('ENCUESTA', $encuesta);
+
             return view('encuestas.seguimiento.dashboard', compact(
                 'encuesta',
                 'estadisticas',
