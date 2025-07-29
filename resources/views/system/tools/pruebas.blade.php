@@ -60,6 +60,9 @@
                         <option value="forzar_validaciones" {{ $tipo === 'forzar_validaciones' ? 'selected' : '' }}>
                             Forzar Validaciones de Encuesta
                         </option>
+                        <option value="probar_dashboard" {{ $tipo === 'probar_dashboard' ? 'selected' : '' }}>
+                            Probar Dashboard de Seguimiento
+                        </option>
                                     <option value="limpiar_cache" {{ $tipo === 'limpiar_cache' ? 'selected' : '' }}>
                                         Limpiar Caché del Sistema
                                     </option>
@@ -385,6 +388,21 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-teal">
+                            <div class="card-body text-center">
+                                <i class="fas fa-chart-line fa-2x mb-2"></i>
+                                <h6>Probar Dashboard</h6>
+                                <p class="card-text">Prueba dashboard de seguimiento</p>
+                                <ul class="text-left small">
+                                    <li>Verifica bloques de envío</li>
+                                    <li>Simula correos enviados</li>
+                                    <li>Analiza estadísticas</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -471,7 +489,7 @@ $(document).ready(function() {
     // Mostrar/ocultar campo encuesta_id según el tipo seleccionado
     $('#tipo_prueba').change(function() {
         const selectedValue = $(this).val();
-        const needsEncuestaId = ['preguntas', 'creacion_preguntas', 'simular_pregunta', 'estado_encuesta', 'probar_envio', 'diagnosticar_tipos', 'diagnosticar_progreso', 'forzar_validaciones'].includes(selectedValue);
+        const needsEncuestaId = ['preguntas', 'creacion_preguntas', 'simular_pregunta', 'estado_encuesta', 'probar_envio', 'diagnosticar_tipos', 'diagnosticar_progreso', 'forzar_validaciones', 'probar_dashboard'].includes(selectedValue);
         const needsDebug = ['diagnosticar_tipos', 'diagnosticar_progreso'].includes(selectedValue);
 
         if (needsEncuestaId) {
@@ -487,6 +505,8 @@ $(document).ready(function() {
                 $('#encuesta_id').attr('placeholder', 'ID de la encuesta para analizar progreso');
             } else if (selectedValue === 'forzar_validaciones') {
                 $('#encuesta_id').attr('placeholder', 'ID de la encuesta para forzar validaciones');
+            } else if (selectedValue === 'probar_dashboard') {
+                $('#encuesta_id').attr('placeholder', 'ID de la encuesta para probar dashboard');
             } else if (selectedValue === 'probar_envio') {
                 $('#encuesta_id').attr('placeholder', 'ID de la encuesta para probar envío');
             } else {

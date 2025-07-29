@@ -116,6 +116,13 @@
         <a href="{{ route('encuestas.preview', $encuesta->id) }}" class="btn btn-success me-2">
             <i class="fas fa-eye"></i> Previsualizar Encuesta
         </a>
+
+        @if($encuesta->estado === 'enviada' || $encuesta->estado === 'en_progreso' || $encuesta->estado === 'pausada')
+            <a href="{{ route('encuestas.seguimiento.dashboard', $encuesta->id) }}" class="btn btn-info me-2">
+                <i class="fas fa-chart-line"></i> Dashboard de Seguimiento
+            </a>
+        @endif
+
         <a href="{{ route('encuestas.index') }}" class="btn btn-secondary">
             <i class="fas fa-arrow-left"></i> Volver al listado
         </a>
