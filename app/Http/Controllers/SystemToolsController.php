@@ -256,6 +256,15 @@ class SystemToolsController extends Controller
                             $resultado = $this->ejecutarComando('encuesta:diagnosticar-estado', ['encuesta_id' => $encuestaId]);
                         }
                         break;
+                    case 'limpiar_cache':
+                        $resultado = $this->ejecutarComando('config:clear');
+                        $resultado .= "\n\n" . $this->ejecutarComando('route:clear');
+                        $resultado .= "\n\n" . $this->ejecutarComando('view:clear');
+                        $resultado .= "\n\n" . $this->ejecutarComando('cache:clear');
+                        break;
+                    case 'limpiar_todo':
+                        $resultado = $this->ejecutarComando('optimize:clear');
+                        break;
                 }
             }
 

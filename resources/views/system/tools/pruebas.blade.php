@@ -48,6 +48,12 @@
                                     <option value="estado_encuesta" {{ $tipo === 'estado_encuesta' ? 'selected' : '' }}>
                                         Diagnosticar Estado de Encuesta
                                     </option>
+                                    <option value="limpiar_cache" {{ $tipo === 'limpiar_cache' ? 'selected' : '' }}>
+                                        Limpiar Caché del Sistema
+                                    </option>
+                                    <option value="limpiar_todo" {{ $tipo === 'limpiar_todo' ? 'selected' : '' }}>
+                                        Optimizar Todo el Sistema
+                                    </option>
                                 </select>
                                 <small class="form-text text-muted">
                                     Selecciona el tipo de prueba que deseas ejecutar.
@@ -277,6 +283,37 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-warning">
+                            <div class="card-body text-center">
+                                <i class="fas fa-broom fa-2x mb-2"></i>
+                                <h6>Limpiar Caché</h6>
+                                <p class="card-text">Limpia caché del sistema</p>
+                                <ul class="text-left small">
+                                    <li>config:clear</li>
+                                    <li>route:clear</li>
+                                    <li>view:clear</li>
+                                    <li>cache:clear</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-success">
+                            <div class="card-body text-center">
+                                <i class="fas fa-rocket fa-2x mb-2"></i>
+                                <h6>Optimizar Todo</h6>
+                                <p class="card-text">Optimización completa</p>
+                                <ul class="text-left small">
+                                    <li>optimize:clear</li>
+                                    <li>Limpia todo el sistema</li>
+                                    <li>Mejora rendimiento</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -303,6 +340,8 @@
                         <li><strong>Simulación de Pregunta:</strong> Simula el proceso completo de creación de una pregunta, mostrando cada paso y posibles errores.</li>
                         <li><strong>Verificación de BD:</strong> Verifica y corrige la configuración de la base de datos para desarrollo local.</li>
                         <li><strong>Diagnóstico de Estado de Encuesta:</strong> Verifica por qué una encuesta no puede enviarse masivamente, revisando todas las condiciones requeridas.</li>
+                        <li><strong>Limpiar Caché del Sistema:</strong> Ejecuta todos los comandos de limpieza de caché (config, route, view, cache).</li>
+                        <li><strong>Optimizar Todo el Sistema:</strong> Ejecuta optimize:clear para limpiar y optimizar todo el sistema.</li>
                     </ul>
                 </div>
 
