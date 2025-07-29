@@ -143,6 +143,9 @@ class SystemToolsController extends Controller
                     case 'preguntas':
                         $resultado = $this->ejecutarComando('preguntas:verificar-migraciones', ['--ejecutar' => true]);
                         break;
+                    case 'fechas_encuestas':
+                        $resultado = $this->ejecutarComando('migrate', ['--path' => 'database/migrations/2025_07_13_091000_agregar_fechas_encuestas.php']);
+                        break;
                 }
             }
 
@@ -217,6 +220,9 @@ class SystemToolsController extends Controller
                         break;
                     case 'sistema':
                         $resultado = $this->ejecutarComando('encuestas:probar-sistema');
+                        break;
+                    case 'fechas':
+                        $resultado = $this->ejecutarComando('encuestas:diagnosticar-fechas');
                         break;
                 }
             }

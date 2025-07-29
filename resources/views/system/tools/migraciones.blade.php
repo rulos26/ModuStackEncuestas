@@ -87,9 +87,9 @@
                     </div>
                 </div>
 
-                <!-- Migración Específica de Preguntas -->
+                <!-- Migraciones Específicas -->
                 <div class="row mt-3">
-                    <div class="col-12">
+                    <div class="col-md-6">
                         <div class="card bg-primary">
                             <div class="card-body text-center">
                                 <i class="fas fa-question-circle fa-2x mb-2"></i>
@@ -100,6 +100,23 @@
                                     <input type="hidden" name="tipo" value="preguntas">
                                     <button type="submit" name="ejecutar" class="btn btn-light">
                                         <i class="fas fa-database"></i> Actualizar Preguntas
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card bg-success">
+                            <div class="card-body text-center">
+                                <i class="fas fa-calendar-alt fa-2x mb-2"></i>
+                                <h6>Agregar Campos de Fecha</h6>
+                                <p class="card-text">Ejecuta la migración para agregar los campos fecha_inicio y fecha_fin a la tabla encuestas</p>
+                                <form method="POST" action="{{ route('system.tools.migraciones') }}">
+                                    @csrf
+                                    <input type="hidden" name="tipo" value="fechas_encuestas">
+                                    <button type="submit" name="ejecutar" class="btn btn-light">
+                                        <i class="fas fa-calendar-plus"></i> Agregar Fechas
                                     </button>
                                 </form>
                             </div>

@@ -30,6 +30,9 @@
                                     <option value="sistema" {{ $tipo === 'sistema' ? 'selected' : '' }}>
                                         Prueba Completa del Sistema
                                     </option>
+                                    <option value="fechas" {{ $tipo === 'fechas' ? 'selected' : '' }}>
+                                        Diagnosticar Columnas de Fecha
+                                    </option>
                                 </select>
                                 <small class="form-text text-muted">
                                     Selecciona el tipo de prueba que deseas ejecutar.
@@ -123,7 +126,7 @@
             <div class="card-body">
                 <div class="row">
                     <!-- Prueba de Encuestas -->
-                    <div class="col-md-4 mb-3">
+                    <div class="col-md-3 mb-3">
                         <div class="card bg-primary">
                             <div class="card-body text-center">
                                 <i class="fas fa-clipboard-list fa-2x mb-2"></i>
@@ -139,7 +142,7 @@
                     </div>
 
                     <!-- Prueba de Preguntas -->
-                    <div class="col-md-4 mb-3">
+                    <div class="col-md-3 mb-3">
                         <div class="card bg-success">
                             <div class="card-body text-center">
                                 <i class="fas fa-question-circle fa-2x mb-2"></i>
@@ -155,7 +158,7 @@
                     </div>
 
                     <!-- Prueba del Sistema -->
-                    <div class="col-md-4 mb-3">
+                    <div class="col-md-3 mb-3">
                         <div class="card bg-warning">
                             <div class="card-body text-center">
                                 <i class="fas fa-cogs fa-2x mb-2"></i>
@@ -165,6 +168,21 @@
                                     <li>Prueba todos los módulos</li>
                                     <li>Verifica la integración</li>
                                     <li>Comprueba el rendimiento</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-info">
+                            <div class="card-body text-center">
+                                <i class="fas fa-calendar-alt fa-2x mb-2"></i>
+                                <h6>Diagnóstico de Fechas</h6>
+                                <p class="card-text">Diagnostica problemas con columnas de fecha</p>
+                                <ul class="text-left small">
+                                    <li>Verifica columnas fecha_inicio/fin</li>
+                                    <li>Comprueba tipos de datos</li>
+                                    <li>Identifica problemas de estructura</li>
                                 </ul>
                             </div>
                         </div>
@@ -189,6 +207,7 @@
                         <li><strong>Prueba de Encuestas:</strong> Simula la creación completa de encuestas y verifica que todo funcione correctamente.</li>
                         <li><strong>Prueba de Preguntas:</strong> Crea diferentes tipos de preguntas para verificar que la funcionalidad esté operativa.</li>
                         <li><strong>Prueba del Sistema:</strong> Ejecuta una batería completa de pruebas para verificar la integridad del sistema.</li>
+                        <li><strong>Diagnóstico de Fechas:</strong> Verifica y diagnostica problemas con las columnas de fecha en la tabla encuestas.</li>
                     </ul>
                 </div>
 
