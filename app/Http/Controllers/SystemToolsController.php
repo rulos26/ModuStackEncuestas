@@ -270,9 +270,9 @@ class SystemToolsController extends Controller
             if (!$encuestaId) {
                 $resultado = "❌ Error: Debes proporcionar el ID de la encuesta";
             } else {
-                $params = ['encuesta_id' => $encuestaId];
+                $params = ['--encuesta_id' => $encuestaId];
                 if ($debug) {
-                    $params['debug'] = true;
+                    $params['--debug'] = true;
                 }
                 $resultado = $this->ejecutarComando('preguntas:diagnosticar-tipos', $params);
             }
