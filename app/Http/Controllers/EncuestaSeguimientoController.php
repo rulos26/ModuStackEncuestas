@@ -231,7 +231,7 @@ class EncuestaSeguimientoController extends Controller
      */
     private function obtenerEstadisticasEnvio($encuesta)
     {
-        dd('obtenerEstadisticasEnvio', $encuesta);
+        //dd('obtenerEstadisticasEnvio', $encuesta);
         $bloques = $encuesta->obtenerBloquesEnvio();
 
         $totalBloques = $bloques->count();
