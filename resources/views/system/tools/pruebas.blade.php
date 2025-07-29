@@ -75,6 +75,9 @@
                         <option value="debug_dashboard" {{ $tipo === 'debug_dashboard' ? 'selected' : '' }}>
                             Debug Dashboard de Encuesta
                         </option>
+                        <option value="verificar_enum" {{ $tipo === 'verificar_enum' ? 'selected' : '' }}>
+                            Verificar ENUM de Estado
+                        </option>
                                     <option value="limpiar_cache" {{ $tipo === 'limpiar_cache' ? 'selected' : '' }}>
                                         Limpiar Caché del Sistema
                                     </option>
