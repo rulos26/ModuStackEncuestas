@@ -493,7 +493,7 @@ return [
                                     'text' => 'Herramientas del Sistema',
                                     'route' => 'system.tools.dashboard',
                                     'icon' => 'fas fa-tools',
-                                    'can' => 'Superadmin|Admin',
+                                    //'can' => 'Superadmin|Admin',
                                 ],
                             ],
                         ],
