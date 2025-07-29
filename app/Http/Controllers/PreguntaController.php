@@ -79,17 +79,18 @@ class PreguntaController extends Controller
                 return $this->redirectIfNoAccess('No tienes permisos para modificar esta encuesta.');
             }
 
+            // Validación simplificada y más robusta
             $request->validate([
                 'texto' => 'required|string|max:500|min:3',
                 'descripcion' => 'nullable|string|max:1000',
                 'placeholder' => 'nullable|string|max:255',
-                'tipo' => 'required|in:respuesta_corta,parrafo,seleccion_unica,casillas_verificacion,lista_desplegable,escala_lineal,cuadricula_opcion_multiple,cuadricula_casillas,fecha,hora,carga_archivos,ubicacion_mapa,logica_condicional',
-                'orden' => 'required|integer|min:1',
-                'obligatoria' => 'nullable|in:on,1,true',
+                'tipo' => 'required|string',
+                'orden' => 'nullable|integer|min:1',
+                'obligatoria' => 'nullable',
                 'min_caracteres' => 'nullable|integer|min:0',
                 'max_caracteres' => 'nullable|integer|min:1',
                 'escala_min' => 'nullable|integer',
-                'escala_max' => 'nullable|integer|gt:escala_min',
+                'escala_max' => 'nullable|integer',
                 'escala_etiqueta_min' => 'nullable|string|max:100',
                 'escala_etiqueta_max' => 'nullable|string|max:100',
                 'tipos_archivo_permitidos' => 'nullable|string|max:255',

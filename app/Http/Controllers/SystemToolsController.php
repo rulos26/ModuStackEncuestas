@@ -230,6 +230,24 @@ class SystemToolsController extends Controller
                     case 'limpiar':
                         $resultado = $this->ejecutarComando('migraciones:limpiar-encuestas');
                         break;
+                    case 'creacion_preguntas':
+                        $encuestaId = $request->get('encuesta_id');
+                        $opciones = [];
+                        if ($encuestaId) $opciones['--encuesta_id'] = $encuestaId;
+                        if ($request->get('crear_prueba')) $opciones['--crear_prueba'] = true;
+                        $resultado = $this->ejecutarComando('preguntas:diagnosticar-creacion', $opciones);
+                        break;
+                    case 'simular_pregunta':
+                        $encuestaId = $request->get('encuesta_id');
+                        $opciones = [];
+                        if ($encuestaId) $opciones['--encuesta_id'] = $encuestaId;
+                        $resultado = $this->ejecutarComando('preguntas:simular-creacion', $opciones);
+                        break;
+                    case 'verificar_bd':
+                        $opciones = [];
+                        if ($request->get('corregir')) $opciones['--corregir'] = true;
+                        $resultado = $this->ejecutarComando('bd:verificar-configuracion', $opciones);
+                        break;
                 }
             }
 

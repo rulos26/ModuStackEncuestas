@@ -100,25 +100,14 @@
                             <label for="tipo" class="form-label">
                                 <i class="fas fa-list"></i> Tipo de pregunta
                             </label>
-                            <div class="form-group">
-                                <label for="tipo" class="form-label">
-                                    <i class="fas fa-list"></i> Tipo de pregunta
-                                </label>
-                                <select name="tipo" id="tipo" class="form-control @error('tipo') is-invalid @enderror" required>
-                                    <option value="">Selecciona el tipo de pregunta</option>
-                                    @foreach(App\Models\Pregunta::getTiposDisponibles() as $tipo => $config)
-                                        <option value="{{ $tipo }}" data-icono="{{ $config['icono'] }}" data-nombre="{{ $config['nombre'] }}" {{ old('tipo') == $tipo ? 'selected' : '' }}>
-                                            <i class="{{ $config['icono'] }}"></i> {{ $config['nombre'] }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('tipo')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
-                                <small class="form-text text-muted">
-                                    El tipo determina cómo se mostrará y validará la respuesta
-                                </small>
-                            </div>
+                            <select name="tipo" id="tipo" class="form-control @error('tipo') is-invalid @enderror" required>
+                                <option value="">Selecciona el tipo de pregunta</option>
+                                @foreach(App\Models\Pregunta::getTiposDisponibles() as $tipo => $config)
+                                    <option value="{{ $tipo }}" data-icono="{{ $config['icono'] }}" data-nombre="{{ $config['nombre'] }}" {{ old('tipo') == $tipo ? 'selected' : '' }}>
+                                        <i class="{{ $config['icono'] }}"></i> {{ $config['nombre'] }}
+                                    </option>
+                                @endforeach
+                            </select>
                             @error('tipo')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror

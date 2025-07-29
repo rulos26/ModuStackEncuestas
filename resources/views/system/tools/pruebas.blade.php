@@ -36,6 +36,15 @@
                                     <option value="limpiar" {{ $tipo === 'limpiar' ? 'selected' : '' }}>
                                         Limpiar Migraciones Duplicadas
                                     </option>
+                                    <option value="creacion_preguntas" {{ $tipo === 'creacion_preguntas' ? 'selected' : '' }}>
+                                        Diagnosticar Creación de Preguntas
+                                    </option>
+                                    <option value="simular_pregunta" {{ $tipo === 'simular_pregunta' ? 'selected' : '' }}>
+                                        Simular Creación de Pregunta
+                                    </option>
+                                    <option value="verificar_bd" {{ $tipo === 'verificar_bd' ? 'selected' : '' }}>
+                                        Verificar Configuración BD
+                                    </option>
                                 </select>
                                 <small class="form-text text-muted">
                                     Selecciona el tipo de prueba que deseas ejecutar.
@@ -205,6 +214,51 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-purple">
+                            <div class="card-body text-center">
+                                <i class="fas fa-question-circle fa-2x mb-2"></i>
+                                <h6>Diagnóstico Preguntas</h6>
+                                <p class="card-text">Diagnostica problemas de creación</p>
+                                <ul class="text-left small">
+                                    <li>Verifica estructura de tabla</li>
+                                    <li>Comprueba modelo y métodos</li>
+                                    <li>Prueba creación de preguntas</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-teal">
+                            <div class="card-body text-center">
+                                <i class="fas fa-play-circle fa-2x mb-2"></i>
+                                <h6>Simular Pregunta</h6>
+                                <p class="card-text">Simula creación completa</p>
+                                <ul class="text-left small">
+                                    <li>Simula datos del request</li>
+                                    <li>Prueba validación y creación</li>
+                                    <li>Muestra errores detallados</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <div class="card bg-orange">
+                            <div class="card-body text-center">
+                                <i class="fas fa-database fa-2x mb-2"></i>
+                                <h6>Verificar BD</h6>
+                                <p class="card-text">Verifica configuración</p>
+                                <ul class="text-left small">
+                                    <li>Verifica conexión a BD</li>
+                                    <li>Corrige configuración</li>
+                                    <li>Diagnostica problemas</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -227,6 +281,9 @@
                         <li><strong>Prueba del Sistema:</strong> Ejecuta una batería completa de pruebas para verificar la integridad del sistema.</li>
                         <li><strong>Diagnóstico de Fechas:</strong> Verifica y diagnostica problemas con las columnas de fecha en la tabla encuestas.</li>
                         <li><strong>Limpiar Migraciones:</strong> Elimina migraciones duplicadas y ejecuta la migración consolidada del sistema de encuestas.</li>
+                        <li><strong>Diagnóstico de Preguntas:</strong> Verifica y diagnostica problemas específicos en la creación de preguntas, incluyendo estructura de tabla, modelo y métodos.</li>
+                        <li><strong>Simulación de Pregunta:</strong> Simula el proceso completo de creación de una pregunta, mostrando cada paso y posibles errores.</li>
+                        <li><strong>Verificación de BD:</strong> Verifica y corrige la configuración de la base de datos para desarrollo local.</li>
                     </ul>
                 </div>
 
