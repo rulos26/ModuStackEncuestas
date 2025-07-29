@@ -24,6 +24,7 @@ class EncuestaSeguimientoController extends Controller
      */
     public function dashboard($encuestaId)
     {
+        dd($encuestaId);
         try {
             $encuesta = Encuesta::with(['bloquesEnvio', 'preguntas'])->findOrFail($encuestaId);
 
@@ -71,6 +72,7 @@ class EncuestaSeguimientoController extends Controller
      */
     public function actualizarDatos($encuestaId)
     {
+        dd($encuestaId);
         try {
             $encuesta = Encuesta::with(['bloquesEnvio'])->findOrFail($encuestaId);
 
@@ -118,6 +120,7 @@ class EncuestaSeguimientoController extends Controller
      */
     public function pausarEnvio($encuestaId)
     {
+        dd($encuestaId);
         try {
             $encuesta = Encuesta::findOrFail($encuestaId);
 
@@ -151,6 +154,7 @@ class EncuestaSeguimientoController extends Controller
      */
     public function reanudarEnvio($encuestaId)
     {
+        dd($encuestaId);
         try {
             $encuesta = Encuesta::findOrFail($encuestaId);
 
@@ -184,6 +188,7 @@ class EncuestaSeguimientoController extends Controller
      */
     public function cancelarEnvio($encuestaId)
     {
+        dd($encuestaId);
         try {
             $encuesta = Encuesta::findOrFail($encuestaId);
 
@@ -226,6 +231,7 @@ class EncuestaSeguimientoController extends Controller
      */
     private function obtenerEstadisticasEnvio($encuesta)
     {
+        dd($encuesta);
         $bloques = $encuesta->obtenerBloquesEnvio();
 
         $totalBloques = $bloques->count();
