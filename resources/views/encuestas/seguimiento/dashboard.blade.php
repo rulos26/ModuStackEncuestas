@@ -134,20 +134,20 @@
                                     @foreach($correosPendientes as $correo)
                                         <tr>
                                             <td>
-                                                <input type="checkbox" class="correo-checkbox" value="{{ $correo->id }}">
+                                                <input type="checkbox" class="correo-checkbox" value="{{ $correo['id'] }}">
                                             </td>
                                             <td>
-                                                <strong>{{ $correo->nombre ?? $correo->email }}</strong>
-                                                @if($correo->cargo)
-                                                    <br><small class="text-muted">{{ $correo->cargo }}</small>
+                                                <strong>{{ $correo['nombre'] ?? $correo['email'] }}</strong>
+                                                @if($correo['cargo'])
+                                                    <br><small class="text-muted">{{ $correo['cargo'] }}</small>
                                                 @endif
                                             </td>
                                             <td>
                                                 <i class="fas fa-envelope text-info"></i>
-                                                {{ $correo->email }}
+                                                {{ $correo['email'] }}
                                             </td>
                                             <td>
-                                                @if($correo->tipo === 'empleado')
+                                                @if($correo['tipo'] === 'empleado')
                                                     <span class="badge badge-info">Empleado</span>
                                                 @else
                                                     <span class="badge badge-primary">Usuario</span>
@@ -158,11 +158,11 @@
                                             </td>
                                             <td>
                                                 <button type="button" class="btn btn-primary btn-sm"
-                                                        onclick="enviarCorreoIndividual({{ $correo->id }}, '{{ $correo->email }}')">
+                                                        onclick="enviarCorreoIndividual('{{ $correo['id'] }}', '{{ $correo['email'] }}')">
                                                     <i class="fas fa-paper-plane"></i> Enviar
                                                 </button>
                                                 <button type="button" class="btn btn-info btn-sm"
-                                                        onclick="verDetallesCorreo({{ $correo->id }})">
+                                                        onclick="verDetallesCorreo('{{ $correo['id'] }}')">
                                                     <i class="fas fa-eye"></i> Ver
                                                 </button>
                                             </td>
