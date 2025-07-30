@@ -48,10 +48,10 @@ class EncuestaSeguimientoController extends Controller
                         // Actualizar estado según progreso
             $resultadoActualizacion = $encuesta->actualizarEstadoSegunProgreso();
 
-            // DEBUG: Mostrar resultado de actualización
+           /*  // DEBUG: Mostrar resultado de actualización
             if (config('app.debug')) {
                 dd('DEBUG - RESULTADO ACTUALIZACIÓN ESTADO:', $resultadoActualizacion);
-            }
+            } */
 
             // Log del resultado de actualización
             if (!$resultadoActualizacion['success']) {
