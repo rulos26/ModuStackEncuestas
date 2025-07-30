@@ -253,6 +253,7 @@ Route::middleware(['auth'])->prefix('encuestas')->name('encuestas.')->group(func
     // Dashboard de seguimiento
     Route::get('{encuesta}/seguimiento', [App\Http\Controllers\EncuestaSeguimientoController::class, 'dashboard'])->name('seguimiento.dashboard');
     Route::get('{encuesta}/seguimiento/actualizar', [App\Http\Controllers\EncuestaSeguimientoController::class, 'actualizarDatos'])->name('seguimiento.actualizar');
+    Route::get('{encuesta}/seguimiento/actualizar-correos-pendientes', [App\Http\Controllers\EncuestaSeguimientoController::class, 'actualizarCorreosPendientes'])->name('seguimiento.actualizar-correos-pendientes');
     Route::post('{encuesta}/seguimiento/pausar', [App\Http\Controllers\EncuestaSeguimientoController::class, 'pausarEnvio'])->name('seguimiento.pausar');
     Route::post('{encuesta}/seguimiento/reanudar', [App\Http\Controllers\EncuestaSeguimientoController::class, 'reanudarEnvio'])->name('seguimiento.reanudar');
     Route::post('{encuesta}/seguimiento/cancelar', [App\Http\Controllers\EncuestaSeguimientoController::class, 'cancelarEnvio'])->name('seguimiento.cancelar');

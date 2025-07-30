@@ -356,6 +356,65 @@ class EncuestaSeguimientoController extends Controller
     }
 
     /**
+     * Actualizar correos pendientes (AJAX)
+     */
+    public function actualizarCorreosPendientes($encuestaId)
+    {
+        try {
+            $encuesta = Encuesta::findOrFail($encuestaId);
+            $correosPendientes = $this->obtenerCorreosPendientes($encuesta);
+
+            // Generar HTML de la tabla
+            $html = '';
+            if (count($correosPendientes) > 0) {
+                foreach ($correosPendientes as $correo) {
+                    $html .= '<tr>';
+                    $html .= '<td><input type="checkbox" class="correo-checkbox" value="' . $correo['id'] . '"></td>';
+                    $html .= '<td><strong>' . ($correo['nombre'] ?? $correo['email']) . '</strong>';
+                    if ($correo['cargo']) {
+                        $html .= '<br><small class="text-muted">' . $correo['cargo'] . '</small>';
+                    }
+                    $html .= '</td>';
+                    $html .= '<td><i class="fas fa-envelope text-info"></i> ' . $correo['email'] . '</td>';
+                    $html .= '<td>';
+                    if ($correo['tipo'] === 'empleado') {
+                        $html .= '<span class="badge badge-info">Empleado</span>';
+                    } else {
+                        $html .= '<span class="badge badge-primary">Usuario</span>';
+                    }
+                    $html .= '</td>';
+                    $html .= '<td><span class="badge badge-warning">Pendiente</span></td>';
+                    $html .= '<td>';
+                    $html .= '<button type="button" class="btn btn-primary btn-sm" onclick="enviarCorreoIndividual(\'' . $correo['id'] . '\', \'' . $correo['email'] . '\')">';
+                    $html .= '<i class="fas fa-paper-plane"></i> Enviar</button>';
+                    $html .= '<button type="button" class="btn btn-info btn-sm" onclick="verDetallesCorreo(\'' . $correo['id'] . '\')">';
+                    $html .= '<i class="fas fa-eye"></i> Ver</button>';
+                    $html .= '</td>';
+                    $html .= '</tr>';
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'html' => $html,
+                'total_pendientes' => count($correosPendientes),
+                'timestamp' => now()->format('Y-m-d H:i:s')
+            ]);
+
+        } catch (Exception $e) {
+            Log::error('Error actualizando correos pendientes', [
+                'encuesta_id' => $encuestaId,
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar correos pendientes: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Exportar lista de correos
      */
     public function exportarLista($encuestaId, Request $request)

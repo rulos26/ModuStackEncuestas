@@ -171,9 +171,9 @@
                                 </tbody>
                             </table>
                         </div>
-
+                        
                         <!-- BOTONES DE ACCIÓN MASIVA -->
-                        <div class="row mt-3">
+                        <div class="row mt-3 botones-accion-masiva">
                             <div class="col-md-6">
                                 <button type="button" class="btn btn-success" onclick="enviarCorreosSeleccionados()">
                                     <i class="fas fa-paper-plane"></i> Enviar Seleccionados
@@ -193,7 +193,7 @@
                             </div>
                         </div>
                     @else
-                        <div class="text-center py-4">
+                        <div class="text-center py-4 mensaje-no-correos">
                             <i class="fas fa-check-circle text-success" style="font-size: 3rem;"></i>
                             <h4 class="mt-3 text-success">¡Todos los correos han sido enviados!</h4>
                             <p class="text-muted">No hay correos pendientes de envío.</p>
@@ -548,6 +548,8 @@ function actualizarContadorSeleccionados() {
 
 function enviarCorreosMasivos() {
     if (confirm('¿Estás seguro de enviar todos los correos pendientes?')) {
+        mostrarLoading('Enviando todos los correos...');
+
         $.ajax({
             url: '{{ route("encuestas.seguimiento.enviar-masivo", $encuesta->id) }}',
             method: 'POST',
@@ -555,13 +557,15 @@ function enviarCorreosMasivos() {
                 _token: '{{ csrf_token() }}'
             },
             success: function(response) {
+                ocultarLoading();
                 if (response.success) {
                     Swal.fire({
                         icon: 'success',
                         title: '¡Éxito!',
                         text: response.message
                     }).then(() => {
-                        location.reload();
+                        actualizarTablaCorreosPendientes();
+                        actualizarEstadisticas();
                     });
                 } else {
                     Swal.fire({
@@ -572,6 +576,7 @@ function enviarCorreosMasivos() {
                 }
             },
             error: function(xhr) {
+                ocultarLoading();
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
@@ -597,6 +602,8 @@ function enviarCorreosSeleccionados() {
     }
 
     if (confirm(`¿Estás seguro de enviar ${seleccionados.length} correos seleccionados?`)) {
+        mostrarLoading(`Enviando ${seleccionados.length} correos...`);
+
         $.ajax({
             url: '{{ route("encuestas.seguimiento.enviar-seleccionados", $encuesta->id) }}',
             method: 'POST',
@@ -605,13 +612,15 @@ function enviarCorreosSeleccionados() {
                 correos: seleccionados
             },
             success: function(response) {
+                ocultarLoading();
                 if (response.success) {
                     Swal.fire({
                         icon: 'success',
                         title: '¡Éxito!',
                         text: response.message
                     }).then(() => {
-                        location.reload();
+                        actualizarTablaCorreosPendientes();
+                        actualizarEstadisticas();
                     });
                 } else {
                     Swal.fire({
@@ -622,6 +631,7 @@ function enviarCorreosSeleccionados() {
                 }
             },
             error: function(xhr) {
+                ocultarLoading();
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
@@ -634,6 +644,8 @@ function enviarCorreosSeleccionados() {
 
 function enviarCorreoIndividual(correoId, email) {
     if (confirm(`¿Estás seguro de enviar el correo a ${email}?`)) {
+        mostrarLoading(`Enviando correo a ${email}...`);
+
         $.ajax({
             url: '{{ route("encuestas.seguimiento.enviar-individual", $encuesta->id) }}',
             method: 'POST',
@@ -642,13 +654,15 @@ function enviarCorreoIndividual(correoId, email) {
                 correo_id: correoId
             },
             success: function(response) {
+                ocultarLoading();
                 if (response.success) {
                     Swal.fire({
                         icon: 'success',
                         title: '¡Éxito!',
                         text: response.message
                     }).then(() => {
-                        location.reload();
+                        actualizarTablaCorreosPendientes();
+                        actualizarEstadisticas();
                     });
                 } else {
                     Swal.fire({
@@ -659,6 +673,7 @@ function enviarCorreoIndividual(correoId, email) {
                 }
             },
             error: function(xhr) {
+                ocultarLoading();
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
@@ -694,6 +709,97 @@ function verDetallesCorreo(correoId) {
             });
         }
     });
+}
+
+function actualizarTablaCorreosPendientes() {
+    $.ajax({
+        url: '{{ route("encuestas.seguimiento.actualizar-correos-pendientes", $encuesta->id) }}',
+        method: 'GET',
+        success: function(response) {
+            if (response.success) {
+                // Actualizar la tabla
+                $('#tablaCorreosPendientes tbody').html(response.html);
+
+                // Actualizar contador
+                $('.card-header .badge').text(response.total_pendientes);
+
+                // Actualizar botones de acción masiva
+                if (response.total_pendientes === 0) {
+                    $('.btn-success, .btn-warning').prop('disabled', true);
+                    $('#tablaCorreosPendientes').hide();
+                    $('.botones-accion-masiva').hide();
+                    $('.mensaje-no-correos').show();
+                } else {
+                    $('.btn-success, .btn-warning').prop('disabled', false);
+                    $('#tablaCorreosPendientes').show();
+                    $('.botones-accion-masiva').show();
+                    $('.mensaje-no-correos').hide();
+                }
+
+                // Reinicializar event listeners
+                $('.correo-checkbox').off('change').on('change', actualizarContadorSeleccionados);
+                $('#seleccionarTodos').off('change').on('change', seleccionarTodosCorreos);
+
+                // Mostrar notificación de actualización
+                mostrarNotificacionActualizacion();
+            }
+        },
+        error: function(xhr) {
+            console.error('Error actualizando tabla de correos pendientes:', xhr.responseText);
+        }
+    });
+}
+
+function actualizarEstadisticas() {
+    $.ajax({
+        url: '{{ route("encuestas.seguimiento.actualizar", $encuesta->id) }}',
+        method: 'GET',
+        success: function(response) {
+            // Actualizar estadísticas
+            actualizarEstadisticas(response.estadisticas);
+
+            // Actualizar bloques
+            actualizarBloques(response.bloques);
+
+            // Actualizar correos
+            actualizarCorreos(response.correos_enviados);
+
+            // Mostrar timestamp
+            mostrarUltimaActualizacion(response.timestamp);
+        },
+        error: function(xhr) {
+            console.error('Error actualizando estadísticas:', xhr.responseText);
+        }
+    });
+}
+
+function mostrarLoading(mensaje) {
+    Swal.fire({
+        title: mensaje,
+        html: '<div class="spinner-border text-primary" role="status"><span class="sr-only">Cargando...</span></div>',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false
+    });
+}
+
+function ocultarLoading() {
+    Swal.close();
+}
+
+function mostrarNotificacionActualizacion() {
+    // Mostrar notificación sutil de actualización
+    const notificacion = $('<div class="alert alert-info alert-dismissible fade show" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">' +
+        '<button type="button" class="close" data-dismiss="alert">&times;</button>' +
+        '<i class="fas fa-sync-alt"></i> Tabla actualizada automáticamente' +
+        '</div>');
+
+    $('body').append(notificacion);
+
+    // Auto-ocultar después de 3 segundos
+    setTimeout(function() {
+        notificacion.fadeOut();
+    }, 3000);
 }
 
 function programarEnvio() {
@@ -764,7 +870,11 @@ function exportarLista() {
 }
 
 function actualizarLista() {
-    location.reload();
+    mostrarLoading('Actualizando lista de correos...');
+    actualizarTablaCorreosPendientes();
+    setTimeout(() => {
+        ocultarLoading();
+    }, 1000);
 }
 
 // Event listeners
