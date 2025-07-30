@@ -204,7 +204,15 @@ class Encuesta extends Model
     }
 
     /**
-     * Generar token único para un destinatario específico
+     * Generar token de acceso único para la encuesta
+     */
+    public function generarTokenAcceso(): string
+    {
+        return Str::random(32);
+    }
+
+    /**
+     * Generar token para destinatario específico
      */
     public function generarTokenParaDestinatario(string $emailDestinatario, int $horasValidez = 24): TokenEncuesta
     {

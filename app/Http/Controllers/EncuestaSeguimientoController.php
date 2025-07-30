@@ -302,7 +302,9 @@ class EncuestaSeguimientoController extends Controller
             'encuesta_id' => $encuesta->id,
             'to' => $correo['email'],
             'subject' => 'Nueva encuesta disponible: ' . $encuesta->titulo,
+            'body' => view('emails.encuesta', $datosCorreo)->render(),
             'status' => 'sent',
+            'sent_by' => auth()->id() ?? 1,
             'sent_at' => now()
         ]);
 
