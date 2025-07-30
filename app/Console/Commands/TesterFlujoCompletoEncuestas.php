@@ -381,7 +381,8 @@ class TesterFlujoCompletoEncuestas extends Command
         $this->line("   - Encuesta ID: {$this->encuesta->id}");
         $this->line("   - Preguntas: {$this->encuesta->preguntas()->count()}");
         $this->line("   - Respuestas totales: " . Respuesta::whereIn('pregunta_id', $this->encuesta->preguntas->pluck('id'))->count());
-        $this->line("   - Reglas de lógica: " . Logica::where('encuesta_id', $this->encuesta->id)->count());
+        $logicaCount = Logica::whereIn('pregunta_id', $this->encuesta->preguntas->pluck('id'))->count();
+        $this->line("   - Reglas de lógica: " . $logicaCount);
         $this->line("   - Emails a enviar: {$this->cantidadUsuarios}");
         $this->line('');
         $this->line("🔗 ACCESOS:");
