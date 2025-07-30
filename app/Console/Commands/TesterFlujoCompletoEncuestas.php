@@ -360,7 +360,7 @@ class TesterFlujoCompletoEncuestas extends Command
         }
 
         $this->line("   🔀 Lógica condicional:");
-        $logicaCount = Logica::where('encuesta_id', $this->encuesta->id)->count();
+        $logicaCount = Logica::whereIn('pregunta_id', $this->encuesta->preguntas->pluck('id'))->count();
         $this->line("     - Reglas creadas: {$logicaCount}");
 
         $this->line('');
