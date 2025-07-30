@@ -317,7 +317,7 @@ class TesterFlujoCompletoEncuestas extends Command
                             ->html($this->encuesta->plantilla_correo);
                 });
 
-                $this->line("   ✅ Email {$index + 1}: {$usuario['email']} - {$usuario['nombre']} - ENVIADO");
+                $this->line("   ✅ Email " . ($index + 1) . ": {$usuario['email']} - {$usuario['nombre']} - ENVIADO");
                 $emailsEnviados++;
 
             } catch (Exception $e) {
@@ -329,7 +329,7 @@ class TesterFlujoCompletoEncuestas extends Command
                     ]);
                 }
 
-                $this->line("   ❌ Email {$index + 1}: {$usuario['email']} - {$usuario['nombre']} - ERROR: {$e->getMessage()}");
+                $this->line("   ❌ Email " . ($index + 1) . ": {$usuario['email']} - {$usuario['nombre']} - ERROR: {$e->getMessage()}");
                 $emailsConError++;
             }
         }
