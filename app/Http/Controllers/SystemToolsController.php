@@ -379,6 +379,19 @@ class SystemToolsController extends Controller
             }
             $resultado = $this->ejecutarComando('verificar:enum-estado', $params);
             break;
+        case 'tester_flujo_completo':
+            $email = $request->get('email', 'rulos26@gmail.com');
+            $cantidad = $request->get('cantidad', 20);
+            $debug = $request->get('debug', false);
+            $params = [
+                '--email' => $email,
+                '--cantidad' => $cantidad
+            ];
+            if ($debug) {
+                $params['--debug'] = true;
+            }
+            $resultado = $this->ejecutarComando('tester:flujo-completo', $params);
+            break;
                     case 'limpiar_cache':
                         $resultado = $this->ejecutarComando('config:clear');
                         $resultado .= "\n\n" . $this->ejecutarComando('route:clear');

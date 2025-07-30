@@ -78,6 +78,9 @@
                         <option value="verificar_enum" {{ $tipo === 'verificar_enum' ? 'selected' : '' }}>
                             Verificar ENUM de Estado
                         </option>
+                        <option value="tester_flujo_completo" {{ $tipo === 'tester_flujo_completo' ? 'selected' : '' }}>
+                            Tester Flujo Completo de Encuestas
+                        </option>
                                     <option value="limpiar_cache" {{ $tipo === 'limpiar_cache' ? 'selected' : '' }}>
                                         Limpiar Caché del Sistema
                                     </option>
@@ -97,6 +100,26 @@
                                        placeholder="Opcional para pruebas específicas">
                                 <small class="form-text text-muted">
                                     Solo necesario para pruebas de preguntas específicas.
+                                </small>
+                            </div>
+                        </div>
+                        <div class="col-md-3" id="email_group" style="display: none;">
+                            <div class="form-group">
+                                <label for="email">Email de Prueba:</label>
+                                <input type="email" class="form-control" id="email" name="email"
+                                       placeholder="rulos26@gmail.com" value="rulos26@gmail.com">
+                                <small class="form-text text-muted">
+                                    Email donde llegarán todos los correos de prueba.
+                                </small>
+                            </div>
+                        </div>
+                        <div class="col-md-3" id="cantidad_group" style="display: none;">
+                            <div class="form-group">
+                                <label for="cantidad">Cantidad de Usuarios:</label>
+                                <input type="number" class="form-control" id="cantidad" name="cantidad"
+                                       placeholder="20" value="20" min="1" max="100">
+                                <small class="form-text text-muted">
+                                    Número de usuarios para el envío masivo.
                                 </small>
                             </div>
                         </div>
@@ -556,15 +579,21 @@ $(document).ready(function() {
                 $('#encuesta_id').attr('placeholder', 'ID de la encuesta para diagnosticar dashboard');
             } else if (selectedValue === 'migracion_sent_mails') {
                 $('#encuesta_id').attr('placeholder', 'No requiere ID - Ejecuta migración');
+            } else if (selectedValue === 'tester_flujo_completo') {
+                $('#encuesta_id').attr('placeholder', 'No requiere ID - Crea encuesta automáticamente');
+                $('#email_group').show();
+                $('#cantidad_group').show();
             } else if (selectedValue === 'probar_envio') {
                 $('#encuesta_id').attr('placeholder', 'ID de la encuesta para probar envío');
             } else {
                 $('#encuesta_id').attr('placeholder', 'ID de la encuesta para pruebas');
             }
-        } else {
-            $('#encuesta_id').closest('.form-group').hide();
-            $('#encuesta_id').prop('required', false);
-        }
+                    } else {
+                $('#encuesta_id').closest('.form-group').hide();
+                $('#encuesta_id').prop('required', false);
+                $('#email_group').hide();
+                $('#cantidad_group').hide();
+            }
 
         // Mostrar/ocultar debug
         if (needsDebug) {
