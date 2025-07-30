@@ -99,6 +99,111 @@
         </div>
     </div>
 
+    <!-- CORREOS NO ENVIADOS -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-envelope-open"></i> Correos Pendientes de Envío
+                        <span class="badge badge-warning ml-2">{{ count($correosPendientes) }}</span>
+                    </h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-success btn-sm" onclick="enviarCorreosMasivos()">
+                            <i class="fas fa-paper-plane"></i> Enviar Todos
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @if(count($correosPendientes) > 0)
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped" id="tablaCorreosPendientes">
+                                <thead>
+                                    <tr>
+                                        <th width="5%">
+                                            <input type="checkbox" id="seleccionarTodos" onchange="seleccionarTodosCorreos()">
+                                        </th>
+                                        <th width="25%">Destinatario</th>
+                                        <th width="20%">Email</th>
+                                        <th width="15%">Tipo</th>
+                                        <th width="15%">Estado</th>
+                                        <th width="20%">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($correosPendientes as $correo)
+                                        <tr>
+                                            <td>
+                                                <input type="checkbox" class="correo-checkbox" value="{{ $correo->id }}">
+                                            </td>
+                                            <td>
+                                                <strong>{{ $correo->nombre ?? $correo->email }}</strong>
+                                                @if($correo->cargo)
+                                                    <br><small class="text-muted">{{ $correo->cargo }}</small>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <i class="fas fa-envelope text-info"></i>
+                                                {{ $correo->email }}
+                                            </td>
+                                            <td>
+                                                @if($correo->tipo === 'empleado')
+                                                    <span class="badge badge-info">Empleado</span>
+                                                @else
+                                                    <span class="badge badge-primary">Usuario</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-warning">Pendiente</span>
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn btn-primary btn-sm"
+                                                        onclick="enviarCorreoIndividual({{ $correo->id }}, '{{ $correo->email }}')">
+                                                    <i class="fas fa-paper-plane"></i> Enviar
+                                                </button>
+                                                <button type="button" class="btn btn-info btn-sm"
+                                                        onclick="verDetallesCorreo({{ $correo->id }})">
+                                                    <i class="fas fa-eye"></i> Ver
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- BOTONES DE ACCIÓN MASIVA -->
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <button type="button" class="btn btn-success" onclick="enviarCorreosSeleccionados()">
+                                    <i class="fas fa-paper-plane"></i> Enviar Seleccionados
+                                    <span class="badge badge-light" id="contadorSeleccionados">0</span>
+                                </button>
+                                <button type="button" class="btn btn-warning" onclick="programarEnvio()">
+                                    <i class="fas fa-clock"></i> Programar Envío
+                                </button>
+                            </div>
+                            <div class="col-md-6 text-right">
+                                <button type="button" class="btn btn-info" onclick="exportarLista()">
+                                    <i class="fas fa-download"></i> Exportar Lista
+                                </button>
+                                <button type="button" class="btn btn-secondary" onclick="actualizarLista()">
+                                    <i class="fas fa-sync-alt"></i> Actualizar
+                                </button>
+                            </div>
+                        </div>
+                    @else
+                        <div class="text-center py-4">
+                            <i class="fas fa-check-circle text-success" style="font-size: 3rem;"></i>
+                            <h4 class="mt-3 text-success">¡Todos los correos han sido enviados!</h4>
+                            <p class="text-muted">No hay correos pendientes de envío.</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- PROGRESO DE ENVÍO -->
     <div class="row mb-4">
         <div class="col-12">
@@ -340,6 +445,31 @@
             </div>
         </div>
     </div>
+
+    <!-- MODAL PARA DETALLES DE CORREO -->
+    <div class="modal fade" id="modalDetallesCorreo" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-envelope"></i> Detalles del Correo
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="modalDetallesCorreoBody">
+                    <!-- Contenido dinámico -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="btnEnviarDesdeModal">
+                        <i class="fas fa-paper-plane"></i> Enviar Correo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('js')
@@ -404,8 +534,245 @@ function mostrarUltimaActualizacion(timestamp) {
     console.log('Última actualización:', timestamp);
 }
 
-// Actualización automática cada 30 segundos
+// FUNCIONES PARA CORREOS PENDIENTES
+function seleccionarTodosCorreos() {
+    const checked = $('#seleccionarTodos').is(':checked');
+    $('.correo-checkbox').prop('checked', checked);
+    actualizarContadorSeleccionados();
+}
+
+function actualizarContadorSeleccionados() {
+    const seleccionados = $('.correo-checkbox:checked').length;
+    $('#contadorSeleccionados').text(seleccionados);
+}
+
+function enviarCorreosMasivos() {
+    if (confirm('¿Estás seguro de enviar todos los correos pendientes?')) {
+        $.ajax({
+            url: '{{ route("encuestas.seguimiento.enviar-masivo", $encuesta->id) }}',
+            method: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                if (response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Éxito!',
+                        text: response.message
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: response.message
+                    });
+                }
+            },
+            error: function(xhr) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error al enviar correos masivos'
+                });
+            }
+        });
+    }
+}
+
+function enviarCorreosSeleccionados() {
+    const seleccionados = $('.correo-checkbox:checked').map(function() {
+        return $(this).val();
+    }).get();
+
+    if (seleccionados.length === 0) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Atención',
+            text: 'Por favor selecciona al menos un correo para enviar'
+        });
+        return;
+    }
+
+    if (confirm(`¿Estás seguro de enviar ${seleccionados.length} correos seleccionados?`)) {
+        $.ajax({
+            url: '{{ route("encuestas.seguimiento.enviar-seleccionados", $encuesta->id) }}',
+            method: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                correos: seleccionados
+            },
+            success: function(response) {
+                if (response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Éxito!',
+                        text: response.message
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: response.message
+                    });
+                }
+            },
+            error: function(xhr) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error al enviar correos seleccionados'
+                });
+            }
+        });
+    }
+}
+
+function enviarCorreoIndividual(correoId, email) {
+    if (confirm(`¿Estás seguro de enviar el correo a ${email}?`)) {
+        $.ajax({
+            url: '{{ route("encuestas.seguimiento.enviar-individual", $encuesta->id) }}',
+            method: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                correo_id: correoId
+            },
+            success: function(response) {
+                if (response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Éxito!',
+                        text: response.message
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: response.message
+                    });
+                }
+            },
+            error: function(xhr) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error al enviar correo individual'
+                });
+            }
+        });
+    }
+}
+
+function verDetallesCorreo(correoId) {
+    $.ajax({
+        url: '{{ route("encuestas.seguimiento.detalles-correo", $encuesta->id) }}',
+        method: 'GET',
+        data: {
+            correo_id: correoId
+        },
+        success: function(response) {
+            $('#modalDetallesCorreoBody').html(response.html);
+            $('#modalDetallesCorreo').modal('show');
+
+            // Configurar botón de envío desde modal
+            $('#btnEnviarDesdeModal').off('click').on('click', function() {
+                enviarCorreoIndividual(correoId, response.correo.email);
+                $('#modalDetallesCorreo').modal('hide');
+            });
+        },
+        error: function(xhr) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Error al cargar detalles del correo'
+            });
+        }
+    });
+}
+
+function programarEnvio() {
+    Swal.fire({
+        title: 'Programar Envío',
+        html: `
+            <div class="form-group">
+                <label>Fecha y Hora de Envío:</label>
+                <input type="datetime-local" id="fechaProgramada" class="form-control">
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'Programar',
+        cancelButtonText: 'Cancelar',
+        preConfirm: () => {
+            const fecha = document.getElementById('fechaProgramada').value;
+            if (!fecha) {
+                Swal.showValidationMessage('Por favor selecciona una fecha y hora');
+                return false;
+            }
+            return fecha;
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Implementar lógica de programación
+            console.log('Fecha programada:', result.value);
+        }
+    });
+}
+
+function exportarLista() {
+    const seleccionados = $('.correo-checkbox:checked').map(function() {
+        return $(this).val();
+    }).get();
+
+    $.ajax({
+        url: '{{ route("encuestas.seguimiento.exportar-lista", $encuesta->id) }}',
+        method: 'POST',
+        data: {
+            _token: '{{ csrf_token() }}',
+            correos: seleccionados
+        },
+        success: function(response) {
+            if (response.success) {
+                // Descargar archivo
+                const link = document.createElement('a');
+                link.href = response.download_url;
+                link.download = response.filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: response.message
+                });
+            }
+        },
+        error: function(xhr) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Error al exportar lista'
+            });
+        }
+    });
+}
+
+function actualizarLista() {
+    location.reload();
+}
+
+// Event listeners
 $(document).ready(function() {
+    // Actualizar contador de seleccionados cuando cambien los checkboxes
+    $('.correo-checkbox').on('change', actualizarContadorSeleccionados);
+
+    // Actualización automática cada 30 segundos
     actualizacionAutomatica = setInterval(actualizarDatos, 30000);
 
     // Detener actualización automática cuando se cierre la página

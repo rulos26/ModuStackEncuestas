@@ -256,6 +256,13 @@ Route::middleware(['auth'])->prefix('encuestas')->name('encuestas.')->group(func
     Route::post('{encuesta}/seguimiento/pausar', [App\Http\Controllers\EncuestaSeguimientoController::class, 'pausarEnvio'])->name('seguimiento.pausar');
     Route::post('{encuesta}/seguimiento/reanudar', [App\Http\Controllers\EncuestaSeguimientoController::class, 'reanudarEnvio'])->name('seguimiento.reanudar');
     Route::post('{encuesta}/seguimiento/cancelar', [App\Http\Controllers\EncuestaSeguimientoController::class, 'cancelarEnvio'])->name('seguimiento.cancelar');
+
+    // Nuevas rutas para envío de correos
+    Route::post('{encuesta}/seguimiento/enviar-masivo', [App\Http\Controllers\EncuestaSeguimientoController::class, 'enviarCorreosMasivos'])->name('seguimiento.enviar-masivo');
+    Route::post('{encuesta}/seguimiento/enviar-seleccionados', [App\Http\Controllers\EncuestaSeguimientoController::class, 'enviarCorreosSeleccionados'])->name('seguimiento.enviar-seleccionados');
+    Route::post('{encuesta}/seguimiento/enviar-individual', [App\Http\Controllers\EncuestaSeguimientoController::class, 'enviarCorreoIndividualEndpoint'])->name('seguimiento.enviar-individual');
+    Route::get('{encuesta}/seguimiento/detalles-correo', [App\Http\Controllers\EncuestaSeguimientoController::class, 'detallesCorreo'])->name('seguimiento.detalles-correo');
+    Route::post('{encuesta}/seguimiento/exportar-lista', [App\Http\Controllers\EncuestaSeguimientoController::class, 'exportarLista'])->name('seguimiento.exportar-lista');
 });
 
 // ============================================================================

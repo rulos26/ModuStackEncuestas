@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Encuesta;
 use App\Models\BloqueEnvio;
 use App\Models\SentMail;
+use App\Models\Empleado;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Exception;
 
 class EncuestaSeguimientoController extends Controller
@@ -24,7 +27,6 @@ class EncuestaSeguimientoController extends Controller
      */
     public function dashboard($encuestaId)
     {
-
         try {
             $encuesta = Encuesta::with(['bloquesEnvio', 'preguntas'])->findOrFail($encuestaId);
 
@@ -45,13 +47,11 @@ class EncuestaSeguimientoController extends Controller
                 ->limit(50)
                 ->get();
 
-                        // Actualizar estado según progreso
-            $resultadoActualizacion = $encuesta->actualizarEstadoSegunProgreso();
+            // Obtener correos pendientes
+            $correosPendientes = $this->obtenerCorreosPendientes($encuesta);
 
-           /*  // DEBUG: Mostrar resultado de actualización
-            if (config('app.debug')) {
-                dd('DEBUG - RESULTADO ACTUALIZACIÓN ESTADO:', $resultadoActualizacion);
-            } */
+            // Actualizar estado según progreso
+            $resultadoActualizacion = $encuesta->actualizarEstadoSegunProgreso();
 
             // Log del resultado de actualización
             if (!$resultadoActualizacion['success']) {
@@ -60,13 +60,13 @@ class EncuestaSeguimientoController extends Controller
                     'error' => $resultadoActualizacion['error']
                 ]);
             }
-            //dd('ENCUESTA', $encuesta);
 
             return view('encuestas.seguimiento.dashboard', compact(
                 'encuesta',
                 'estadisticas',
                 'bloques',
-                'correosEnviados'
+                'correosEnviados',
+                'correosPendientes'
             ));
 
         } catch (Exception $e) {
@@ -82,11 +82,338 @@ class EncuestaSeguimientoController extends Controller
     }
 
     /**
+     * Obtener correos pendientes de envío
+     */
+    private function obtenerCorreosPendientes($encuesta)
+    {
+        $correosPendientes = collect();
+
+        // Obtener empleados que no han recibido correo
+        $empleadosSinCorreo = Empleado::whereNotExists(function ($query) use ($encuesta) {
+            $query->select(DB::raw(1))
+                  ->from('sent_mails')
+                  ->whereColumn('sent_mails.to', 'empleados.correo_electronico')
+                  ->where('sent_mails.encuesta_id', $encuesta->id);
+        })->get();
+
+        foreach ($empleadosSinCorreo as $empleado) {
+            $correosPendientes->push([
+                'id' => 'emp_' . $empleado->id,
+                'nombre' => $empleado->nombre,
+                'email' => $empleado->correo_electronico,
+                'cargo' => $empleado->cargo,
+                'tipo' => 'empleado',
+                'empleado_id' => $empleado->id
+            ]);
+        }
+
+        // Obtener usuarios que no han recibido correo
+        $usuariosSinCorreo = User::whereNotExists(function ($query) use ($encuesta) {
+            $query->select(DB::raw(1))
+                  ->from('sent_mails')
+                  ->whereColumn('sent_mails.to', 'users.email')
+                  ->where('sent_mails.encuesta_id', $encuesta->id);
+        })->get();
+
+        foreach ($usuariosSinCorreo as $usuario) {
+            $correosPendientes->push([
+                'id' => 'usr_' . $usuario->id,
+                'nombre' => $usuario->name,
+                'email' => $usuario->email,
+                'cargo' => null,
+                'tipo' => 'usuario',
+                'usuario_id' => $usuario->id
+            ]);
+        }
+
+        return $correosPendientes;
+    }
+
+    /**
+     * Enviar correos masivos
+     */
+    public function enviarCorreosMasivos($encuestaId)
+    {
+        try {
+            $encuesta = Encuesta::findOrFail($encuestaId);
+            $correosPendientes = $this->obtenerCorreosPendientes($encuesta);
+
+            $enviados = 0;
+            $errores = 0;
+
+            foreach ($correosPendientes as $correo) {
+                try {
+                    $this->enviarCorreoIndividual($correo, $encuesta);
+                    $enviados++;
+                } catch (Exception $e) {
+                    $errores++;
+                    Log::error('Error enviando correo masivo', [
+                        'email' => $correo['email'],
+                        'error' => $e->getMessage()
+                    ]);
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => "Se enviaron {$enviados} correos exitosamente. Errores: {$errores}",
+                'enviados' => $enviados,
+                'errores' => $errores
+            ]);
+
+        } catch (Exception $e) {
+            Log::error('Error en envío masivo', [
+                'encuesta_id' => $encuestaId,
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al enviar correos masivos: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Enviar correos seleccionados
+     */
+    public function enviarCorreosSeleccionados($encuestaId, Request $request)
+    {
+        try {
+            $encuesta = Encuesta::findOrFail($encuestaId);
+            $correosIds = $request->input('correos', []);
+
+            $enviados = 0;
+            $errores = 0;
+
+            foreach ($correosIds as $correoId) {
+                try {
+                    $correo = $this->obtenerCorreoPorId($correoId, $encuesta);
+                    if ($correo) {
+                        $this->enviarCorreoIndividual($correo, $encuesta);
+                        $enviados++;
+                    }
+                } catch (Exception $e) {
+                    $errores++;
+                    Log::error('Error enviando correo seleccionado', [
+                        'correo_id' => $correoId,
+                        'error' => $e->getMessage()
+                    ]);
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => "Se enviaron {$enviados} correos exitosamente. Errores: {$errores}",
+                'enviados' => $enviados,
+                'errores' => $errores
+            ]);
+
+        } catch (Exception $e) {
+            Log::error('Error en envío de correos seleccionados', [
+                'encuesta_id' => $encuestaId,
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al enviar correos seleccionados: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Enviar correo individual (endpoint público)
+     */
+    public function enviarCorreoIndividualEndpoint($encuestaId, Request $request)
+    {
+        try {
+            $encuesta = Encuesta::findOrFail($encuestaId);
+            $correoId = $request->input('correo_id');
+
+            $correo = $this->obtenerCorreoPorId($correoId, $encuesta);
+
+            if (!$correo) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Correo no encontrado'
+                ], 404);
+            }
+
+            $this->enviarCorreoIndividual($correo, $encuesta);
+
+            return response()->json([
+                'success' => true,
+                'message' => "Correo enviado exitosamente a {$correo['email']}"
+            ]);
+
+        } catch (Exception $e) {
+            Log::error('Error enviando correo individual', [
+                'encuesta_id' => $encuestaId,
+                'correo_id' => $correoId ?? 'N/A',
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al enviar correo individual: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Obtener correo por ID
+     */
+    private function obtenerCorreoPorId($correoId, $encuesta)
+    {
+        $correosPendientes = $this->obtenerCorreosPendientes($encuesta);
+
+        return $correosPendientes->firstWhere('id', $correoId);
+    }
+
+    /**
+     * Enviar correo individual (método interno)
+     */
+    private function enviarCorreoIndividual($correo, $encuesta)
+    {
+        // Generar token único para la encuesta
+        $token = $encuesta->generarTokenAcceso();
+
+        // Generar enlace de la encuesta
+        $enlace = route('encuestas.publica', $encuesta->slug) . '?token=' . $token;
+
+        // Preparar datos del correo
+        $datosCorreo = [
+            'nombre' => $correo['nombre'],
+            'email' => $correo['email'],
+            'encuesta' => $encuesta->titulo,
+            'enlace' => $enlace,
+            'fecha_limite' => $encuesta->fecha_fin ? $encuesta->fecha_fin->format('d/m/Y H:i') : 'Sin fecha límite'
+        ];
+
+        // Enviar correo
+        Mail::send('emails.encuesta', $datosCorreo, function ($message) use ($correo, $encuesta) {
+            $message->to($correo['email'], $correo['nombre'])
+                    ->subject('Nueva encuesta disponible: ' . $encuesta->titulo);
+        });
+
+        // Registrar envío en la base de datos
+        SentMail::create([
+            'encuesta_id' => $encuesta->id,
+            'to' => $correo['email'],
+            'subject' => 'Nueva encuesta disponible: ' . $encuesta->titulo,
+            'status' => 'sent',
+            'sent_at' => now()
+        ]);
+
+        Log::info('Correo enviado exitosamente', [
+            'encuesta_id' => $encuesta->id,
+            'email' => $correo['email'],
+            'tipo' => $correo['tipo']
+        ]);
+    }
+
+    /**
+     * Ver detalles de correo
+     */
+    public function detallesCorreo($encuestaId, Request $request)
+    {
+        try {
+            $encuesta = Encuesta::findOrFail($encuestaId);
+            $correoId = $request->input('correo_id');
+
+            $correo = $this->obtenerCorreoPorId($correoId, $encuesta);
+
+            if (!$correo) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Correo no encontrado'
+                ], 404);
+            }
+
+            $html = view('encuestas.seguimiento.detalles-correo', compact('correo', 'encuesta'))->render();
+
+            return response()->json([
+                'success' => true,
+                'html' => $html,
+                'correo' => $correo
+            ]);
+
+        } catch (Exception $e) {
+            Log::error('Error obteniendo detalles de correo', [
+                'encuesta_id' => $encuestaId,
+                'correo_id' => $correoId ?? 'N/A',
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al obtener detalles del correo: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Exportar lista de correos
+     */
+    public function exportarLista($encuestaId, Request $request)
+    {
+        try {
+            $encuesta = Encuesta::findOrFail($encuestaId);
+            $correosIds = $request->input('correos', []);
+
+            $correosPendientes = $this->obtenerCorreosPendientes($encuesta);
+
+            if (!empty($correosIds)) {
+                $correosPendientes = $correosPendientes->whereIn('id', $correosIds);
+            }
+
+            // Generar CSV
+            $filename = 'correos_pendientes_' . $encuesta->id . '_' . now()->format('Y-m-d_H-i-s') . '.csv';
+            $filepath = storage_path('app/public/' . $filename);
+
+            $handle = fopen($filepath, 'w');
+
+            // Headers
+            fputcsv($handle, ['Nombre', 'Email', 'Cargo', 'Tipo']);
+
+            // Datos
+            foreach ($correosPendientes as $correo) {
+                fputcsv($handle, [
+                    $correo['nombre'],
+                    $correo['email'],
+                    $correo['cargo'] ?? 'N/A',
+                    $correo['tipo']
+                ]);
+            }
+
+            fclose($handle);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Lista exportada exitosamente',
+                'download_url' => asset('storage/' . $filename),
+                'filename' => $filename
+            ]);
+
+        } catch (Exception $e) {
+            Log::error('Error exportando lista de correos', [
+                'encuesta_id' => $encuestaId,
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al exportar lista: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Actualizar datos del dashboard (AJAX)
      */
     public function actualizarDatos($encuestaId)
     {
-        dd('actualizarDatos', $encuestaId);
         try {
             $encuesta = Encuesta::with(['bloquesEnvio'])->findOrFail($encuestaId);
 
@@ -107,13 +434,8 @@ class EncuestaSeguimientoController extends Controller
                 ->limit(10)
                 ->get();
 
-                        // Actualizar estado
+            // Actualizar estado
             $resultadoActualizacion = $encuesta->actualizarEstadoSegunProgreso();
-
-            // DEBUG: Mostrar resultado de actualización
-            if (config('app.debug')) {
-                dd('DEBUG - ACTUALIZAR DATOS:', $resultadoActualizacion);
-            }
 
             // Log del resultado de actualización
             if (!$resultadoActualizacion['success']) {
@@ -147,7 +469,6 @@ class EncuestaSeguimientoController extends Controller
      */
     public function pausarEnvio($encuestaId)
     {
-        dd('pausarEnvio', $encuestaId);
         try {
             $encuesta = Encuesta::findOrFail($encuestaId);
 
@@ -181,7 +502,6 @@ class EncuestaSeguimientoController extends Controller
      */
     public function reanudarEnvio($encuestaId)
     {
-        dd('reanudarEnvio', $encuestaId);
         try {
             $encuesta = Encuesta::findOrFail($encuestaId);
 
@@ -215,7 +535,6 @@ class EncuestaSeguimientoController extends Controller
      */
     public function cancelarEnvio($encuestaId)
     {
-        dd('cancelarEnvio', $encuestaId);
         try {
             $encuesta = Encuesta::findOrFail($encuestaId);
 
@@ -258,7 +577,6 @@ class EncuestaSeguimientoController extends Controller
      */
     private function obtenerEstadisticasEnvio($encuesta)
     {
-        //dd('obtenerEstadisticasEnvio', $encuesta);
         $bloques = $encuesta->obtenerBloquesEnvio();
 
         $totalBloques = $bloques->count();
