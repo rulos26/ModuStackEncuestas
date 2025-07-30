@@ -119,7 +119,7 @@
             <i class="fas fa-eye"></i> Previsualizar Encuesta
         </a>
 
-        @if($encuesta->estado === 'enviada' || $encuesta->estado === 'en_progreso' || $encuesta->estado === 'pausada')
+        @if($encuesta->estado === 'enviada' || $encuesta->estado === 'en_progreso' || $encuesta->estado === 'pausada' || $encuesta->estado === 'publicada')
             <a href="{{ route('encuestas.seguimiento.dashboard', $encuesta->id) }}" class="btn btn-info me-2">
                 <i class="fas fa-chart-line"></i> Dashboard de Seguimiento
             </a>
