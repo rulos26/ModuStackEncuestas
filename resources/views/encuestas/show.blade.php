@@ -5,7 +5,9 @@
     <h2>Detalle de la Encuesta</h2>
     <p><strong>Título:</strong> {{ $encuesta->titulo }}</p>
     <p><strong>Slug:</strong> {{ $encuesta->slug }}</p>
-    <p><strong>Estado:</strong> {{ $encuesta->habilitada ? 'Habilitada' : 'Deshabilitada' }}</p>
+    <p><strong>Estado:</strong>
+                                {!! App\Helpers\EstadoHelper::getBadgeHtml($encuesta->estado) !!}
+                            </p>
 
     @if(session('success'))
         <div class="alert alert-success alert-dismissible">

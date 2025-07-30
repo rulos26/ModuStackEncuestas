@@ -175,9 +175,7 @@
                 <h6><i class="fas fa-info-circle"></i> Estado Actual</h6>
                 <p class="mb-0">
                     <strong>Estado:</strong>
-                    <span class="badge badge-{{ $encuesta->estado === 'borrador' ? 'warning' : ($encuesta->estado === 'enviada' ? 'success' : 'info') }}">
-                        {{ ucfirst($encuesta->estado) }}
-                    </span>
+                    {!! App\Helpers\EstadoHelper::getBadgeHtml($encuesta->estado) !!}
                 </p>
                 <small class="text-muted">
                     El estado se actualiza automáticamente según el progreso del envío

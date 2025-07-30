@@ -29,11 +29,7 @@
                     <td>{{ $encuesta->empresa->nombre ?? '-' }}</td>
                     <td>{{ $encuesta->user->name ?? '-' }}</td>
                     <td>
-                        @if($encuesta->habilitada)
-                            <span class="badge bg-success">Habilitada</span>
-                        @else
-                            <span class="badge bg-danger">Deshabilitada</span>
-                        @endif
+                        {!! App\Helpers\EstadoHelper::getBadgeHtml($encuesta->estado) !!}
                     </td>
                     <td>
                         <div class="btn-group" role="group">

@@ -50,9 +50,7 @@
                             <p><strong>Título:</strong> {{ $encuesta->titulo }}</p>
                             <p><strong>Empresa:</strong> {{ $encuesta->empresa->nombre_legal ?? 'No asignada' }}</p>
                             <p><strong>Estado:</strong>
-                                <span class="badge badge-{{ $encuesta->estado === 'publicada' ? 'success' : ($encuesta->estado === 'enviada' ? 'warning' : 'secondary') }}">
-                                    {{ ucfirst($encuesta->estado) }}
-                                </span>
+                                {!! App\Helpers\EstadoHelper::getBadgeHtml($encuesta->estado) !!}
                             </p>
                         </div>
                         <div class="col-md-6">
