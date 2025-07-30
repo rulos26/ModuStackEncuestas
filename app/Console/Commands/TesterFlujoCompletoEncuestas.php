@@ -5,12 +5,14 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use App\Models\Encuesta;
 use App\Models\Pregunta;
 use App\Models\Respuesta;
 use App\Models\Logica;
 use App\Models\Empresa;
 use App\Models\User;
+use App\Models\SentMail;
 use Exception;
 
 class TesterFlujoCompletoEncuestas extends Command
@@ -291,15 +293,51 @@ class TesterFlujoCompletoEncuestas extends Command
             ];
         }
 
-        // Simular envío de correos
+        // ENVIAR CORREOS REALES
+        $emailsEnviados = 0;
+        $emailsConError = 0;
+
         foreach ($usuarios as $index => $usuario) {
-            // Aquí normalmente se enviaría el correo
-            // Por ahora solo registramos
-            $this->line("   📨 Email {$index + 1}: {$usuario['email']} - {$usuario['nombre']}");
+            try {
+                // Crear registro en sent_mails
+                $sentMail = SentMail::create([
+                    'to' => $usuario['email'],
+                    'subject' => $this->encuesta->asunto_correo,
+                    'body' => $this->encuesta->plantilla_correo,
+                    'encuesta_id' => $this->encuesta->id,
+                    'sent_by' => $this->user->id,
+                    'status' => 'sent',
+                    'attachments' => []
+                ]);
+
+                // Enviar email real
+                Mail::send([], [], function ($message) use ($usuario) {
+                    $message->to($usuario['email'])
+                            ->subject($this->encuesta->asunto_correo)
+                            ->html($this->encuesta->plantilla_correo);
+                });
+
+                $this->line("   ✅ Email {$index + 1}: {$usuario['email']} - {$usuario['nombre']} - ENVIADO");
+                $emailsEnviados++;
+
+            } catch (Exception $e) {
+                // Registrar error
+                if (isset($sentMail)) {
+                    $sentMail->update([
+                        'status' => 'error',
+                        'error_message' => $e->getMessage()
+                    ]);
+                }
+
+                $this->line("   ❌ Email {$index + 1}: {$usuario['email']} - {$usuario['nombre']} - ERROR: {$e->getMessage()}");
+                $emailsConError++;
+            }
         }
 
         $this->line("   ✅ Configuración de envío completada");
         $this->line("   📊 Total emails a enviar: {$this->cantidadUsuarios}");
+        $this->line("   ✅ Emails enviados exitosamente: {$emailsEnviados}");
+        $this->line("   ❌ Emails con error: {$emailsConError}");
         $this->line('');
     }
 
