@@ -255,11 +255,10 @@ class TesterFlujoCompletoEncuestas extends Command
                 $primeraRespuesta = $respuestas->first();
 
                 Logica::create([
-                    'encuesta_id' => $this->encuesta->id,
-                    'pregunta_origen_id' => $pregunta->id,
-                    'respuesta_origen_id' => $primeraRespuesta->id,
-                    'pregunta_destino_id' => $pregunta->id + 1, // Siguiente pregunta
-                    'accion' => 'saltar_a'
+                    'pregunta_id' => $pregunta->id,
+                    'respuesta_id' => $primeraRespuesta->id,
+                    'siguiente_pregunta_id' => $pregunta->id + 1, // Siguiente pregunta
+                    'finalizar' => false
                 ]);
 
                 $this->line("   ✅ Lógica creada para '{$pregunta->texto}'");
