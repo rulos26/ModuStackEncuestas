@@ -34,7 +34,7 @@ class EncuestaSeguimientoController extends Controller
             // }
 
             // Obtener estadísticas de envío
-            //$estadisticas = $this->obtenerEstadisticasEnvio($encuesta);
+            $estadisticas = $this->obtenerEstadisticasEnvio($encuesta);
 
             // Obtener bloques de envío
             $bloques = $encuesta->obtenerBloquesEnvio();
@@ -60,7 +60,7 @@ class EncuestaSeguimientoController extends Controller
                     'error' => $resultadoActualizacion['error']
                 ]);
             }
-            dd('ENCUESTA', $encuesta);
+            //dd('ENCUESTA', $encuesta);
 
             return view('encuestas.seguimiento.dashboard', compact(
                 'encuesta',
