@@ -81,6 +81,9 @@
                         <option value="tester_flujo_completo" {{ $tipo === 'tester_flujo_completo' ? 'selected' : '' }}>
                             Tester Flujo Completo de Encuestas
                         </option>
+                        <option value="publicar_encuesta" {{ $tipo === 'publicar_encuesta' ? 'selected' : '' }}>
+                            Publicar Encuesta y Generar Enlace
+                        </option>
                                     <option value="limpiar_cache" {{ $tipo === 'limpiar_cache' ? 'selected' : '' }}>
                                         Limpiar Caché del Sistema
                                     </option>
@@ -120,6 +123,16 @@
                                        placeholder="20" value="20" min="1" max="100">
                                 <small class="form-text text-muted">
                                     Número de usuarios para el envío masivo.
+                                </small>
+                            </div>
+                        </div>
+                        <div class="col-md-3" id="horas_group" style="display: none;">
+                            <div class="form-group">
+                                <label for="horas">Horas de Validez:</label>
+                                <input type="number" class="form-control" id="horas" name="horas"
+                                       placeholder="24" value="24" min="1" max="168">
+                                <small class="form-text text-muted">
+                                    Horas de validez del token de acceso.
                                 </small>
                             </div>
                         </div>
@@ -557,7 +570,7 @@ $(document).ready(function() {
     // Mostrar/ocultar campo encuesta_id según el tipo seleccionado
     $('#tipo_prueba').change(function() {
         const selectedValue = $(this).val();
-        const needsEncuestaId = ['preguntas', 'creacion_preguntas', 'simular_pregunta', 'estado_encuesta', 'probar_envio', 'diagnosticar_tipos', 'diagnosticar_progreso', 'forzar_validaciones', 'probar_dashboard', 'diagnosticar_dashboard'].includes(selectedValue);
+        const needsEncuestaId = ['preguntas', 'creacion_preguntas', 'simular_pregunta', 'estado_encuesta', 'probar_envio', 'diagnosticar_tipos', 'diagnosticar_progreso', 'forzar_validaciones', 'probar_dashboard', 'diagnosticar_dashboard', 'publicar_encuesta'].includes(selectedValue);
         const needsDebug = ['diagnosticar_tipos', 'diagnosticar_progreso'].includes(selectedValue);
 
         if (needsEncuestaId) {
@@ -583,6 +596,12 @@ $(document).ready(function() {
                 $('#encuesta_id').attr('placeholder', 'No requiere ID - Crea encuesta automáticamente');
                 $('#email_group').show();
                 $('#cantidad_group').show();
+            } else if (selectedValue === 'publicar_encuesta') {
+                $('#encuesta_id').attr('placeholder', 'ID de la encuesta a publicar');
+                $('#email_group').show();
+                $('#email').attr('placeholder', 'Email para el token de acceso');
+                $('#cantidad_group').hide();
+                $('#horas_group').show();
             } else if (selectedValue === 'probar_envio') {
                 $('#encuesta_id').attr('placeholder', 'ID de la encuesta para probar envío');
             } else {
@@ -593,6 +612,7 @@ $(document).ready(function() {
                 $('#encuesta_id').prop('required', false);
                 $('#email_group').hide();
                 $('#cantidad_group').hide();
+                $('#horas_group').hide();
             }
 
         // Mostrar/ocultar debug

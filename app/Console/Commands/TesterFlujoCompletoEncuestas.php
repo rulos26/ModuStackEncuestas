@@ -64,6 +64,35 @@ class TesterFlujoCompletoEncuestas extends Command
             // 8. Mostrar resumen
             $this->mostrarResumen();
 
+            // PUBLICAR LA ENCUESTA PARA ACCESO PÚBLICO
+            $this->line('');
+            $this->line('🌐 PUBLICANDO ENCUESTA PARA ACCESO PÚBLICO...');
+
+            try {
+                $this->encuesta->update([
+                    'estado' => 'publicada',
+                    'habilitada' => true
+                ]);
+
+                $this->line('   ✅ Encuesta publicada exitosamente');
+                $this->line('   📍 Estado: publicada');
+                $this->line('   �� Habilitada: sí');
+
+                // Generar un token de prueba
+                $token = $this->encuesta->generarTokenParaDestinatario('test@example.com', 24);
+                $enlace = $token->obtenerEnlace();
+
+                $this->line('   🔗 Enlace de prueba:');
+                $this->line('      ' . $enlace);
+
+            } catch (Exception $e) {
+                $this->error('   ❌ Error publicando encuesta: ' . $e->getMessage());
+            }
+
+            $this->line('');
+            $this->line('🎉 ¡TEST COMPLETADO EXITOSAMENTE!');
+            $this->line('📊 La encuesta está lista para ser utilizada.');
+
             return 0;
 
         } catch (Exception $e) {

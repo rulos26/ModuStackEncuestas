@@ -392,6 +392,21 @@ class SystemToolsController extends Controller
             }
             $resultado = $this->ejecutarComando('tester:flujo-completo', $params);
             break;
+        case 'publicar_encuesta':
+            $encuestaId = $request->get('encuesta_id');
+            $email = $request->get('email', 'test@example.com');
+            $horas = $request->get('horas', 24);
+            if (!$encuestaId) {
+                $resultado = "❌ Error: Debes proporcionar el ID de la encuesta";
+            } else {
+                $params = [
+                    'encuesta_id' => $encuestaId,
+                    '--email' => $email,
+                    '--horas' => $horas
+                ];
+                $resultado = $this->ejecutarComando('encuesta:publicar', $params);
+            }
+            break;
                     case 'limpiar_cache':
                         $resultado = $this->ejecutarComando('config:clear');
                         $resultado .= "\n\n" . $this->ejecutarComando('route:clear');
