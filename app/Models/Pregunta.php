@@ -63,6 +63,14 @@ class Pregunta extends Model
     }
 
     /**
+     * Relación con las respuestas de usuario
+     */
+    public function respuestasUsuario(): HasMany
+    {
+        return $this->hasMany(\App\Models\RespuestaUsuario::class, 'pregunta_id');
+    }
+
+    /**
      * Obtener los tipos de preguntas disponibles
      */
     public static function getTiposDisponibles()

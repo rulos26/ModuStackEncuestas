@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Encuesta;
 use App\Models\AnalisisEncuesta;
+use App\Models\RespuestaUsuario;
+use App\Models\Respuesta;
 use App\Services\IAService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -64,7 +66,7 @@ class RespuestasController extends Controller
                 return redirect()->back()->with('error', 'Debe seleccionar una encuesta.');
             }
 
-            $encuesta = Encuesta::with(['preguntas.respuestas', 'preguntas.respuestasUsuario'])
+            $encuesta = Encuesta::with(['preguntas.respuestas'])
                 ->findOrFail($encuestaId);
 
             // Verificar que la encuesta tenga respuestas
@@ -170,24 +172,18 @@ class RespuestasController extends Controller
         return $datos;
     }
 
-    /**
+        /**
      * Obtener respuestas de una pregunta
      */
     private function obtenerRespuestasPregunta(int $preguntaId): array
     {
-        $respuestas = DB::table('respuestas_usuario')
-            ->where('pregunta_id', $preguntaId)
-            ->get();
-
+        $respuestas = RespuestaUsuario::where('pregunta_id', $preguntaId)->get();
         $resultado = [];
 
         foreach ($respuestas as $respuesta) {
             if ($respuesta->respuesta_id) {
                 // Respuesta de selección
-                $respuestaModel = DB::table('respuestas')
-                    ->where('id', $respuesta->respuesta_id)
-                    ->first();
-
+                $respuestaModel = Respuesta::find($respuesta->respuesta_id);
                 if ($respuestaModel) {
                     $resultado[] = $respuestaModel->texto;
                 }
