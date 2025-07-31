@@ -53,7 +53,7 @@ class EncuestaPublicaController extends Controller
      */
     public function responder(Request $request, $id)
     {
-        // dd($request->all(), $id); // DEBUG - COMENTADO PERO NO BORRADO
+         // DEBUG - COMENTADO PERO NO BORRADO
 
         try {
             DB::beginTransaction();
@@ -64,7 +64,7 @@ class EncuestaPublicaController extends Controller
                 ->where('habilitada', true)
                 ->where('estado', 'publicada')
                 ->firstOrFail();
-
+                dd($request->all(), $id, $encuesta);
             if (!$encuesta->estaDisponible()) {
                 return redirect()->back()->with('error', 'Esta encuesta no está disponible en este momento.');
             }
