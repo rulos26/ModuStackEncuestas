@@ -566,9 +566,9 @@ return [
                     'icon' => 'fas fa-list',
                 ],
                 [
-                    'text' => 'Respuestas',
-                    'url'  => '#', // Cambia por la ruta real si tienes un módulo de respuestas
-                    'icon' => 'fas fa-check-circle',
+                    'text' => 'Análisis de Respuestas',
+                    'route' => 'respuestas.index',
+                    'icon' => 'fas fa-chart-bar',
                 ],
                 [
                     'text' => 'Vista Previa',

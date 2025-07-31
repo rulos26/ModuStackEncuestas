@@ -47,4 +47,9 @@ return [
         'tenant' => 'common',
     ],
 
+    'huggingface' => [
+        'api_key' => env('HUGGINGFACE_API_KEY'),
+        'model' => env('HUGGINGFACE_MODEL', 'microsoft/DialoGPT-medium'),
+    ],
+
 ];

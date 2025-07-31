@@ -273,6 +273,13 @@ Route::middleware(['auth'])->prefix('encuestas')->name('encuestas.')->group(func
 // RUTAS PARA HERRAMIENTAS DEL SISTEMA
 // ============================================================================
 
+// Módulo de respuestas con análisis de IA
+Route::middleware(['auth'])->prefix('respuestas')->name('respuestas.')->group(function () {
+    Route::get('/', [App\Http\Controllers\RespuestasController::class, 'index'])->name('index');
+    Route::post('generar-analisis', [App\Http\Controllers\RespuestasController::class, 'generarAnalisis'])->name('generar-analisis');
+    Route::get('ver/{encuestaId}', [App\Http\Controllers\RespuestasController::class, 'ver'])->name('ver');
+});
+
 Route::middleware(['auth'])->prefix('system/tools')->name('system.tools.')->group(function () {
     Route::get('/', [App\Http\Controllers\SystemToolsController::class, 'dashboard'])->name('dashboard');
     Route::get('diagnosticar-encuestas', [App\Http\Controllers\SystemToolsController::class, 'diagnosticarEncuestas'])->name('diagnosticar-encuestas');
