@@ -96,6 +96,9 @@
                         <option value="diagnosticar_error_publica" {{ $tipo === 'diagnosticar_error_publica' ? 'selected' : '' }}>
                             Diagnosticar Error Encuesta Pública
                         </option>
+                        <option value="solucionar_hosting_completa" {{ $tipo === 'solucionar_hosting_completa' ? 'selected' : '' }}>
+                            Solución Completa para Hosting
+                        </option>
                                     <option value="limpiar_cache" {{ $tipo === 'limpiar_cache' ? 'selected' : '' }}>
                                         Limpiar Caché del Sistema
                                     </option>
@@ -631,6 +634,11 @@ $(document).ready(function() {
                 $('#horas_group').hide();
             } else if (selectedValue === 'diagnosticar_error_publica') {
                 $('#encuesta_id').attr('placeholder', 'ID de encuesta (opcional) - Diagnostica todas si no se especifica');
+                $('#email_group').hide();
+                $('#cantidad_group').hide();
+                $('#horas_group').hide();
+            } else if (selectedValue === 'solucionar_hosting_completa') {
+                $('#encuesta_id').attr('placeholder', 'No requiere ID - Solución automática completa');
                 $('#email_group').hide();
                 $('#cantidad_group').hide();
                 $('#horas_group').hide();

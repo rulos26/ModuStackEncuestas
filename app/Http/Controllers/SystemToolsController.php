@@ -437,6 +437,9 @@ class SystemToolsController extends Controller
                 $resultado = $this->ejecutarComando('encuesta:diagnosticar-error-publica');
             }
             break;
+        case 'solucionar_hosting_completa':
+            $resultado = $this->ejecutarComando('hosting:solucionar-completa');
+            break;
                     case 'limpiar_cache':
                         $resultado = $this->ejecutarComando('config:clear');
                         $resultado .= "\n\n" . $this->ejecutarComando('route:clear');
