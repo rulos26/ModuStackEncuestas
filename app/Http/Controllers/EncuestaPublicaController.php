@@ -77,7 +77,7 @@ class EncuestaPublicaController extends Controller
             // 3. Validar preguntas obligatorias
             $preguntasObligatorias = $encuesta->preguntas()->where('obligatoria', true)->pluck('id')->toArray();
             $respuestasEnviadas = array_keys($request->respuestas);
-            dd(preguntasObligatorias: $preguntasObligatorias, respuestasEnviadas: $respuestasEnviadas);
+
             foreach ($preguntasObligatorias as $preguntaId) {
                 if (!in_array($preguntaId, $respuestasEnviadas)) {
                     return redirect()->back()->with('error', 'Debe responder todas las preguntas obligatorias.');
@@ -127,7 +127,7 @@ class EncuestaPublicaController extends Controller
                 // Guardar la respuesta
                 $this->guardarRespuestaUsuario($encuesta->id, $preguntaId, $respuestaId, $respuestaTexto, $request);
             }
-
+            dd(preguntasObligatorias: $preguntasObligatorias, respuestasEnviadas: $respuestasEnviadas);
             DB::commit();
 
             return redirect()->route('encuestas.publica', $encuesta->slug)
