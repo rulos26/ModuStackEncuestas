@@ -17,7 +17,7 @@
                     <div class="pregunta-texto">
                         {{ $loop->iteration }}. {{ $pregunta->texto }}
                         @if($pregunta->obligatoria)
-                            <span class="obligatoria" data-pregunta-id="{{ $pregunta->id }}"> *</span>
+                            <span class="obligatoria" data-pregunta-id="{{ $pregunta->id }}" data-pregunta-texto="{{ $pregunta->texto }}"> *</span>
                         @endif
                     </div>
 

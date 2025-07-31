@@ -227,10 +227,42 @@
 
                     obligatorias.forEach(obligatoria => {
                         const preguntaId = obligatoria.dataset.preguntaId;
-                        const respuesta = document.querySelector(`input[name="respuestas[${preguntaId}]"]`);
+                        const preguntaTexto = obligatoria.dataset.preguntaTexto;
 
-                        if (!respuesta || !respuesta.value.trim()) {
-                            faltantes.push(obligatoria.textContent);
+                        // Buscar diferentes tipos de respuestas
+                        let respuesta = document.querySelector(`input[name="respuestas[${preguntaId}]"]`);
+                        let textarea = document.querySelector(`textarea[name="respuestas[${preguntaId}]"]`);
+                        let select = document.querySelector(`select[name="respuestas[${preguntaId}]"]`);
+
+                        let tieneRespuesta = false;
+
+                        // Verificar radio buttons
+                        if (respuesta && respuesta.type === 'radio') {
+                            const radios = document.querySelectorAll(`input[name="respuestas[${preguntaId}]"]`);
+                            radios.forEach(radio => {
+                                if (radio.checked) {
+                                    tieneRespuesta = true;
+                                }
+                            });
+                        }
+                        // Verificar checkbox
+                        else if (respuesta && respuesta.type === 'checkbox') {
+                            const checkboxes = document.querySelectorAll(`input[name="respuestas[${preguntaId}][]"]`);
+                            checkboxes.forEach(checkbox => {
+                                if (checkbox.checked) {
+                                    tieneRespuesta = true;
+                                }
+                            });
+                        }
+                        // Verificar texto, textarea, select
+                        else if ((respuesta && respuesta.value.trim()) ||
+                                 (textarea && textarea.value.trim()) ||
+                                 (select && select.value.trim())) {
+                            tieneRespuesta = true;
+                        }
+
+                        if (!tieneRespuesta) {
+                            faltantes.push(preguntaTexto || `Pregunta ${preguntaId}`);
                         }
                     });
 
