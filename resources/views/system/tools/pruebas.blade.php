@@ -84,6 +84,9 @@
                         <option value="publicar_encuesta" {{ $tipo === 'publicar_encuesta' ? 'selected' : '' }}>
                             Publicar Encuesta y Generar Enlace
                         </option>
+                        <option value="verificar_respuestas" {{ $tipo === 'verificar_respuestas' ? 'selected' : '' }}>
+                            Verificar Respuestas de Encuesta
+                        </option>
                                     <option value="limpiar_cache" {{ $tipo === 'limpiar_cache' ? 'selected' : '' }}>
                                         Limpiar Caché del Sistema
                                     </option>
@@ -570,7 +573,7 @@ $(document).ready(function() {
     // Mostrar/ocultar campo encuesta_id según el tipo seleccionado
     $('#tipo_prueba').change(function() {
         const selectedValue = $(this).val();
-        const needsEncuestaId = ['preguntas', 'creacion_preguntas', 'simular_pregunta', 'estado_encuesta', 'probar_envio', 'diagnosticar_tipos', 'diagnosticar_progreso', 'forzar_validaciones', 'probar_dashboard', 'diagnosticar_dashboard', 'publicar_encuesta'].includes(selectedValue);
+        const needsEncuestaId = ['preguntas', 'creacion_preguntas', 'simular_pregunta', 'estado_encuesta', 'probar_envio', 'diagnosticar_tipos', 'diagnosticar_progreso', 'forzar_validaciones', 'probar_dashboard', 'diagnosticar_dashboard', 'publicar_encuesta', 'verificar_respuestas'].includes(selectedValue);
         const needsDebug = ['diagnosticar_tipos', 'diagnosticar_progreso'].includes(selectedValue);
 
         if (needsEncuestaId) {
@@ -602,6 +605,11 @@ $(document).ready(function() {
                 $('#email').attr('placeholder', 'Email para el token de acceso');
                 $('#cantidad_group').hide();
                 $('#horas_group').show();
+            } else if (selectedValue === 'verificar_respuestas') {
+                $('#encuesta_id').attr('placeholder', 'ID de la encuesta para verificar respuestas');
+                $('#email_group').hide();
+                $('#cantidad_group').hide();
+                $('#horas_group').hide();
             } else if (selectedValue === 'probar_envio') {
                 $('#encuesta_id').attr('placeholder', 'ID de la encuesta para probar envío');
             } else {

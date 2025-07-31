@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Encuesta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Exception;
 
 class EncuestaPublicaController extends Controller
@@ -73,38 +74,106 @@ class EncuestaPublicaController extends Controller
             }
 
             // Guardar respuestas
-            foreach ($request->respuestas as $preguntaId => $respuestaId) {
+            foreach ($request->respuestas as $preguntaId => $respuestaData) {
                 // Verificar que la pregunta existe y pertenece a la encuesta
                 $pregunta = $encuesta->preguntas()->where('id', $preguntaId)->first();
                 if (!$pregunta) {
                     continue;
                 }
 
-                // Verificar que la respuesta existe y pertenece a la pregunta
-                $respuesta = $pregunta->respuestas()->where('id', $respuestaId)->first();
-                if (!$respuesta) {
-                    continue;
+                $respuestaId = null;
+                $respuestaTexto = null;
+
+                // Determinar el tipo de respuesta según el tipo de pregunta
+                switch ($pregunta->tipo) {
+                    case 'respuesta_corta':
+                    case 'parrafo':
+                    case 'fecha':
+                    case 'hora':
+                        // Respuesta de texto libre
+                        $respuestaTexto = is_array($respuestaData) ? implode(', ', $respuestaData) : $respuestaData;
+                        break;
+
+                    case 'seleccion_unica':
+                        // Respuesta de selección única
+                        $respuestaId = $respuestaData;
+                        break;
+
+                    case 'casillas_verificacion':
+                        // Respuesta de múltiple selección
+                        if (is_array($respuestaData)) {
+                            // Guardar cada selección como una respuesta separada
+                            foreach ($respuestaData as $respId) {
+                                $this->guardarRespuestaUsuario($encuesta->id, $preguntaId, $respId, null, $request);
+                            }
+                            continue; // Continuar con la siguiente pregunta
+                        } else {
+                            $respuestaId = $respuestaData;
+                        }
+                        break;
+
+                    case 'lista_desplegable':
+                        // Respuesta de selección única
+                        $respuestaId = $respuestaData;
+                        break;
+
+                    case 'escala_lineal':
+                        // Respuesta de escala (guardar como texto)
+                        $respuestaTexto = $respuestaData;
+                        break;
+
+                    default:
+                        // Para otros tipos, intentar como texto
+                        $respuestaTexto = is_array($respuestaData) ? implode(', ', $respuestaData) : $respuestaData;
+                        break;
                 }
 
-                // Guardar respuesta del usuario
-                DB::table('respuestas_usuario')->insert([
-                    'encuesta_id' => $encuesta->id,
-                    'pregunta_id' => $preguntaId,
-                    'respuesta_id' => $respuestaId,
-                    'ip_address' => $request->ip(),
-                    'user_agent' => $request->userAgent(),
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
+                // Guardar la respuesta
+                $this->guardarRespuestaUsuario($encuesta->id, $preguntaId, $respuestaId, $respuestaTexto, $request);
             }
 
             DB::commit();
 
-        return redirect()->route('encuestas.publica', $encuesta->slug)
-            ->with('success', '¡Gracias por responder la encuesta!');
+            return redirect()->route('encuestas.publica', $encuesta->slug)
+                ->with('success', '¡Gracias por responder la encuesta!');
+
         } catch (Exception $e) {
             DB::rollBack();
+            Log::error('Error guardando respuestas de encuesta pública', [
+                'encuesta_id' => $id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return redirect()->back()->with('error', 'Error al procesar las respuestas. Por favor, inténtelo de nuevo.');
         }
+    }
+
+    /**
+     * Guardar una respuesta de usuario en la base de datos
+     */
+    private function guardarRespuestaUsuario($encuestaId, $preguntaId, $respuestaId, $respuestaTexto, $request)
+    {
+        // Verificar que la respuesta existe si es de selección
+        if ($respuestaId) {
+            $pregunta = \App\Models\Pregunta::find($preguntaId);
+            $respuesta = $pregunta->respuestas()->where('id', $respuestaId)->first();
+            if (!$respuesta) {
+                return false; // Respuesta no válida
+            }
+        }
+
+        // Guardar respuesta del usuario
+        DB::table('respuestas_usuario')->insert([
+            'encuesta_id' => $encuestaId,
+            'pregunta_id' => $preguntaId,
+            'respuesta_id' => $respuestaId,
+            'respuesta_texto' => $respuestaTexto,
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return true;
     }
 }
