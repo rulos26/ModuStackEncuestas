@@ -127,9 +127,9 @@ class EncuestaPublicaController extends Controller
                 // Guardar la respuesta
                 $this->guardarRespuestaUsuario($encuesta->id, $preguntaId, $respuestaId, $respuestaTexto, $request);
             }
-            dd(preguntasObligatorias: $preguntasObligatorias, respuestasEnviadas: $respuestasEnviadas);
-            DB::commit();
 
+            DB::commit();
+            dd(preguntasObligatorias: $preguntasObligatorias, respuestasEnviadas: $respuestasEnviadas);
             return redirect()->route('encuestas.publica', $encuesta->slug)
                 ->with('success', '¡Gracias por responder la encuesta!');
 
