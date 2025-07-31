@@ -76,7 +76,8 @@
         }
 
         .respuesta-option input[type="radio"]:checked + label,
-        .respuesta-option input[type="checkbox"]:checked + label {
+        .respuesta-option input[type="checkbox"]:checked + label,
+        .escala-option input[type="radio"]:checked + label {
             color: #667eea;
             font-weight: 600;
         }
@@ -198,22 +199,31 @@
                     // Remover selección previa en el mismo grupo
                     const name = this.name;
                     document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
-                        r.closest('.respuesta-option').classList.remove('selected');
+                        const parent = r.closest('.respuesta-option') || r.closest('.escala-option');
+                        if (parent) {
+                            parent.classList.remove('selected');
+                        }
                     });
 
                     // Marcar como seleccionada
                     if (this.checked) {
-                        this.closest('.respuesta-option').classList.add('selected');
+                        const parent = this.closest('.respuesta-option') || this.closest('.escala-option');
+                        if (parent) {
+                            parent.classList.add('selected');
+                        }
                     }
                 });
             });
 
             checkboxes.forEach(checkbox => {
                 checkbox.addEventListener('change', function() {
-                    if (this.checked) {
-                        this.closest('.respuesta-option').classList.add('selected');
-                    } else {
-                        this.closest('.respuesta-option').classList.remove('selected');
+                    const parent = this.closest('.respuesta-option') || this.closest('.escala-option');
+                    if (parent) {
+                        if (this.checked) {
+                            parent.classList.add('selected');
+                        } else {
+                            parent.classList.remove('selected');
+                        }
                     }
                 });
             });
