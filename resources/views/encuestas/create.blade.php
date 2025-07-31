@@ -56,7 +56,7 @@
                 <label for="numero_encuestas">Número de encuestas a enviar</label>
                 <input type="number" name="numero_encuestas" id="numero_encuestas"
                        class="form-control @error('numero_encuestas') is-invalid @enderror"
-                       value="{{ old('numero_encuestas') }}" min="1" max="10000"
+                       value="{{ old('numero_encuestas', 100) }}" min="1" max="10000"
                        placeholder="Ej: 100">
                 @error('numero_encuestas')
                     <div class="invalid-feedback">{{ $message }}</div>

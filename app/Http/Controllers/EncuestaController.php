@@ -109,6 +109,12 @@ class EncuestaController extends Controller
             $data = $request->validated();
             $data['user_id'] = Auth::id();
             $data['habilitada'] = $request->has('habilitada');
+
+            // Asignar valor por defecto para numero_encuestas si no se proporciona
+            if (!isset($data['numero_encuestas']) || empty($data['numero_encuestas'])) {
+                $data['numero_encuestas'] = 100; // Valor por defecto: 100 encuestas
+            }
+
             // Estado se maneja automáticamente en el modelo (por defecto: 'borrador')
             // $data['estado'] = $data['estado'] ?? 'borrador';
 

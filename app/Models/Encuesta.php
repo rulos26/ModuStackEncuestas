@@ -43,6 +43,7 @@ class Encuesta extends Model
         'enviar_por_correo' => false,
         'envio_masivo_activado' => false,
         'validacion_completada' => false,
+        'numero_encuestas' => 100,
         'encuestas_enviadas' => 0,
         'encuestas_respondidas' => 0,
         'encuestas_pendientes' => 0
@@ -56,6 +57,7 @@ class Encuesta extends Model
         'habilitada' => 'boolean',
         'envio_masivo_activado' => 'boolean',
         'validacion_completada' => 'boolean',
+        'numero_encuestas' => 'integer',
         'encuestas_enviadas' => 'integer',
         'encuestas_respondidas' => 'integer',
         'encuestas_pendientes' => 'integer',

@@ -464,14 +464,26 @@ class SystemToolsController extends Controller
         case 'fix_session_419':
             $resultado = $this->ejecutarComando('session:fix-419');
             break;
-        case 'diagnosticar_redireccion_fin':
-            $slug = $request->get('slug');
-            if ($slug) {
-                $resultado = $this->ejecutarComando('diagnosticar:redireccion-fin', ['slug' => $slug]);
-            } else {
-                $resultado = $this->ejecutarComando('diagnosticar:redireccion-fin');
-            }
-            break;
+                    case 'diagnosticar_redireccion_fin':
+                $slug = $request->get('slug');
+                if ($slug) {
+                    $resultado = $this->ejecutarComando('diagnosticar:redireccion-fin', ['slug' => $slug]);
+                } else {
+                    $resultado = $this->ejecutarComando('diagnosticar:redireccion-fin');
+                }
+                break;
+            case 'probar_numero_encuestas':
+                $valor = $request->get('valor', 100);
+                $resultado = $this->ejecutarComando('probar:numero-encuestas', ['--valor' => $valor]);
+                break;
+            case 'probar_contadores_encuesta':
+                $encuestaId = $request->get('encuesta_id');
+                if ($encuestaId) {
+                    $resultado = $this->ejecutarComando('probar:contadores-encuesta', ['encuesta_id' => $encuestaId]);
+                } else {
+                    $resultado = $this->ejecutarComando('probar:contadores-encuesta');
+                }
+                break;
                     case 'limpiar_cache':
                         $resultado = $this->ejecutarComando('config:clear');
                         $resultado .= "\n\n" . $this->ejecutarComando('route:clear');

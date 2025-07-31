@@ -120,6 +120,12 @@
                         <option value="diagnosticar_redireccion_fin" {{ $tipo === 'diagnosticar_redireccion_fin' ? 'selected' : '' }}>
                             🔍 Diagnosticar Redirección a Fin de Encuesta
                         </option>
+                        <option value="probar_numero_encuestas" {{ $tipo === 'probar_numero_encuestas' ? 'selected' : '' }}>
+                            🧪 Probar Campo Numero Encuestas
+                        </option>
+                        <option value="probar_contadores_encuesta" {{ $tipo === 'probar_contadores_encuesta' ? 'selected' : '' }}>
+                            📊 Probar Contadores de Encuesta
+                        </option>
                                     <option value="limpiar_cache" {{ $tipo === 'limpiar_cache' ? 'selected' : '' }}>
                                         Limpiar Caché del Sistema
                                     </option>
@@ -695,6 +701,16 @@ $(document).ready(function() {
                 $('#horas_group').hide();
             } else if (selectedValue === 'diagnosticar_redireccion_fin') {
                 $('#encuesta_id').attr('placeholder', 'Slug de encuesta (opcional) - Diagnostica todas si no se especifica');
+                $('#email_group').hide();
+                $('#cantidad_group').hide();
+                $('#horas_group').hide();
+            } else if (selectedValue === 'probar_numero_encuestas') {
+                $('#encuesta_id').attr('placeholder', 'Valor por defecto (opcional) - Usa 100 si no se especifica');
+                $('#email_group').hide();
+                $('#cantidad_group').hide();
+                $('#horas_group').hide();
+            } else if (selectedValue === 'probar_contadores_encuesta') {
+                $('#encuesta_id').attr('placeholder', 'ID de encuesta (opcional) - Prueba todas si no se especifica');
                 $('#email_group').hide();
                 $('#cantidad_group').hide();
                 $('#horas_group').hide();

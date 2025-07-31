@@ -128,8 +128,18 @@ class EncuestaPublicaController extends Controller
                 $this->guardarRespuestaUsuario($encuesta->id, $preguntaId, $respuestaId, $respuestaTexto, $request);
             }
 
+            // 5. Actualizar contadores de la encuesta
+            $this->actualizarContadoresEncuesta($encuesta);
+
             DB::commit();
-            //dd(preguntasObligatorias: $preguntasObligatorias, respuestasEnviadas: $respuestasEnviadas);
+
+            Log::info('✅ Respuesta guardada exitosamente', [
+                'encuesta_id' => $encuesta->id,
+                'encuesta_titulo' => $encuesta->titulo,
+                'encuestas_respondidas' => $encuesta->encuestas_respondidas,
+                'encuestas_pendientes' => $encuesta->encuestas_pendientes
+            ]);
+
             return redirect()->route('encuestas.fin', $encuesta->slug);
                 //dd(preguntasObligatorias: $preguntasObligatorias, respuestasEnviadas: $respuestasEnviadas);
         } catch (Exception $e) {
@@ -179,12 +189,48 @@ class EncuestaPublicaController extends Controller
     }
 
     /**
+     * Actualizar contadores de la encuesta después de guardar una respuesta
+     */
+    private function actualizarContadoresEncuesta($encuesta)
+    {
+        try {
+            // Incrementar encuestas respondidas
+            $encuesta->increment('encuestas_respondidas');
+
+            // Decrementar encuestas pendientes (pero no menos de 0)
+            $encuesta->decrement('encuestas_pendientes');
+
+            // Asegurar que encuestas_pendientes no sea negativo
+            if ($encuesta->encuestas_pendientes < 0) {
+                $encuesta->update(['encuestas_pendientes' => 0]);
+            }
+
+            // Recargar el modelo para obtener los valores actualizados
+            $encuesta->refresh();
+
+            Log::info('📊 Contadores de encuesta actualizados', [
+                'encuesta_id' => $encuesta->id,
+                'encuestas_respondidas' => $encuesta->encuestas_respondidas,
+                'encuestas_pendientes' => $encuesta->encuestas_pendientes,
+                'numero_encuestas' => $encuesta->numero_encuestas
+            ]);
+
+        } catch (Exception $e) {
+            Log::error('❌ Error actualizando contadores de encuesta', [
+                'encuesta_id' => $encuesta->id,
+                'error' => $e->getMessage()
+            ]);
+            throw $e; // Re-lanzar la excepción para que se maneje en el método principal
+        }
+    }
+
+    /**
      * Mostrar página de fin de encuesta
      */
     public function finEncuesta($slug)
     {
         try {
-            \Log::info("🔍 FIN ENCUESTA - Buscando encuesta con slug: {$slug}");
+            Log::info("🔍 FIN ENCUESTA - Buscando encuesta con slug: {$slug}");
 
             $encuesta = Encuesta::with(['empresa'])
                 ->where('slug', $slug)
@@ -193,18 +239,18 @@ class EncuestaPublicaController extends Controller
                 ->first();
 
             if (!$encuesta) {
-                \Log::warning("❌ FIN ENCUESTA - Encuesta no encontrada: {$slug}");
+                Log::warning("❌ FIN ENCUESTA - Encuesta no encontrada: {$slug}");
                 return view('encuestas.fin', [
                     'encuesta' => null,
                     'error' => 'Encuesta no encontrada.'
                 ]);
             }
 
-            \Log::info("✅ FIN ENCUESTA - Encuesta encontrada: {$encuesta->titulo}");
+            Log::info("✅ FIN ENCUESTA - Encuesta encontrada: {$encuesta->titulo}");
             return view('encuestas.fin', compact('encuesta'));
 
         } catch (Exception $e) {
-            \Log::error("❌ FIN ENCUESTA - Error: " . $e->getMessage());
+            Log::error("❌ FIN ENCUESTA - Error: " . $e->getMessage());
             return view('encuestas.fin', [
                 'encuesta' => null,
                 'error' => 'Error al cargar la encuesta: ' . $e->getMessage()
