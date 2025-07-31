@@ -243,6 +243,7 @@
                         let respuesta = document.querySelector(`input[name="respuestas[${preguntaId}]"]`);
                         let textarea = document.querySelector(`textarea[name="respuestas[${preguntaId}]"]`);
                         let select = document.querySelector(`select[name="respuestas[${preguntaId}]"]`);
+                        let checkboxes = document.querySelectorAll(`input[name="respuestas[${preguntaId}][]"]`);
 
                         let tieneRespuesta = false;
 
@@ -255,9 +256,8 @@
                                 }
                             });
                         }
-                        // Verificar checkbox
-                        else if (respuesta && respuesta.type === 'checkbox') {
-                            const checkboxes = document.querySelectorAll(`input[name="respuestas[${preguntaId}][]"]`);
+                        // Verificar checkbox (buscar específicamente checkboxes con corchetes)
+                        else if (checkboxes.length > 0) {
                             checkboxes.forEach(checkbox => {
                                 if (checkbox.checked) {
                                     tieneRespuesta = true;
