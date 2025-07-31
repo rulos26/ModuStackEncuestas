@@ -130,8 +130,7 @@ class EncuestaPublicaController extends Controller
 
             DB::commit();
             //dd(preguntasObligatorias: $preguntasObligatorias, respuestasEnviadas: $respuestasEnviadas);
-            return redirect()->route('encuestas.publica', $encuesta->slug)
-                ->with('success', '¡Gracias por responder la encuesta!');
+            return redirect()->route('encuestas.fin', $encuesta->slug);
                 dd(preguntasObligatorias: $preguntasObligatorias, respuestasEnviadas: $respuestasEnviadas);
         } catch (Exception $e) {
             DB::rollBack();
@@ -177,5 +176,27 @@ class EncuestaPublicaController extends Controller
         ]);
 
         return true;
+    }
+
+    /**
+     * Mostrar página de fin de encuesta
+     */
+    public function finEncuesta($slug)
+    {
+        try {
+            $encuesta = Encuesta::with(['empresa'])
+                ->where('slug', $slug)
+                ->where('habilitada', true)
+                ->where('estado', 'publicada')
+                ->firstOrFail();
+
+            return view('encuestas.fin', compact('encuesta'));
+
+        } catch (Exception $e) {
+            return view('encuestas.fin', [
+                'encuesta' => null,
+                'error' => 'Encuesta no encontrada.'
+            ]);
+        }
     }
 }
