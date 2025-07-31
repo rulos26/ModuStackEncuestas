@@ -130,9 +130,8 @@ class EncuestaPublicaController extends Controller
 
             DB::commit();
             //dd(preguntasObligatorias: $preguntasObligatorias, respuestasEnviadas: $respuestasEnviadas);
-            //return redirect()->route('encuestas.fin', $encuesta->slug);
-            return redirect()->view('encuestas.fin', compact('encuesta'));
-                dd(preguntasObligatorias: $preguntasObligatorias, respuestasEnviadas: $respuestasEnviadas);
+            return redirect()->route('encuestas.fin', $encuesta->slug);
+                //dd(preguntasObligatorias: $preguntasObligatorias, respuestasEnviadas: $respuestasEnviadas);
         } catch (Exception $e) {
             DB::rollBack();
 
@@ -185,18 +184,30 @@ class EncuestaPublicaController extends Controller
     public function finEncuesta($slug)
     {
         try {
+            \Log::info("🔍 FIN ENCUESTA - Buscando encuesta con slug: {$slug}");
+
             $encuesta = Encuesta::with(['empresa'])
                 ->where('slug', $slug)
                 ->where('habilitada', true)
                 ->where('estado', 'publicada')
-                ->firstOrFail();
+                ->first();
 
+            if (!$encuesta) {
+                \Log::warning("❌ FIN ENCUESTA - Encuesta no encontrada: {$slug}");
+                return view('encuestas.fin', [
+                    'encuesta' => null,
+                    'error' => 'Encuesta no encontrada.'
+                ]);
+            }
+
+            \Log::info("✅ FIN ENCUESTA - Encuesta encontrada: {$encuesta->titulo}");
             return view('encuestas.fin', compact('encuesta'));
 
         } catch (Exception $e) {
+            \Log::error("❌ FIN ENCUESTA - Error: " . $e->getMessage());
             return view('encuestas.fin', [
                 'encuesta' => null,
-                'error' => 'Encuesta no encontrada.'
+                'error' => 'Error al cargar la encuesta: ' . $e->getMessage()
             ]);
         }
     }

@@ -464,6 +464,14 @@ class SystemToolsController extends Controller
         case 'fix_session_419':
             $resultado = $this->ejecutarComando('session:fix-419');
             break;
+        case 'diagnosticar_redireccion_fin':
+            $slug = $request->get('slug');
+            if ($slug) {
+                $resultado = $this->ejecutarComando('diagnosticar:redireccion-fin', ['slug' => $slug]);
+            } else {
+                $resultado = $this->ejecutarComando('diagnosticar:redireccion-fin');
+            }
+            break;
                     case 'limpiar_cache':
                         $resultado = $this->ejecutarComando('config:clear');
                         $resultado .= "\n\n" . $this->ejecutarComando('route:clear');
