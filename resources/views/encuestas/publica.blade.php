@@ -93,25 +93,52 @@
                             @break
 
                         @case('escala_lineal')
-                            <div class="escala-container">
-                                @for($i = 1; $i <= $pregunta->escala_max; $i++)
-                                    <div class="escala-option">
-                                        <input type="radio"
-                                               id="resp_{{ $pregunta->id }}_{{ $i }}"
-                                               name="respuestas[{{ $pregunta->id }}]"
-                                               value="{{ $i }}"
-                                               @if($pregunta->obligatoria) required @endif>
-                                        <label for="resp_{{ $pregunta->id }}_{{ $i }}" class="escala-label">
-                                            {{ $i }}
-                                        </label>
-                                    </div>
-                                @endfor
-                            </div>
-                            <div class="mt-2">
-                                <small class="text-muted">
-                                    Escala del 1 al {{ $pregunta->escala_max }}
-                                </small>
-                            </div>
+                            @if(config('app.debug'))
+                                <!-- DEBUG: Información de escala -->
+                                <div class="alert alert-info">
+                                    <strong>DEBUG Escala:</strong><br>
+                                    - Tipo: {{ $pregunta->tipo }}<br>
+                                    - Escala min: {{ $pregunta->escala_min ?? 'NULL' }}<br>
+                                    - Escala max: {{ $pregunta->escala_max ?? 'NULL' }}<br>
+                                    - Etiqueta min: {{ $pregunta->escala_etiqueta_min ?? 'NULL' }}<br>
+                                    - Etiqueta max: {{ $pregunta->escala_etiqueta_max ?? 'NULL' }}
+                                </div>
+                            @endif
+
+                            @if($pregunta->escala_max && $pregunta->escala_max > 0)
+                                <div class="escala-container">
+                                    @for($i = ($pregunta->escala_min ?? 1); $i <= $pregunta->escala_max; $i++)
+                                        <div class="escala-option">
+                                            <input type="radio"
+                                                   id="resp_{{ $pregunta->id }}_{{ $i }}"
+                                                   name="respuestas[{{ $pregunta->id }}]"
+                                                   value="{{ $i }}"
+                                                   @if($pregunta->obligatoria) required @endif>
+                                            <label for="resp_{{ $pregunta->id }}_{{ $i }}" class="escala-label">
+                                                {{ $i }}
+                                            </label>
+                                        </div>
+                                    @endfor
+                                </div>
+                                <div class="mt-2">
+                                    <small class="text-muted">
+                                        Escala del {{ $pregunta->escala_min ?? 1 }} al {{ $pregunta->escala_max }}
+                                        @if($pregunta->escala_etiqueta_min && $pregunta->escala_etiqueta_max)
+                                            <br>
+                                            <span class="text-info">
+                                                {{ $pregunta->escala_etiqueta_min }} ↔ {{ $pregunta->escala_etiqueta_max }}
+                                            </span>
+                                        @endif
+                                    </small>
+                                </div>
+                            @else
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <strong>Error en escala:</strong> No se pudo determinar el rango de la escala.
+                                    <br>
+                                    <small>Escala máxima: {{ $pregunta->escala_max ?? 'No definida' }}</small>
+                                </div>
+                            @endif
                             @break
 
                         @default

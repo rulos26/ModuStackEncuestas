@@ -90,6 +90,9 @@
                         <option value="configurar_sesiones" {{ $tipo === 'configurar_sesiones' ? 'selected' : '' }}>
                             Configurar Sesiones para Hosting
                         </option>
+                        <option value="verificar_escala" {{ $tipo === 'verificar_escala' ? 'selected' : '' }}>
+                            Verificar Preguntas de Escala
+                        </option>
                                     <option value="limpiar_cache" {{ $tipo === 'limpiar_cache' ? 'selected' : '' }}>
                                         Limpiar Caché del Sistema
                                     </option>
@@ -615,6 +618,11 @@ $(document).ready(function() {
                 $('#horas_group').hide();
             } else if (selectedValue === 'configurar_sesiones') {
                 $('#encuesta_id').attr('placeholder', 'No requiere ID - Configuración automática');
+                $('#email_group').hide();
+                $('#cantidad_group').hide();
+                $('#horas_group').hide();
+            } else if (selectedValue === 'verificar_escala') {
+                $('#encuesta_id').attr('placeholder', 'ID de encuesta (opcional) - Verifica todas si no se especifica');
                 $('#email_group').hide();
                 $('#cantidad_group').hide();
                 $('#horas_group').hide();

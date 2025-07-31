@@ -419,6 +419,15 @@ class SystemToolsController extends Controller
         case 'configurar_sesiones':
             $resultado = $this->ejecutarComando('hosting:configurar-sesiones');
             break;
+        case 'verificar_escala':
+            $encuestaId = $request->get('encuesta_id');
+            if ($encuestaId) {
+                $params = ['encuesta_id' => $encuestaId];
+                $resultado = $this->ejecutarComando('preguntas:verificar-escala', $params);
+            } else {
+                $resultado = $this->ejecutarComando('preguntas:verificar-escala');
+            }
+            break;
                     case 'limpiar_cache':
                         $resultado = $this->ejecutarComando('config:clear');
                         $resultado .= "\n\n" . $this->ejecutarComando('route:clear');
