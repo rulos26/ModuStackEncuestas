@@ -1,6 +1,35 @@
 @extends('layouts.encuesta-publica')
 
 @section('content')
+    {{-- Mostrar errores visualmente --}}
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <h5><i class="fas fa-exclamation-triangle"></i> Error</h5>
+            <p>{{ session('error') }}</p>
+
+            @if(session('error_details'))
+                <hr>
+                <h6>Detalles del Error:</h6>
+                <ul class="mb-0">
+                    <li><strong>Encuesta ID:</strong> {{ session('error_details.encuesta_id') }}</li>
+                    <li><strong>Mensaje:</strong> {{ session('error_details.error_message') }}</li>
+                    <li><strong>Archivo:</strong> {{ session('error_details.error_file') }}</li>
+                    <li><strong>Línea:</strong> {{ session('error_details.error_line') }}</li>
+                </ul>
+            @endif
+
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <h5><i class="fas fa-check-circle"></i> Éxito</h5>
+            <p>{{ session('success') }}</p>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
     @if(isset($encuesta) && $encuesta)
         <div class="encuesta-header">
             <h1 class="encuesta-title">{{ $encuesta->titulo }}</h1>
