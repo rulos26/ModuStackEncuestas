@@ -64,7 +64,7 @@ class EncuestaPublicaController extends Controller
                 ->where('habilitada', true)
                 ->where('estado', 'publicada')
                 ->firstOrFail();
-                dd($request->all(), $id, $encuesta);
+
             if (!$encuesta->estaDisponible()) {
                 return redirect()->back()->with('error', 'Esta encuesta no está disponible en este momento.');
             }
@@ -77,7 +77,7 @@ class EncuestaPublicaController extends Controller
             // 3. Validar preguntas obligatorias
             $preguntasObligatorias = $encuesta->preguntas()->where('obligatoria', true)->pluck('id')->toArray();
             $respuestasEnviadas = array_keys($request->respuestas);
-
+            dd(preguntasObligatorias: $preguntasObligatorias, respuestasEnviadas: $respuestasEnviadas);
             foreach ($preguntasObligatorias as $preguntaId) {
                 if (!in_array($preguntaId, $respuestasEnviadas)) {
                     return redirect()->back()->with('error', 'Debe responder todas las preguntas obligatorias.');
