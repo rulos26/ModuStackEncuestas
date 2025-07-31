@@ -26,10 +26,10 @@ class EncuestaPublicaController extends Controller
 
         try {
             $encuesta = Encuesta::with(['preguntas.respuestas', 'empresa'])
-                    ->where('slug', $slug)
-                    ->where('habilitada', true)
+                ->where('slug', $slug)
+                ->where('habilitada', true)
                 ->where('estado', 'publicada')
-                    ->firstOrFail();
+                ->firstOrFail();
 
             // Verificar si la encuesta está disponible
             if (!$encuesta->estaDisponible()) {
@@ -39,7 +39,7 @@ class EncuestaPublicaController extends Controller
                 ]);
             }
 
-        return view('encuestas.publica', compact('encuesta'));
+            return view('encuestas.publica', compact('encuesta'));
         } catch (Exception $e) {
             return view('encuestas.publica', [
                 'encuesta' => null,
@@ -53,7 +53,7 @@ class EncuestaPublicaController extends Controller
      */
     public function responder(Request $request, $id)
     {
-         // DEBUG - COMENTADO PERO NO BORRADO
+        // DEBUG - COMENTADO PERO NO BORRADO
 
         try {
             DB::beginTransaction();
@@ -129,11 +129,11 @@ class EncuestaPublicaController extends Controller
             }
 
             DB::commit();
-            dd(preguntasObligatorias: $preguntasObligatorias, respuestasEnviadas: $respuestasEnviadas);
+            //dd(preguntasObligatorias: $preguntasObligatorias, respuestasEnviadas: $respuestasEnviadas);
             return redirect()->route('encuestas.publica', $encuesta->slug)
                 ->with('success', '¡Gracias por responder la encuesta!');
-
-                } catch (Exception $e) {
+                dd(preguntasObligatorias: $preguntasObligatorias, respuestasEnviadas: $respuestasEnviadas);
+        } catch (Exception $e) {
             DB::rollBack();
 
             // Mostrar error visualmente con detalles
