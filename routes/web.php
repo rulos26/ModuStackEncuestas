@@ -187,7 +187,7 @@ Route::prefix('publica')->name('encuestas.')->group(function () {
     Route::get('{slug}', [EncuestaPublicaController::class, 'mostrar'])
         ->name('publica')
         ->middleware('verificar.token.encuesta');
-    Route::post('{id}', [EncuestaPublicaController::class, 'responder'])->name('responder');
+    Route::post('{id}', [EncuestaPublicaController::class, 'responder'])->name('responder');  
 
     // Rutas para renovación de enlaces
     Route::get('{slug}/renovar', [App\Http\Controllers\EncuestaRenovarController::class, 'mostrarFormularioRenovacion'])

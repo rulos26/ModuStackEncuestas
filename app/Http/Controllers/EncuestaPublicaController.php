@@ -53,6 +53,8 @@ class EncuestaPublicaController extends Controller
      */
     public function responder(Request $request, $id)
     {
+
+       dd($request->all(), $id);
         // 🧪 LOGGING DE PRUEBA - CONEXIÓN VISTA-CONTROLADOR
         Log::info('🧪 PRUEBA: Conexión vista-controlador establecida', [
             'timestamp' => now(),
