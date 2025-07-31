@@ -428,6 +428,15 @@ class SystemToolsController extends Controller
                 $resultado = $this->ejecutarComando('preguntas:verificar-escala');
             }
             break;
+        case 'diagnosticar_error_publica':
+            $encuestaId = $request->get('encuesta_id');
+            if ($encuestaId) {
+                $params = ['encuesta_id' => $encuestaId];
+                $resultado = $this->ejecutarComando('encuesta:diagnosticar-error-publica', $params);
+            } else {
+                $resultado = $this->ejecutarComando('encuesta:diagnosticar-error-publica');
+            }
+            break;
                     case 'limpiar_cache':
                         $resultado = $this->ejecutarComando('config:clear');
                         $resultado .= "\n\n" . $this->ejecutarComando('route:clear');

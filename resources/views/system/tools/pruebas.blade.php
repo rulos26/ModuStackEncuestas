@@ -93,6 +93,9 @@
                         <option value="verificar_escala" {{ $tipo === 'verificar_escala' ? 'selected' : '' }}>
                             Verificar Preguntas de Escala
                         </option>
+                        <option value="diagnosticar_error_publica" {{ $tipo === 'diagnosticar_error_publica' ? 'selected' : '' }}>
+                            Diagnosticar Error Encuesta Pública
+                        </option>
                                     <option value="limpiar_cache" {{ $tipo === 'limpiar_cache' ? 'selected' : '' }}>
                                         Limpiar Caché del Sistema
                                     </option>
@@ -623,6 +626,11 @@ $(document).ready(function() {
                 $('#horas_group').hide();
             } else if (selectedValue === 'verificar_escala') {
                 $('#encuesta_id').attr('placeholder', 'ID de encuesta (opcional) - Verifica todas si no se especifica');
+                $('#email_group').hide();
+                $('#cantidad_group').hide();
+                $('#horas_group').hide();
+            } else if (selectedValue === 'diagnosticar_error_publica') {
+                $('#encuesta_id').attr('placeholder', 'ID de encuesta (opcional) - Diagnostica todas si no se especifica');
                 $('#email_group').hide();
                 $('#cantidad_group').hide();
                 $('#horas_group').hide();
