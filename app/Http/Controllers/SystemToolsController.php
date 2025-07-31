@@ -449,6 +449,18 @@ class SystemToolsController extends Controller
         case 'emergency_hosting_fix':
             $resultado = $this->ejecutarComando('hosting:emergency-fix');
             break;
+        case 'diagnosticar_flujo_publica':
+            $encuestaId = $request->get('encuesta_id');
+            if ($encuestaId) {
+                $params = ['encuesta_id' => $encuestaId];
+                $resultado = $this->ejecutarComando('encuesta:diagnosticar-flujo-publica', $params);
+            } else {
+                $resultado = $this->ejecutarComando('encuesta:diagnosticar-flujo-publica');
+            }
+            break;
+        case 'revisar_logs_prueba':
+            $resultado = $this->ejecutarComando('encuesta:revisar-logs-prueba');
+            break;
                     case 'limpiar_cache':
                         $resultado = $this->ejecutarComando('config:clear');
                         $resultado .= "\n\n" . $this->ejecutarComando('route:clear');

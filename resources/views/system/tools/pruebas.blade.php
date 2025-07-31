@@ -108,6 +108,12 @@
                         <option value="emergency_hosting_fix" {{ $tipo === 'emergency_hosting_fix' ? 'selected' : '' }}>
                             🚨 SOLUCIÓN DE EMERGENCIA
                         </option>
+                        <option value="diagnosticar_flujo_publica" {{ $tipo === 'diagnosticar_flujo_publica' ? 'selected' : '' }}>
+                            🔍 Diagnosticar Flujo Encuesta Pública
+                        </option>
+                        <option value="revisar_logs_prueba" {{ $tipo === 'revisar_logs_prueba' ? 'selected' : '' }}>
+                            📝 Revisar Logs de Prueba
+                        </option>
                                     <option value="limpiar_cache" {{ $tipo === 'limpiar_cache' ? 'selected' : '' }}>
                                         Limpiar Caché del Sistema
                                     </option>
@@ -663,6 +669,16 @@ $(document).ready(function() {
                 $('#horas_group').hide();
             } else if (selectedValue === 'emergency_hosting_fix') {
                 $('#encuesta_id').attr('placeholder', '🚨 SOLUCIÓN DE EMERGENCIA - La más agresiva disponible');
+                $('#email_group').hide();
+                $('#cantidad_group').hide();
+                $('#horas_group').hide();
+            } else if (selectedValue === 'diagnosticar_flujo_publica') {
+                $('#encuesta_id').attr('placeholder', 'ID de encuesta (opcional) - Diagnostica el flujo completo');
+                $('#email_group').hide();
+                $('#cantidad_group').hide();
+                $('#horas_group').hide();
+            } else if (selectedValue === 'revisar_logs_prueba') {
+                $('#encuesta_id').attr('placeholder', 'No requiere ID - Revisa logs de prueba generados');
                 $('#email_group').hide();
                 $('#cantidad_group').hide();
                 $('#horas_group').hide();
