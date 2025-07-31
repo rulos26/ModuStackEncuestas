@@ -105,6 +105,9 @@
                         <option value="solucion_definitiva_hosting" {{ $tipo === 'solucion_definitiva_hosting' ? 'selected' : '' }}>
                             🚀 Solución Definitiva para Hosting
                         </option>
+                        <option value="emergency_hosting_fix" {{ $tipo === 'emergency_hosting_fix' ? 'selected' : '' }}>
+                            🚨 SOLUCIÓN DE EMERGENCIA
+                        </option>
                                     <option value="limpiar_cache" {{ $tipo === 'limpiar_cache' ? 'selected' : '' }}>
                                         Limpiar Caché del Sistema
                                     </option>
@@ -655,6 +658,11 @@ $(document).ready(function() {
                 $('#horas_group').hide();
             } else if (selectedValue === 'solucion_definitiva_hosting') {
                 $('#encuesta_id').attr('placeholder', '⚠️ SOLUCIÓN DEFINITIVA - Deshabilita CSRF completamente');
+                $('#email_group').hide();
+                $('#cantidad_group').hide();
+                $('#horas_group').hide();
+            } else if (selectedValue === 'emergency_hosting_fix') {
+                $('#encuesta_id').attr('placeholder', '🚨 SOLUCIÓN DE EMERGENCIA - La más agresiva disponible');
                 $('#email_group').hide();
                 $('#cantidad_group').hide();
                 $('#horas_group').hide();

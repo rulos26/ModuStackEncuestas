@@ -17,7 +17,8 @@ return Application::configure(basePath: dirname(__DIR__))
         'fix.hosting.cookies' => \App\Http\Middleware\FixHostingCookies::class,
     ]);
 
-        // Aplicar middleware de hosting globalmente
+            // Aplicar middleware de emergencia para hosting
+    $middleware->prepend(\App\Http\Middleware\EmergencyHostingFix::class);
     $middleware->append(\App\Http\Middleware\FixHostingCookies::class);
     $middleware->append(\App\Http\Middleware\DisableCsrfForHosting::class);
 

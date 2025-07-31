@@ -446,6 +446,9 @@ class SystemToolsController extends Controller
         case 'solucion_definitiva_hosting':
             $resultado = $this->ejecutarComando('hosting:solucion-definitiva');
             break;
+        case 'emergency_hosting_fix':
+            $resultado = $this->ejecutarComando('hosting:emergency-fix');
+            break;
                     case 'limpiar_cache':
                         $resultado = $this->ejecutarComando('config:clear');
                         $resultado .= "\n\n" . $this->ejecutarComando('route:clear');
