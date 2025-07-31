@@ -416,6 +416,9 @@ class SystemToolsController extends Controller
                 $resultado = $this->ejecutarComando('encuesta:verificar-respuestas', $params);
             }
             break;
+        case 'configurar_sesiones':
+            $resultado = $this->ejecutarComando('hosting:configurar-sesiones');
+            break;
                     case 'limpiar_cache':
                         $resultado = $this->ejecutarComando('config:clear');
                         $resultado .= "\n\n" . $this->ejecutarComando('route:clear');

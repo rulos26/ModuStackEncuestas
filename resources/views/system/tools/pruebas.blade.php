@@ -87,6 +87,9 @@
                         <option value="verificar_respuestas" {{ $tipo === 'verificar_respuestas' ? 'selected' : '' }}>
                             Verificar Respuestas de Encuesta
                         </option>
+                        <option value="configurar_sesiones" {{ $tipo === 'configurar_sesiones' ? 'selected' : '' }}>
+                            Configurar Sesiones para Hosting
+                        </option>
                                     <option value="limpiar_cache" {{ $tipo === 'limpiar_cache' ? 'selected' : '' }}>
                                         Limpiar Caché del Sistema
                                     </option>
@@ -607,6 +610,11 @@ $(document).ready(function() {
                 $('#horas_group').show();
             } else if (selectedValue === 'verificar_respuestas') {
                 $('#encuesta_id').attr('placeholder', 'ID de la encuesta para verificar respuestas');
+                $('#email_group').hide();
+                $('#cantidad_group').hide();
+                $('#horas_group').hide();
+            } else if (selectedValue === 'configurar_sesiones') {
+                $('#encuesta_id').attr('placeholder', 'No requiere ID - Configuración automática');
                 $('#email_group').hide();
                 $('#cantidad_group').hide();
                 $('#horas_group').hide();
