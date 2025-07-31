@@ -30,16 +30,11 @@
                     <p><strong>Fecha:</strong> {{ now()->format('d/m/Y H:i') }}</p>
                 </div>
 
-                <div class="fin-encuesta-actions">
-                    <button type="button" class="btn btn-primary" onclick="window.close()">
-                        <i class="fas fa-times"></i>
-                        Cerrar Ventana
-                    </button>
-
-                    <a href="{{ route('home') }}" class="btn btn-secondary" target="_blank">
-                        <i class="fas fa-home"></i>
-                        Ir al Inicio
-                    </a>
+                                <div class="fin-encuesta-message-close">
+                    <p class="fin-encuesta-close-text">
+                        <i class="fas fa-check-circle"></i>
+                        Ya puedes cerrar esta ventana
+                    </p>
                 </div>
 
                 <div class="fin-encuesta-timer">
@@ -120,24 +115,28 @@
             margin-bottom: 0;
         }
 
-        .fin-encuesta-actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
+        .fin-encuesta-message-close {
+            text-align: center;
             margin-bottom: 2rem;
-            flex-wrap: wrap;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #28a745, #20c997);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
         }
 
-        .fin-encuesta-actions .btn {
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: all 0.3s ease;
+        .fin-encuesta-close-text {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
 
-        .fin-encuesta-actions .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        .fin-encuesta-close-text i {
+            font-size: 1.5rem;
         }
 
         .fin-encuesta-timer {
@@ -165,12 +164,14 @@
                 font-size: 1.5rem;
             }
 
-            .fin-encuesta-actions {
+            .fin-encuesta-close-text {
+                font-size: 1rem;
                 flex-direction: column;
+                gap: 0.25rem;
             }
 
-            .fin-encuesta-actions .btn {
-                width: 100%;
+            .fin-encuesta-close-text i {
+                font-size: 1.2rem;
             }
         }
     </style>
@@ -190,41 +191,7 @@
             }
         }, 1000);
 
-        // Pausar el timer si el usuario interactúa con la página
-        let userActivity = false;
-
-        document.addEventListener('click', function() {
-            userActivity = true;
-        });
-
-        document.addEventListener('keypress', function() {
-            userActivity = true;
-        });
-
-        // Si el usuario está inactivo por más de 30 segundos, acelerar el cierre
-        let inactivityTimer = 30;
-        const inactivityInterval = setInterval(function() {
-            if (!userActivity) {
-                inactivityTimer--;
-                if (inactivityTimer <= 0) {
-                    clearInterval(inactivityInterval);
-                    clearInterval(timer);
-                    window.close();
-                }
-            } else {
-                inactivityTimer = 30; // Reset inactivity timer
-                userActivity = false;
-            }
-        }, 1000);
-
-        // Detectar si la ventana pierde el foco
-        window.addEventListener('blur', function() {
-            // Si la ventana pierde el foco, cerrar después de 1 minuto
-            setTimeout(function() {
-                if (!document.hasFocus()) {
-                    window.close();
-                }
-            }, 60000);
-        });
+                // Auto-cierre simplificado - solo cerrar después de 3 minutos
+        // No hay interacción del usuario, solo esperar y cerrar
     </script>
 @endsection
