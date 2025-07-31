@@ -14,16 +14,11 @@ return Application::configure(basePath: dirname(__DIR__))
     $middleware->alias([
         'verificar.token.encuesta' => \App\Http\Middleware\VerificarTokenEncuesta::class,
         'validar.flujo.encuesta' => \App\Http\Middleware\ValidarFlujoEncuesta::class,
-        'fix.hosting.cookies' => \App\Http\Middleware\FixHostingCookies::class,
+        'fix.session.hosting' => \App\Http\Middleware\FixSessionForHosting::class,
     ]);
 
-            // Aplicar middleware de emergencia para hosting
-    $middleware->prepend(\App\Http\Middleware\EmergencyHostingFix::class);
-    $middleware->append(\App\Http\Middleware\FixHostingCookies::class);
-    $middleware->append(\App\Http\Middleware\DisableCsrfForHosting::class);
-
-    // Excluir CSRF completamente para hosting
-    $middleware->remove(\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class);
+    // Aplicar middleware de sesiones para hosting globalmente
+    $middleware->prepend(\App\Http\Middleware\FixSessionForHosting::class);
 })
     ->withExceptions(function (Exceptions $exceptions) {
         //

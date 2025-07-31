@@ -114,6 +114,9 @@
                         <option value="revisar_logs_prueba" {{ $tipo === 'revisar_logs_prueba' ? 'selected' : '' }}>
                             📝 Revisar Logs de Prueba
                         </option>
+                        <option value="fix_session_419" {{ $tipo === 'fix_session_419' ? 'selected' : '' }}>
+                            🔧 Solucionar Error 419 - Sesiones
+                        </option>
                                     <option value="limpiar_cache" {{ $tipo === 'limpiar_cache' ? 'selected' : '' }}>
                                         Limpiar Caché del Sistema
                                     </option>
@@ -679,6 +682,11 @@ $(document).ready(function() {
                 $('#horas_group').hide();
             } else if (selectedValue === 'revisar_logs_prueba') {
                 $('#encuesta_id').attr('placeholder', 'No requiere ID - Revisa logs de prueba generados');
+                $('#email_group').hide();
+                $('#cantidad_group').hide();
+                $('#horas_group').hide();
+            } else if (selectedValue === 'fix_session_419') {
+                $('#encuesta_id').attr('placeholder', 'No requiere ID - Soluciona error 419 de sesiones');
                 $('#email_group').hide();
                 $('#cantidad_group').hide();
                 $('#horas_group').hide();

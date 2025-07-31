@@ -461,6 +461,9 @@ class SystemToolsController extends Controller
         case 'revisar_logs_prueba':
             $resultado = $this->ejecutarComando('encuesta:revisar-logs-prueba');
             break;
+        case 'fix_session_419':
+            $resultado = $this->ejecutarComando('session:fix-419');
+            break;
                     case 'limpiar_cache':
                         $resultado = $this->ejecutarComando('config:clear');
                         $resultado .= "\n\n" . $this->ejecutarComando('route:clear');
