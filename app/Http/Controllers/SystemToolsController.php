@@ -443,6 +443,9 @@ class SystemToolsController extends Controller
         case 'solucionar_csrf_hosting':
             $resultado = $this->ejecutarComando('hosting:solucionar-csrf');
             break;
+        case 'solucion_definitiva_hosting':
+            $resultado = $this->ejecutarComando('hosting:solucion-definitiva');
+            break;
                     case 'limpiar_cache':
                         $resultado = $this->ejecutarComando('config:clear');
                         $resultado .= "\n\n" . $this->ejecutarComando('route:clear');
