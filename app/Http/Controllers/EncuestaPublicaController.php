@@ -113,7 +113,7 @@ class EncuestaPublicaController extends Controller
                             foreach ($respuestaData as $respId) {
                                 $this->guardarRespuestaUsuario($encuesta->id, $preguntaId, $respId, null, $request);
                             }
-                            continue;
+                            continue 2; // Continuar con el bucle exterior
                         } else {
                             $respuestaId = $respuestaData;
                         }
