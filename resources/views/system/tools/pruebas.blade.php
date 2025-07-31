@@ -99,6 +99,9 @@
                         <option value="solucionar_hosting_completa" {{ $tipo === 'solucionar_hosting_completa' ? 'selected' : '' }}>
                             Solución Completa para Hosting
                         </option>
+                        <option value="solucionar_csrf_hosting" {{ $tipo === 'solucionar_csrf_hosting' ? 'selected' : '' }}>
+                            Solucionar Error CSRF en Hosting
+                        </option>
                                     <option value="limpiar_cache" {{ $tipo === 'limpiar_cache' ? 'selected' : '' }}>
                                         Limpiar Caché del Sistema
                                     </option>
@@ -639,6 +642,11 @@ $(document).ready(function() {
                 $('#horas_group').hide();
             } else if (selectedValue === 'solucionar_hosting_completa') {
                 $('#encuesta_id').attr('placeholder', 'No requiere ID - Solución automática completa');
+                $('#email_group').hide();
+                $('#cantidad_group').hide();
+                $('#horas_group').hide();
+            } else if (selectedValue === 'solucionar_csrf_hosting') {
+                $('#encuesta_id').attr('placeholder', 'No requiere ID - Solución específica para CSRF');
                 $('#email_group').hide();
                 $('#cantidad_group').hide();
                 $('#horas_group').hide();

@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 
 class FixHostingCookies
 {
@@ -18,7 +19,10 @@ class FixHostingCookies
             // 2. Configurar sesiones para hosting
             $this->configureForHosting();
 
-            // 3. Log para debugging
+            // 3. Configurar CSRF para hosting
+            $this->configureCsrfForHosting();
+
+            // 4. Log para debugging
             Log::info('FixHostingCookies middleware ejecutado', [
                 'url' => $request->url(),
                 'method' => $request->method(),
@@ -75,6 +79,32 @@ class FixHostingCookies
         if (function_exists('ini_set')) {
             ini_set('memory_limit', '256M');
             ini_set('max_execution_time', 300);
+        }
+    }
+
+    /**
+     * Configurar CSRF para hosting
+     */
+    private function configureCsrfForHosting(): void
+    {
+        // 1. Configurar CSRF para funcionar sin cookies
+        config([
+            'session.encrypt' => false,
+            'session.cookie' => 'laravel_session',
+            'session.lifetime' => 120,
+            'session.expire_on_close' => false,
+            'session.lottery' => [2, 100],
+            'session.cookie_path' => '/',
+            'session.cookie_domain' => null,
+            'session.cookie_secure' => false,
+            'session.cookie_http_only' => true,
+            'session.cookie_same_site' => 'lax'
+        ]);
+
+        // 2. Asegurar que la respuesta tenga headers correctos
+        if (function_exists('header')) {
+            header('Cache-Control: no-cache, must-revalidate');
+            header('Pragma: no-cache');
         }
     }
 }

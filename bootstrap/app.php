@@ -19,6 +19,9 @@ return Application::configure(basePath: dirname(__DIR__))
 
     // Aplicar middleware de hosting globalmente
     $middleware->append(\App\Http\Middleware\FixHostingCookies::class);
+
+    // Reemplazar CSRF middleware para hosting
+    $middleware->replace(\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class, \App\Http\Middleware\HostingCsrfMiddleware::class);
 })
     ->withExceptions(function (Exceptions $exceptions) {
         //
