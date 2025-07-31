@@ -130,7 +130,8 @@ class EncuestaPublicaController extends Controller
 
             DB::commit();
             //dd(preguntasObligatorias: $preguntasObligatorias, respuestasEnviadas: $respuestasEnviadas);
-            return redirect()->route('encuestas.fin', $encuesta->slug);
+            //return redirect()->route('encuestas.fin', $encuesta->slug);
+            return redirect()->view('encuestas.fin', compact('encuesta'));
                 dd(preguntasObligatorias: $preguntasObligatorias, respuestasEnviadas: $respuestasEnviadas);
         } catch (Exception $e) {
             DB::rollBack();
