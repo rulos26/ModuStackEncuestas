@@ -318,13 +318,55 @@ class IAService
                 ];
 
             case 'escala_lineal':
+                // Convertir strings a números y filtrar valores válidos
+                $valoresNumericos = [];
+                foreach ($respuestas as $respuesta) {
+                    $valor = is_numeric($respuesta) ? (float)$respuesta : null;
+                    if ($valor !== null) {
+                        $valoresNumericos[] = $valor;
+                    }
+                }
+
+                // Calcular estadísticas
+                $total = count($valoresNumericos);
+                $promedio = $total > 0 ? array_sum($valoresNumericos) / $total : 0;
+                $min = $total > 0 ? min($valoresNumericos) : 0;
+                $max = $total > 0 ? max($valoresNumericos) : 0;
+
                 return [
-                    'labels' => ['Rango de valores'],
+                    'labels' => ['Promedio', 'Mínimo', 'Máximo', 'Total Respuestas'],
                     'datasets' => [
                         [
-                            'label' => 'Distribución',
-                            'data' => $respuestas,
-                            'backgroundColor' => 'rgba(54, 162, 235, 0.5)'
+                            'label' => 'Estadísticas',
+                            'data' => [$promedio, $min, $max, $total],
+                            'backgroundColor' => [
+                                'rgba(54, 162, 235, 0.8)',
+                                'rgba(255, 99, 132, 0.8)',
+                                'rgba(255, 206, 86, 0.8)',
+                                'rgba(75, 192, 192, 0.8)'
+                            ]
+                        ]
+                    ],
+                    'estadisticas' => [
+                        'promedio' => round($promedio, 2),
+                        'minimo' => $min,
+                        'maximo' => $max,
+                        'total_respuestas' => $total,
+                        'valores_originales' => $valoresNumericos
+                    ]
+                ];
+
+            case 'respuesta_corta':
+            case 'parrafo':
+                // Para respuestas de texto, contar frecuencias de palabras clave
+                $palabrasClave = $this->extraerPalabrasClave($respuestas);
+                return [
+                    'labels' => array_keys($palabrasClave),
+                    'datasets' => [
+                        [
+                            'label' => 'Frecuencia',
+                            'data' => array_values($palabrasClave),
+                            'backgroundColor' => $this->generarColores(count($palabrasClave))
                         ]
                     ]
                 ];
@@ -341,6 +383,31 @@ class IAService
                     ]
                 ];
         }
+    }
+
+    /**
+     * Extraer palabras clave de respuestas de texto
+     */
+    private function extraerPalabrasClave(array $respuestas): array
+    {
+        $palabras = [];
+        $stopWords = ['el', 'la', 'de', 'que', 'y', 'a', 'en', 'un', 'es', 'se', 'no', 'te', 'lo', 'le', 'da', 'su', 'por', 'son', 'con', 'para', 'al', 'del', 'los', 'las', 'una', 'como', 'pero', 'sus', 'me', 'hasta', 'hay', 'donde', 'han', 'quien', 'están', 'estado', 'desde', 'todo', 'nos', 'durante', 'todos', 'uno', 'les', 'ni', 'contra', 'otros', 'ese', 'eso', 'ante', 'ellos', 'e', 'esto', 'mí', 'antes', 'algunos', 'qué', 'unos', 'yo', 'otro', 'otras', 'otra', 'él', 'tanto', 'esa', 'estos', 'mucho', 'quienes', 'nada', 'muchos', 'cual', 'poco', 'ella', 'estar', 'estas', 'algunas', 'algo', 'nosotros', 'mi', 'mis', 'tú', 'te', 'ti', 'tu', 'tus', 'ellas', 'nosotras', 'vosotros', 'vosotras', 'os', 'mío', 'mía', 'míos', 'mías', 'tuyo', 'tuya', 'tuyos', 'tuyas', 'suyo', 'suya', 'suyos', 'suyas', 'nuestro', 'nuestra', 'nuestros', 'nuestras', 'vuestro', 'vuestra', 'vuestros', 'vuestras', 'esos', 'esas', 'estoy', 'estás', 'está', 'estamos', 'estáis', 'están', 'esté', 'estés', 'estemos', 'estéis', 'estén', 'estaré', 'estarás', 'estará', 'estaremos', 'estaréis', 'estarán', 'estaría', 'estarías', 'estaríamos', 'estaríais', 'estarían', 'estaba', 'estabas', 'estábamos', 'estabais', 'estaban', 'estuve', 'estuviste', 'estuvo', 'estuvimos', 'estuvisteis', 'estuvieron', 'estuviera', 'estuvieras', 'estuviéramos', 'estuvierais', 'estuvieran', 'estuviese', 'estuvieses', 'estuviésemos', 'estuvieseis', 'estuviesen', 'habiendo', 'habido', 'habida', 'habidos', 'habidas', 'tened'];
+
+        foreach ($respuestas as $respuesta) {
+            $texto = strtolower(trim($respuesta));
+            $palabrasTexto = preg_split('/\s+/', $texto);
+
+            foreach ($palabrasTexto as $palabra) {
+                $palabra = trim($palabra, '.,;:!?()[]{}"\'-');
+                if (strlen($palabra) > 2 && !in_array($palabra, $stopWords)) {
+                    $palabras[$palabra] = ($palabras[$palabra] ?? 0) + 1;
+                }
+            }
+        }
+
+        // Ordenar por frecuencia y tomar las 10 más comunes
+        arsort($palabras);
+        return array_slice($palabras, 0, 10, true);
     }
 
     /**
