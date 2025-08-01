@@ -256,7 +256,6 @@ function mostrarModalEdicion(preguntaId, preguntaTexto) {
                     </div>
                     <form id="formEditarRespuestas" method="POST" action="{{ route('encuestas.respuestas.editar', ':preguntaId') }}">
                         @csrf
-                        @method('PUT')
                         <div class="modal-body">
                             <div class="form-group">
                                 <label><strong>Pregunta:</strong></label>
