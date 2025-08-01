@@ -234,12 +234,44 @@ class IAService
                        round(($frecuencias[$masComun] / $total) * 100, 1) . "% de las respuestas.";
 
             case 'escala_lineal':
-                $promedio = array_sum($respuestas) / $total;
-                return "El promedio de las respuestas en la escala es {$promedio} de {$total} respuestas.";
+                // Convertir strings a números y filtrar valores válidos
+                $valoresNumericos = [];
+                foreach ($respuestas as $respuesta) {
+                    $valor = is_numeric($respuesta) ? (float)$respuesta : null;
+                    if ($valor !== null) {
+                        $valoresNumericos[] = $valor;
+                    }
+                }
+
+                if (empty($valoresNumericos)) {
+                    return "No se encontraron valores numéricos válidos en las respuestas.";
+                }
+
+                $promedio = array_sum($valoresNumericos) / count($valoresNumericos);
+                return "El promedio de las respuestas en la escala es " . round($promedio, 2) .
+                       " de " . count($valoresNumericos) . " respuestas válidas.";
 
             case 'casillas_verificacion':
-                $totalSelecciones = array_sum($respuestas);
-                return "Se registraron {$totalSelecciones} selecciones en total de {$total} respuestas.";
+                // Para casillas de verificación, contar las selecciones
+                $selecciones = 0;
+                foreach ($respuestas as $respuesta) {
+                    if (is_numeric($respuesta)) {
+                        $selecciones += (int)$respuesta;
+                    } elseif (is_string($respuesta) && in_array(strtolower($respuesta), ['true', '1', 'yes', 'si', 'sí'])) {
+                        $selecciones++;
+                    }
+                }
+                return "Se registraron {$selecciones} selecciones en total de {$total} respuestas.";
+
+            case 'respuesta_corta':
+            case 'parrafo':
+                $palabrasClave = $this->extraerPalabrasClave($respuestas);
+                if (empty($palabrasClave)) {
+                    return "Se analizaron {$total} respuestas de texto.";
+                }
+                $topPalabra = array_key_first($palabrasClave);
+                $frecuencia = $palabrasClave[$topPalabra];
+                return "De {$total} respuestas, la palabra más frecuente fue '{$topPalabra}' ({$frecuencia} veces).";
 
             default:
                 return "Se analizaron {$total} respuestas para esta pregunta.";
