@@ -303,6 +303,21 @@ class SystemToolsController extends Controller
                 $resultado = $this->ejecutarComando('encuesta:forzar-validaciones', $params);
             }
             break;
+
+        case 'diagnosticar_envio_correos':
+            $encuestaId = $request->get('encuesta_id');
+            if (!$encuestaId) {
+                $resultado = "❌ Error: Debes proporcionar el ID de la encuesta";
+            } else {
+                $resultado = $this->ejecutarComando('diagnosticar:envio-correos', ['encuesta_id' => $encuestaId]);
+            }
+            break;
+                if ($debug) {
+                    $params['--debug'] = true;
+                }
+                $resultado = $this->ejecutarComando('encuesta:forzar-validaciones', $params);
+            }
+            break;
         case 'probar_dashboard':
             $encuestaId = $request->get('encuesta_id');
             $debug = $request->get('debug', false);

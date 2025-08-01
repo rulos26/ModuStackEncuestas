@@ -99,6 +99,10 @@
                         <option value="solucionar_hosting_completa" {{ $tipo === 'solucionar_hosting_completa' ? 'selected' : '' }}>
                             Solución Completa para Hosting
                         </option>
+                        <option value="diagnosticar_envio_correos" {{ $tipo === 'diagnosticar_envio_correos' ? 'selected' : '' }}>
+                            📧 Diagnosticar Envío de Correos
+                        </option>
+                        </option>
                         <option value="solucionar_csrf_hosting" {{ $tipo === 'solucionar_csrf_hosting' ? 'selected' : '' }}>
                             Solucionar Error CSRF en Hosting
                         </option>
@@ -610,9 +614,9 @@ $(document).ready(function() {
     }
 
     // Mostrar/ocultar campo encuesta_id según el tipo seleccionado
-    $('#tipo_prueba').change(function() {
+    $('#tipo').change(function() {
         const selectedValue = $(this).val();
-        const needsEncuestaId = ['preguntas', 'creacion_preguntas', 'simular_pregunta', 'estado_encuesta', 'probar_envio', 'diagnosticar_tipos', 'diagnosticar_progreso', 'forzar_validaciones', 'probar_dashboard', 'diagnosticar_dashboard', 'publicar_encuesta', 'verificar_respuestas'].includes(selectedValue);
+        const needsEncuestaId = ['preguntas', 'creacion_preguntas', 'simular_pregunta', 'estado_encuesta', 'probar_envio', 'diagnosticar_tipos', 'diagnosticar_progreso', 'forzar_validaciones', 'probar_dashboard', 'diagnosticar_dashboard', 'publicar_encuesta', 'verificar_respuestas', 'diagnosticar_envio_correos'].includes(selectedValue);
         const needsDebug = ['diagnosticar_tipos', 'diagnosticar_progreso'].includes(selectedValue);
 
         if (needsEncuestaId) {
@@ -693,6 +697,11 @@ $(document).ready(function() {
                 $('#encuesta_id').attr('placeholder', 'No requiere ID - Revisa logs de prueba generados');
                 $('#email_group').hide();
                 $('#cantidad_group').hide();
+            } else if (selectedValue === 'diagnosticar_envio_correos') {
+                $('#encuesta_id').attr('placeholder', 'ID de encuesta (opcional) - Diagnostica todas si no se especifica');
+                $('#email_group').hide();
+                $('#cantidad_group').hide();
+                $('#horas_group').hide();
                 $('#horas_group').hide();
             } else if (selectedValue === 'fix_session_419') {
                 $('#encuesta_id').attr('placeholder', 'No requiere ID - Soluciona error 419 de sesiones');
@@ -736,7 +745,7 @@ $(document).ready(function() {
     });
 
     // Ejecutar al cargar la página
-    $('#tipo_prueba').trigger('change');
+    $('#tipo').trigger('change');
 });
 </script>
 @endsection
