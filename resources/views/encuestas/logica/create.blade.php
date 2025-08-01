@@ -102,7 +102,15 @@
                                         </div>
                                     </div>
                                 </div>
-                            @endif
+                            @else
+                                <div class="card mb-3 border-success">
+                                    <div class="card-header bg-success text-white">
+                                        <h5 class="mb-0">
+                                            <i class="fas fa-cog"></i>
+                                            Pregunta {{ $pregunta->orden }}: {{ $pregunta->texto }}
+                                            <span class="badge badge-light ml-2">{{ $pregunta->getNombreTipo() }}</span>
+                                        </h5>
+                                    </div>
                                     <div class="card-body">
                                         @foreach($pregunta->respuestas as $respuesta)
                                             <div class="row mb-3 align-items-center">
