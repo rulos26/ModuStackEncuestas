@@ -379,14 +379,25 @@ class EncuestaRespuestaController extends Controller
                 return response()->json(['error' => 'No tienes permisos para modificar esta encuesta.'], 403);
             }
 
-            DB::beginTransaction();
+                        DB::beginTransaction();
 
             try {
                 $respuestas = $request->input('respuestas', []);
 
-                // Actualizar respuestas existentes
+                Log::info('Iniciando edición de respuestas', [
+                    'user_id' => Auth::id(),
+                    'pregunta_id' => $preguntaId,
+                    'total_respuestas_recibidas' => count($respuestas),
+                    'datos_recibidos' => $respuestas
+                ]);
+
+                $respuestasActualizadas = 0;
+                $respuestasCreadas = 0;
+                $respuestasEliminadas = 0;
+
+                // Actualizar respuestas existentes y crear nuevas
                 foreach ($respuestas as $index => $respuestaData) {
-                    if (isset($respuestaData['id'])) {
+                    if (isset($respuestaData['id']) && !empty($respuestaData['id'])) {
                         // Actualizar respuesta existente
                         $respuesta = Respuesta::find($respuestaData['id']);
                         if ($respuesta && $respuesta->pregunta_id == $preguntaId) {
@@ -394,24 +405,45 @@ class EncuestaRespuestaController extends Controller
                                 'texto' => $respuestaData['texto'],
                                 'orden' => $respuestaData['orden'] ?? $index + 1
                             ]);
+                            $respuestasActualizadas++;
+
+                            Log::info('Respuesta actualizada', [
+                                'respuesta_id' => $respuesta->id,
+                                'texto_anterior' => $respuesta->getOriginal('texto'),
+                                'texto_nuevo' => $respuestaData['texto']
+                            ]);
                         }
                     } else {
                         // Crear nueva respuesta
-                        Respuesta::create([
+                        $nuevaRespuesta = Respuesta::create([
                             'pregunta_id' => $preguntaId,
                             'texto' => $respuestaData['texto'],
                             'orden' => $respuestaData['orden'] ?? $index + 1
+                        ]);
+                        $respuestasCreadas++;
+
+                        Log::info('Nueva respuesta creada', [
+                            'respuesta_id' => $nuevaRespuesta->id,
+                            'texto' => $respuestaData['texto']
                         ]);
                     }
                 }
 
                 // Eliminar respuestas que ya no están en la lista
                 $respuestasIds = collect($respuestas)->pluck('id')->filter();
-                Respuesta::where('pregunta_id', $preguntaId)
+                $respuestasEliminadas = Respuesta::where('pregunta_id', $preguntaId)
                     ->whereNotIn('id', $respuestasIds)
                     ->delete();
 
                 DB::commit();
+
+                Log::info('Edición de respuestas completada', [
+                    'user_id' => Auth::id(),
+                    'pregunta_id' => $preguntaId,
+                    'respuestas_actualizadas' => $respuestasActualizadas,
+                    'respuestas_creadas' => $respuestasCreadas,
+                    'respuestas_eliminadas' => $respuestasEliminadas
+                ]);
 
                 Log::info('Respuestas editadas exitosamente', [
                     'user_id' => Auth::id(),

@@ -2,6 +2,10 @@
 
 @section('title', 'Agregar Respuestas')
 
+@push('css')
+<meta name="csrf-token" content="{{ csrf_token() }}">
+@endpush
+
 @section('content_header')
     <h1>
         <i class="fas fa-list-check"></i> Agregar Respuestas
@@ -366,18 +370,41 @@ $(document).on('click', '.eliminar-respuesta-modal', function() {
 $(document).on('submit', '#formEditarRespuestas', function(e) {
     e.preventDefault();
 
+    var formData = $(this).serialize();
+    var url = $(this).attr('action');
+
+    console.log('Enviando datos:', formData);
+    console.log('URL:', url);
+
+    // Mostrar indicador de carga
+    $('#formEditarRespuestas button[type="submit"]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Guardando...');
+
     $.ajax({
-        url: $(this).attr('action'),
+        url: url,
         method: 'POST',
-        data: $(this).serialize(),
+        data: formData,
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
         success: function(response) {
+            console.log('Respuesta exitosa:', response);
             $('#modalEditarRespuestas').modal('hide');
-            location.reload(); // Recargar página para mostrar cambios
+
+            // Mostrar mensaje de éxito
+            alert('Respuestas actualizadas exitosamente');
+
+            // Recargar página para mostrar cambios
+            location.reload();
         },
         error: function(xhr, status, error) {
             console.error('Error al guardar:', xhr.responseText);
             console.error('Status:', status);
             console.error('Error:', error);
+            console.error('Response:', xhr.responseJSON);
+
+            // Habilitar botón nuevamente
+            $('#formEditarRespuestas button[type="submit"]').prop('disabled', false).html('<i class="fas fa-save"></i> Guardar Cambios');
+
             alert('Error al guardar los cambios: ' + (xhr.responseJSON?.error || xhr.responseJSON?.message || error));
         }
     });
