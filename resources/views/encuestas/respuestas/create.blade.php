@@ -362,25 +362,55 @@ $(document).on('click', '#agregarNuevaRespuesta', function() {
 });
 
 $(document).on('click', '.eliminar-respuesta-modal', function() {
-    $(this).closest('.respuesta-item').remove();
+    var respuestaItem = $(this).closest('.respuesta-item');
+    var respuestaTexto = respuestaItem.find('input[name*="[texto]"]').val();
+
+    if (confirm('¿Está seguro de que desea eliminar la respuesta "' + respuestaTexto + '"?')) {
+        // Ocultar en lugar de eliminar para que no se envíe
+        respuestaItem.hide();
+        respuestaItem.addClass('eliminada');
+
+        console.log('🗑️ Respuesta ocultada:', respuestaTexto);
+    }
 });
 
 // Manejar envío del formulario de edición
 $(document).on('submit', '#formEditarRespuestas', function(e) {
     e.preventDefault();
 
-    var formData = $(this).serialize();
+    // Solo enviar respuestas que están visibles (no eliminadas)
+    var respuestasVisibles = $('#respuestasContainer .respuesta-item:visible');
+    if (respuestasVisibles.length === 0) {
+        alert('Debe agregar al menos una respuesta');
+        return;
+    }
+
+    // Crear FormData solo con respuestas visibles
+    var formData = new FormData();
+    formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
+
+    respuestasVisibles.each(function(index) {
+        var inputs = $(this).find('input');
+        inputs.each(function() {
+            var name = $(this).attr('name');
+            var value = $(this).val();
+            if (name && value !== undefined) {
+                // Ajustar el índice para que sea secuencial
+                var newName = name.replace(/\[\d+\]/, '[' + index + ']');
+                formData.append(newName, value);
+            }
+        });
+    });
+
     var url = $(this).attr('action');
 
     console.log('🔧 Enviando datos de edición:');
     console.log('URL:', url);
-    console.log('FormData:', formData);
+    console.log('Respuestas visibles:', respuestasVisibles.length);
 
-    // Validar que hay respuestas
-    var respuestas = $('#respuestasContainer .respuesta-item');
-    if (respuestas.length === 0) {
-        alert('Debe agregar al menos una respuesta');
-        return;
+    // Mostrar datos que se van a enviar
+    for (var pair of formData.entries()) {
+        console.log(pair[0] + ': ' + pair[1]);
     }
 
     // Mostrar indicador de carga
@@ -390,9 +420,10 @@ $(document).on('submit', '#formEditarRespuestas', function(e) {
         url: url,
         method: 'POST',
         data: formData,
+        processData: false,
+        contentType: false,
         headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
-            'Content-Type': 'application/x-www-form-urlencoded'
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         },
         success: function(response) {
             console.log('✅ Respuesta exitosa:', response);

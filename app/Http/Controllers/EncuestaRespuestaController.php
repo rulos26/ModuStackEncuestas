@@ -479,11 +479,15 @@ class EncuestaRespuestaController extends Controller
                     }
                 }
 
-                // Eliminar respuestas que ya no están en la lista
-                $respuestasIds = collect($respuestas)->pluck('id')->filter();
-                $respuestasEliminadas = Respuesta::where('pregunta_id', $preguntaId)
-                    ->whereNotIn('id', $respuestasIds)
-                    ->delete();
+                // NO eliminar respuestas automáticamente - solo las que el usuario explícitamente elimina
+                // El usuario debe usar el botón de eliminar en el frontend para quitar respuestas
+                $respuestasEliminadas = 0;
+
+                Log::info('🔒 Protección activada: No se eliminan respuestas automáticamente', [
+                    'pregunta_id' => $preguntaId,
+                    'total_respuestas_enviadas' => count($respuestas),
+                    'respuestas_con_id' => collect($respuestas)->pluck('id')->filter()->count()
+                ]);
 
                 DB::commit();
 
