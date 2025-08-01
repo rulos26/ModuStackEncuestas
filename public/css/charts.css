@@ -1,0 +1,164 @@
+/* ============================================================================
+   ESTILOS PARA GRÁFICAS
+   ============================================================================ */
+
+/* Contenedor principal de gráficas */
+.chart-wrapper {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    margin-bottom: 20px;
+    background: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Contenedor de la gráfica */
+.chart-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    background: #ffffff;
+}
+
+/* Canvas de la gráfica */
+.chart-container canvas {
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
+}
+
+/* Estilos específicos para diferentes tipos de gráficas */
+.chart-container.bar-chart {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.chart-container.pie-chart {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.chart-container.line-chart {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.chart-container.area-chart {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+/* Estados de carga */
+.chart-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    background: #f8f9fa;
+    color: #6c757d;
+    font-size: 14px;
+}
+
+.chart-loading::before {
+    content: "Cargando gráfica...";
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Estados de error */
+.chart-error {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    background: #f8d7da;
+    color: #721c24;
+    font-size: 14px;
+    text-align: center;
+    padding: 20px;
+}
+
+.chart-error::before {
+    content: "Error al cargar la gráfica";
+}
+
+/* Estados vacíos */
+.chart-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    background: #e2e3e5;
+    color: #6c757d;
+    font-size: 14px;
+    text-align: center;
+    padding: 20px;
+}
+
+.chart-empty::before {
+    content: "No hay datos para mostrar";
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .chart-wrapper {
+        height: 300px;
+    }
+
+    .chart-container {
+        padding: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .chart-wrapper {
+        height: 250px;
+    }
+}
+
+/* Debug styles (solo en desarrollo) */
+.chart-debug {
+    border: 2px solid #dc3545;
+    background: rgba(220, 53, 69, 0.1);
+}
+
+.chart-debug::after {
+    content: "DEBUG: Chart Container";
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: #dc3545;
+    color: white;
+    padding: 2px 5px;
+    font-size: 10px;
+    border-radius: 3px;
+    z-index: 1000;
+}
+
+/* Mejoras visuales */
+.chart-container:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+/* Estilos para leyendas */
+.chart-legend {
+    margin-top: 10px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+/* Estilos para tooltips personalizados */
+.chart-tooltip {
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    pointer-events: none;
+}

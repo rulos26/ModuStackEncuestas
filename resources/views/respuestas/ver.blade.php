@@ -2,6 +2,17 @@
 
 @section('title', 'Análisis de Respuestas - ' . $encuesta->titulo)
 
+@section('css')
+<link rel="stylesheet" href="{{ asset('css/charts.css') }}">
+@endsection
+
+@section('content_header')
+    <h1>
+        <i class="fas fa-chart-bar"></i> Análisis de Respuestas
+        <small>{{ $encuesta->titulo }}</small>
+    </h1>
+@endsection
+
 @section('content')
 <div class="container-fluid">
     <div class="row">
@@ -81,8 +92,10 @@
                                         <div class="card-body">
                                             <div class="row">
                                                 <div class="col-md-8">
-                                                    <div class="chart-container" style="position: relative; height:400px;">
-                                                        <canvas id="chart-{{ $analisisItem->id }}"></canvas>
+                                                    <div class="chart-wrapper">
+                                                        <div class="chart-container" style="position: relative; height:400px; width:100%;">
+                                                            <canvas id="chart-{{ $analisisItem->id }}" width="400" height="400"></canvas>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
@@ -201,56 +214,255 @@
 
 <style>
 .chart-container {
-    background: #f8f9fa;
+    background: #ffffff;
+    border: 1px solid #dee2e6;
     border-radius: 8px;
     padding: 20px;
     margin-bottom: 20px;
+    position: relative;
+    height: 400px;
+    min-height: 400px;
 }
+
+.chart-container canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
 .analysis-info {
     padding: 15px;
     background: #f8f9fa;
     border-radius: 8px;
+    border: 1px solid #dee2e6;
 }
+
 .analysis-info h5, .analysis-info h6 {
     color: #495057;
     margin-bottom: 10px;
 }
+
 .card-tools .badge {
     font-size: 0.8rem;
 }
+
+/* Asegurar que los contenedores de gráficas tengan dimensiones */
+.chart-wrapper {
+    position: relative;
+    height: 400px;
+    width: 100%;
+}
+
+/* Estilos para diferentes tipos de gráficas */
+.chart-container.bar-chart {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.chart-container.pie-chart {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.chart-container.line-chart {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+/* Debug styles */
+.chart-debug {
+    border: 2px solid red;
+    background: rgba(255, 0, 0, 0.1);
+}
+
+.chart-debug::before {
+    content: "DEBUG: Chart Container";
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    background: red;
+    color: white;
+    padding: 2px 5px;
+    font-size: 10px;
+    z-index: 1000;
+}
 </style>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-$(document).ready(function() {
-    @foreach($analisis as $analisisItem)
-        var ctx{{ $analisisItem->id }} = document.getElementById('chart-{{ $analisisItem->id }}').getContext('2d');
-        var data{{ $analisisItem->id }} = @json($analisisItem->datos_procesados);
-        var config{{ $analisisItem->id }} = @json($analisisItem->configuracion_grafico);
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
 
-        new Chart(ctx{{ $analisisItem->id }}, {
-            type: config{{ $analisisItem->id }}.type || 'bar',
-            data: data{{ $analisisItem->id }},
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Iniciando renderizado de gráficas...');
+
+    // Función para mostrar estado de carga
+    function showLoading(canvasId) {
+        const container = document.getElementById(canvasId).parentElement;
+        container.innerHTML = '<div class="chart-loading"></div>';
+    }
+
+    // Función para mostrar error
+    function showError(canvasId, message) {
+        const container = document.getElementById(canvasId).parentElement;
+        container.innerHTML = `<div class="chart-error">${message}</div>`;
+    }
+
+    // Función para mostrar estado vacío
+    function showEmpty(canvasId) {
+        const container = document.getElementById(canvasId).parentElement;
+        container.innerHTML = '<div class="chart-empty"></div>';
+    }
+
+    @foreach($analisis as $analisisItem)
+        console.log('📊 Procesando gráfica para análisis ID: {{ $analisisItem->id }}');
+
+        const canvasId = 'chart-{{ $analisisItem->id }}';
+        const canvas = document.getElementById(canvasId);
+
+        if (!canvas) {
+            console.error('❌ No se encontró el canvas:', canvasId);
+            continue;
+        }
+
+        // Verificar que el canvas esté visible
+        const rect = canvas.getBoundingClientRect();
+        if (rect.width === 0 || rect.height === 0) {
+            console.warn('⚠️ Canvas no visible, esperando...');
+            setTimeout(() => {
+                renderChart(canvasId, {{ $analisisItem->id }});
+            }, 1000);
+            continue;
+        }
+
+        renderChart(canvasId, {{ $analisisItem->id }});
+    @endforeach
+
+    function renderChart(canvasId, analisisId) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) {
+            console.error('❌ Canvas no encontrado:', canvasId);
+            return;
+        }
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+            console.error('❌ No se pudo obtener el contexto 2D');
+            showError(canvasId, 'Error al obtener contexto 2D');
+            return;
+        }
+
+        // Obtener datos del análisis
+        let data, config;
+
+        @foreach($analisis as $analisisItem)
+        if (analisisId === {{ $analisisItem->id }}) {
+            data = @json($analisisItem->datos_procesados);
+            config = @json($analisisItem->configuracion_grafico);
+        }
+        @endforeach
+
+        if (!data || !data.labels || !data.datasets) {
+            console.error('❌ Datos de gráfica inválidos para análisis ID:', analisisId);
+            showEmpty(canvasId);
+            return;
+        }
+
+        // Validar que hay datos para mostrar
+        const hasData = data.datasets.some(dataset =>
+            dataset.data && dataset.data.length > 0 &&
+            dataset.data.some(value => value > 0)
+        );
+
+        if (!hasData) {
+            console.warn('⚠️ No hay datos válidos para mostrar');
+            showEmpty(canvasId);
+            return;
+        }
+
+        // Configuración mejorada
+        const chartConfig = {
+            type: config?.type || 'bar',
+            data: data,
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
                         position: 'bottom',
+                        labels: {
+                            color: '#495057',
+                            font: { size: 12 },
+                            usePointStyle: true
+                        }
                     },
                     title: {
                         display: true,
-                        text: '{{ $analisisItem->pregunta->texto }}'
+                        text: '{{ $analisisItem->pregunta->texto }}',
+                        color: '#495057',
+                        font: { size: 16, weight: 'bold' }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        borderColor: '#ffffff',
+                        borderWidth: 1
                     }
                 },
                 scales: {
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        grid: { color: 'rgba(0,0,0,0.1)' },
+                        ticks: { color: '#495057' }
+                    },
+                    x: {
+                        grid: { color: 'rgba(0,0,0,0.1)' },
+                        ticks: { color: '#495057' }
                     }
+                },
+                elements: {
+                    point: { radius: 4 },
+                    line: { tension: 0.4 },
+                    bar: { borderWidth: 1 }
+                },
+                animation: {
+                    duration: 1000,
+                    easing: 'easeInOutQuart'
                 }
             }
-        });
-    @endforeach
+        };
+
+        // Agregar configuración específica según el tipo
+        if (chartConfig.type === 'pie' || chartConfig.type === 'doughnut') {
+            chartConfig.options.plugins.legend.position = 'bottom';
+            chartConfig.options.plugins.legend.labels.usePointStyle = true;
+        }
+
+        console.log('🎨 Configuración final:', chartConfig);
+
+        try {
+            // Destruir gráfica existente si existe
+            if (window.charts && window.charts[canvasId]) {
+                window.charts[canvasId].destroy();
+            }
+
+            // Crear la gráfica
+            const chart = new Chart(ctx, chartConfig);
+
+            // Guardar referencia global
+            if (!window.charts) window.charts = {};
+            window.charts[canvasId] = chart;
+
+            console.log('✅ Gráfica creada exitosamente para análisis ID:', analisisId);
+
+            // Agregar clase CSS para debugging en desarrollo
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                canvas.parentElement.classList.add('chart-debug');
+            }
+
+        } catch (error) {
+            console.error('❌ Error creando gráfica para análisis ID:', analisisId, error);
+            showError(canvasId, `Error: ${error.message}`);
+        }
+    }
+
+    console.log('🎉 Renderizado de gráficas completado');
 });
 </script>
 @endsection
