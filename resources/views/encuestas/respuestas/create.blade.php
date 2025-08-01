@@ -373,8 +373,16 @@ $(document).on('submit', '#formEditarRespuestas', function(e) {
     var formData = $(this).serialize();
     var url = $(this).attr('action');
 
-    console.log('Enviando datos:', formData);
+    console.log('🔧 Enviando datos de edición:');
     console.log('URL:', url);
+    console.log('FormData:', formData);
+
+    // Validar que hay respuestas
+    var respuestas = $('#respuestasContainer .respuesta-item');
+    if (respuestas.length === 0) {
+        alert('Debe agregar al menos una respuesta');
+        return;
+    }
 
     // Mostrar indicador de carga
     $('#formEditarRespuestas button[type="submit"]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Guardando...');
@@ -384,28 +392,50 @@ $(document).on('submit', '#formEditarRespuestas', function(e) {
         method: 'POST',
         data: formData,
         headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+            'Content-Type': 'application/x-www-form-urlencoded'
         },
         success: function(response) {
-            console.log('Respuesta exitosa:', response);
-            $('#modalEditarRespuestas').modal('hide');
+            console.log('✅ Respuesta exitosa:', response);
 
-            // Mostrar mensaje de éxito
-            alert('Respuestas actualizadas exitosamente');
+            if (response.success) {
+                $('#modalEditarRespuestas').modal('hide');
 
-            // Recargar página para mostrar cambios
-            location.reload();
+                // Mostrar mensaje de éxito con detalles
+                var mensaje = 'Respuestas actualizadas exitosamente\n';
+                if (response.data) {
+                    mensaje += '• Actualizadas: ' + response.data.actualizadas + '\n';
+                    mensaje += '• Creadas: ' + response.data.creadas + '\n';
+                    mensaje += '• Eliminadas: ' + response.data.eliminadas;
+                }
+                alert(mensaje);
+
+                // Recargar página para mostrar cambios
+                location.reload();
+            } else {
+                alert('Error: ' + (response.message || 'Error desconocido'));
+            }
         },
         error: function(xhr, status, error) {
-            console.error('Error al guardar:', xhr.responseText);
+            console.error('❌ Error al guardar:');
             console.error('Status:', status);
             console.error('Error:', error);
             console.error('Response:', xhr.responseJSON);
+            console.error('ResponseText:', xhr.responseText);
 
             // Habilitar botón nuevamente
             $('#formEditarRespuestas button[type="submit"]').prop('disabled', false).html('<i class="fas fa-save"></i> Guardar Cambios');
 
-            alert('Error al guardar los cambios: ' + (xhr.responseJSON?.error || xhr.responseJSON?.message || error));
+            var errorMsg = 'Error al guardar los cambios';
+            if (xhr.responseJSON && xhr.responseJSON.error) {
+                errorMsg += ': ' + xhr.responseJSON.error;
+            } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                errorMsg += ': ' + xhr.responseJSON.message;
+            } else {
+                errorMsg += ': ' + error;
+            }
+
+            alert(errorMsg);
         }
     });
 });

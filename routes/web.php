@@ -272,7 +272,7 @@ Route::middleware(['auth'])->prefix('encuestas')->name('encuestas.')->group(func
 // Rutas para edición de respuestas
 Route::middleware(['auth'])->prefix('encuestas')->name('encuestas.')->group(function () {
     Route::get('{pregunta}/respuestas/obtener', [App\Http\Controllers\EncuestaRespuestaController::class, 'obtenerRespuestas'])->name('respuestas.obtener');
-    Route::put('{pregunta}/respuestas/editar', [App\Http\Controllers\EncuestaRespuestaController::class, 'editarRespuestas'])->name('respuestas.editar');
+    Route::post('{pregunta}/respuestas/editar', [App\Http\Controllers\EncuestaRespuestaController::class, 'editarRespuestas'])->name('respuestas.editar');
 });
 
 // ============================================================================

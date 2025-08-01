@@ -366,25 +366,51 @@ class EncuestaRespuestaController extends Controller
     public function editarRespuestas(Request $request, $preguntaId)
     {
         try {
+            Log::info('🔧 Iniciando edición de respuestas', [
+                'user_id' => Auth::id(),
+                'pregunta_id' => $preguntaId,
+                'method' => $request->method(),
+                'all_data' => $request->all()
+            ]);
+
             $pregunta = Pregunta::findOrFail($preguntaId);
 
             // Verificar permisos
             if (!$this->checkUserAccess(['respuestas.create'])) {
+                Log::warning('❌ Permisos insuficientes para editar respuestas', [
+                    'user_id' => Auth::id(),
+                    'pregunta_id' => $preguntaId
+                ]);
                 return response()->json(['error' => 'No tienes permisos para editar respuestas.'], 403);
             }
 
             // Verificar que el usuario es el propietario de la encuesta
             $encuesta = $pregunta->encuesta;
             if ($encuesta->user_id !== Auth::id() && !$this->isAdmin()) {
+                Log::warning('❌ Usuario no es propietario de la encuesta', [
+                    'user_id' => Auth::id(),
+                    'encuesta_user_id' => $encuesta->user_id,
+                    'pregunta_id' => $preguntaId
+                ]);
                 return response()->json(['error' => 'No tienes permisos para modificar esta encuesta.'], 403);
             }
 
-                        DB::beginTransaction();
+                                    DB::beginTransaction();
 
             try {
                 $respuestas = $request->input('respuestas', []);
 
-                Log::info('Iniciando edición de respuestas', [
+                // Validar que se recibieron datos
+                if (empty($respuestas)) {
+                    Log::warning('❌ No se recibieron datos de respuestas', [
+                        'user_id' => Auth::id(),
+                        'pregunta_id' => $preguntaId,
+                        'request_data' => $request->all()
+                    ]);
+                    return response()->json(['error' => 'No se recibieron datos de respuestas.'], 400);
+                }
+
+                Log::info('📝 Procesando edición de respuestas', [
                     'user_id' => Auth::id(),
                     'pregunta_id' => $preguntaId,
                     'total_respuestas_recibidas' => count($respuestas),
@@ -395,37 +421,61 @@ class EncuestaRespuestaController extends Controller
                 $respuestasCreadas = 0;
                 $respuestasEliminadas = 0;
 
-                // Actualizar respuestas existentes y crear nuevas
+                                // Actualizar respuestas existentes y crear nuevas
                 foreach ($respuestas as $index => $respuestaData) {
+                    Log::info('Procesando respuesta', [
+                        'index' => $index,
+                        'data' => $respuestaData
+                    ]);
+
+                    // Validar datos mínimos
+                    if (!isset($respuestaData['texto']) || empty(trim($respuestaData['texto']))) {
+                        Log::warning('Respuesta sin texto válido', ['data' => $respuestaData]);
+                        continue;
+                    }
+
                     if (isset($respuestaData['id']) && !empty($respuestaData['id'])) {
                         // Actualizar respuesta existente
                         $respuesta = Respuesta::find($respuestaData['id']);
                         if ($respuesta && $respuesta->pregunta_id == $preguntaId) {
+                            $textoAnterior = $respuesta->texto;
                             $respuesta->update([
-                                'texto' => $respuestaData['texto'],
+                                'texto' => trim($respuestaData['texto']),
                                 'orden' => $respuestaData['orden'] ?? $index + 1
                             ]);
                             $respuestasActualizadas++;
 
-                            Log::info('Respuesta actualizada', [
+                            Log::info('✅ Respuesta actualizada', [
                                 'respuesta_id' => $respuesta->id,
-                                'texto_anterior' => $respuesta->getOriginal('texto'),
+                                'texto_anterior' => $textoAnterior,
                                 'texto_nuevo' => $respuestaData['texto']
+                            ]);
+                        } else {
+                            Log::warning('❌ Respuesta no encontrada o no pertenece a la pregunta', [
+                                'respuesta_id' => $respuestaData['id'],
+                                'pregunta_id' => $preguntaId
                             ]);
                         }
                     } else {
                         // Crear nueva respuesta
-                        $nuevaRespuesta = Respuesta::create([
-                            'pregunta_id' => $preguntaId,
-                            'texto' => $respuestaData['texto'],
-                            'orden' => $respuestaData['orden'] ?? $index + 1
-                        ]);
-                        $respuestasCreadas++;
+                        try {
+                            $nuevaRespuesta = Respuesta::create([
+                                'pregunta_id' => $preguntaId,
+                                'texto' => trim($respuestaData['texto']),
+                                'orden' => $respuestaData['orden'] ?? $index + 1
+                            ]);
+                            $respuestasCreadas++;
 
-                        Log::info('Nueva respuesta creada', [
-                            'respuesta_id' => $nuevaRespuesta->id,
-                            'texto' => $respuestaData['texto']
-                        ]);
+                            Log::info('✅ Nueva respuesta creada', [
+                                'respuesta_id' => $nuevaRespuesta->id,
+                                'texto' => $respuestaData['texto']
+                            ]);
+                        } catch (Exception $e) {
+                            Log::error('❌ Error creando nueva respuesta', [
+                                'error' => $e->getMessage(),
+                                'data' => $respuestaData
+                            ]);
+                        }
                     }
                 }
 
@@ -437,23 +487,23 @@ class EncuestaRespuestaController extends Controller
 
                 DB::commit();
 
-                Log::info('Edición de respuestas completada', [
+                Log::info('🎉 Edición de respuestas completada exitosamente', [
                     'user_id' => Auth::id(),
                     'pregunta_id' => $preguntaId,
                     'respuestas_actualizadas' => $respuestasActualizadas,
                     'respuestas_creadas' => $respuestasCreadas,
-                    'respuestas_eliminadas' => $respuestasEliminadas
-                ]);
-
-                Log::info('Respuestas editadas exitosamente', [
-                    'user_id' => Auth::id(),
-                    'pregunta_id' => $preguntaId,
-                    'total_respuestas' => count($respuestas)
+                    'respuestas_eliminadas' => $respuestasEliminadas,
+                    'total_procesadas' => count($respuestas)
                 ]);
 
                 return response()->json([
                     'success' => true,
-                    'message' => 'Respuestas actualizadas exitosamente'
+                    'message' => 'Respuestas actualizadas exitosamente',
+                    'data' => [
+                        'actualizadas' => $respuestasActualizadas,
+                        'creadas' => $respuestasCreadas,
+                        'eliminadas' => $respuestasEliminadas
+                    ]
                 ]);
 
             } catch (Exception $e) {
