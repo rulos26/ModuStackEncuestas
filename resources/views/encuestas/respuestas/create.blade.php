@@ -250,7 +250,7 @@ function mostrarModalEdicion(preguntaId, preguntaTexto) {
                             <span>&times;</span>
                         </button>
                     </div>
-                    <form id="formEditarRespuestas" method="POST" action="/encuestas/${preguntaId}/respuestas/editar">
+                    <form id="formEditarRespuestas" method="POST" action="{{ route('encuestas.respuestas.editar', ':preguntaId') }}">
                         @csrf
                         @method('PUT')
                         <div class="modal-body">
@@ -285,8 +285,11 @@ function mostrarModalEdicion(preguntaId, preguntaTexto) {
     // Remover modal anterior si existe
     $('#modalEditarRespuestas').remove();
 
-    // Agregar nuevo modal al body
+        // Agregar nuevo modal al body
     $('body').append(modalHtml);
+
+    // Actualizar la acción del formulario con el ID correcto
+    $('#formEditarRespuestas').attr('action', "{{ route('encuestas.respuestas.editar', ':preguntaId') }}".replace(':preguntaId', preguntaId));
 
     // Cargar respuestas actuales
     cargarRespuestasActuales(preguntaId);
@@ -298,7 +301,7 @@ function mostrarModalEdicion(preguntaId, preguntaTexto) {
 // Función para cargar respuestas actuales
 function cargarRespuestasActuales(preguntaId) {
     $.ajax({
-        url: `/encuestas/${preguntaId}/respuestas/obtener`,
+        url: "{{ route('encuestas.respuestas.obtener', ':preguntaId') }}".replace(':preguntaId', preguntaId),
         method: 'GET',
         success: function(response) {
             var container = $('#respuestasContainer');
@@ -323,8 +326,11 @@ function cargarRespuestasActuales(preguntaId) {
                 container.append(respuestaHtml);
             });
         },
-        error: function() {
-            alert('Error al cargar las respuestas');
+        error: function(xhr, status, error) {
+            console.error('Error AJAX:', xhr.responseText);
+            console.error('Status:', status);
+            console.error('Error:', error);
+            alert('Error al cargar las respuestas: ' + (xhr.responseJSON?.error || error));
         }
     });
 }
@@ -368,8 +374,11 @@ $(document).on('submit', '#formEditarRespuestas', function(e) {
             $('#modalEditarRespuestas').modal('hide');
             location.reload(); // Recargar página para mostrar cambios
         },
-        error: function(xhr) {
-            alert('Error al guardar los cambios: ' + xhr.responseJSON.message);
+        error: function(xhr, status, error) {
+            console.error('Error al guardar:', xhr.responseText);
+            console.error('Status:', status);
+            console.error('Error:', error);
+            alert('Error al guardar los cambios: ' + (xhr.responseJSON?.error || xhr.responseJSON?.message || error));
         }
     });
 });

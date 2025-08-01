@@ -226,8 +226,6 @@ Route::middleware(['auth'])->prefix('encuestas')->name('encuestas.')->group(func
     Route::post('{encuesta}/respuestas', [EncuestaRespuestaController::class, 'store'])
         ->name('respuestas.store')
         ->middleware('validar.flujo.encuesta:respuestas');
-    Route::get('{pregunta}/respuestas/obtener', [EncuestaRespuestaController::class, 'obtenerRespuestas'])->name('respuestas.obtener');
-    Route::put('{pregunta}/respuestas/editar', [EncuestaRespuestaController::class, 'editarRespuestas'])->name('respuestas.editar');
 
     // Configuración de lógica
     Route::get('{encuesta}/logica', [EncuestaLogicaController::class, 'create'])
@@ -269,6 +267,12 @@ Route::middleware(['auth'])->prefix('encuestas')->name('encuestas.')->group(func
     Route::post('{encuesta}/seguimiento/enviar-individual', [App\Http\Controllers\EncuestaSeguimientoController::class, 'enviarCorreoIndividualEndpoint'])->name('seguimiento.enviar-individual');
     Route::get('{encuesta}/seguimiento/detalles-correo', [App\Http\Controllers\EncuestaSeguimientoController::class, 'detallesCorreo'])->name('seguimiento.detalles-correo');
     Route::post('{encuesta}/seguimiento/exportar-lista', [App\Http\Controllers\EncuestaSeguimientoController::class, 'exportarLista'])->name('seguimiento.exportar-lista');
+});
+
+// Rutas para edición de respuestas
+Route::middleware(['auth'])->prefix('encuestas')->name('encuestas.')->group(function () {
+    Route::get('{pregunta}/respuestas/obtener', [App\Http\Controllers\EncuestaRespuestaController::class, 'obtenerRespuestas'])->name('respuestas.obtener');
+    Route::put('{pregunta}/respuestas/editar', [App\Http\Controllers\EncuestaRespuestaController::class, 'editarRespuestas'])->name('respuestas.editar');
 });
 
 // ============================================================================
