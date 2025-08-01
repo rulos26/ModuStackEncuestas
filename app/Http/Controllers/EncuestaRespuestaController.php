@@ -316,4 +316,127 @@ class EncuestaRespuestaController extends Controller
             'user_permissions' => Auth::user()->permissions->pluck('name')->toArray()
         ]);
     }
+
+    /**
+     * Obtener respuestas de una pregunta específica
+     */
+    public function obtenerRespuestas($preguntaId)
+    {
+        try {
+            $pregunta = Pregunta::with('respuestas')->findOrFail($preguntaId);
+
+            // Verificar permisos
+            if (!$this->checkUserAccess(['respuestas.create'])) {
+                return response()->json(['error' => 'No tienes permisos para acceder a las respuestas.'], 403);
+            }
+
+            // Verificar que el usuario es el propietario de la encuesta
+            $encuesta = $pregunta->encuesta;
+            if ($encuesta->user_id !== Auth::id() && !$this->isAdmin()) {
+                return response()->json(['error' => 'No tienes permisos para modificar esta encuesta.'], 403);
+            }
+
+            $respuestas = $pregunta->respuestas->map(function($respuesta) {
+                return [
+                    'id' => $respuesta->id,
+                    'texto' => $respuesta->texto,
+                    'orden' => $respuesta->orden
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'respuestas' => $respuestas
+            ]);
+
+        } catch (Exception $e) {
+            Log::error('Error obteniendo respuestas', [
+                'user_id' => Auth::id(),
+                'pregunta_id' => $preguntaId,
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json(['error' => 'Error al obtener las respuestas: ' . $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Editar respuestas de una pregunta específica
+     */
+    public function editarRespuestas(Request $request, $preguntaId)
+    {
+        try {
+            $pregunta = Pregunta::findOrFail($preguntaId);
+
+            // Verificar permisos
+            if (!$this->checkUserAccess(['respuestas.create'])) {
+                return response()->json(['error' => 'No tienes permisos para editar respuestas.'], 403);
+            }
+
+            // Verificar que el usuario es el propietario de la encuesta
+            $encuesta = $pregunta->encuesta;
+            if ($encuesta->user_id !== Auth::id() && !$this->isAdmin()) {
+                return response()->json(['error' => 'No tienes permisos para modificar esta encuesta.'], 403);
+            }
+
+            DB::beginTransaction();
+
+            try {
+                $respuestas = $request->input('respuestas', []);
+
+                // Actualizar respuestas existentes
+                foreach ($respuestas as $index => $respuestaData) {
+                    if (isset($respuestaData['id'])) {
+                        // Actualizar respuesta existente
+                        $respuesta = Respuesta::find($respuestaData['id']);
+                        if ($respuesta && $respuesta->pregunta_id == $preguntaId) {
+                            $respuesta->update([
+                                'texto' => $respuestaData['texto'],
+                                'orden' => $respuestaData['orden'] ?? $index + 1
+                            ]);
+                        }
+                    } else {
+                        // Crear nueva respuesta
+                        Respuesta::create([
+                            'pregunta_id' => $preguntaId,
+                            'texto' => $respuestaData['texto'],
+                            'orden' => $respuestaData['orden'] ?? $index + 1
+                        ]);
+                    }
+                }
+
+                // Eliminar respuestas que ya no están en la lista
+                $respuestasIds = collect($respuestas)->pluck('id')->filter();
+                Respuesta::where('pregunta_id', $preguntaId)
+                    ->whereNotIn('id', $respuestasIds)
+                    ->delete();
+
+                DB::commit();
+
+                Log::info('Respuestas editadas exitosamente', [
+                    'user_id' => Auth::id(),
+                    'pregunta_id' => $preguntaId,
+                    'total_respuestas' => count($respuestas)
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Respuestas actualizadas exitosamente'
+                ]);
+
+            } catch (Exception $e) {
+                DB::rollBack();
+                throw $e;
+            }
+
+        } catch (Exception $e) {
+            Log::error('Error editando respuestas', [
+                'user_id' => Auth::id(),
+                'pregunta_id' => $preguntaId,
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json(['error' => 'Error al editar las respuestas: ' . $e->getMessage()], 500);
+        }
+    }
 }

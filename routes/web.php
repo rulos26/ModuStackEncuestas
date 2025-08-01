@@ -226,6 +226,8 @@ Route::middleware(['auth'])->prefix('encuestas')->name('encuestas.')->group(func
     Route::post('{encuesta}/respuestas', [EncuestaRespuestaController::class, 'store'])
         ->name('respuestas.store')
         ->middleware('validar.flujo.encuesta:respuestas');
+    Route::get('{pregunta}/respuestas/obtener', [EncuestaRespuestaController::class, 'obtenerRespuestas'])->name('respuestas.obtener');
+    Route::put('{pregunta}/respuestas/editar', [EncuestaRespuestaController::class, 'editarRespuestas'])->name('respuestas.editar');
 
     // Configuración de lógica
     Route::get('{encuesta}/logica', [EncuestaLogicaController::class, 'create'])

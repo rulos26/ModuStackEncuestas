@@ -224,6 +224,154 @@ $(document).ready(function() {
     $(document).on('click', '.eliminar-respuesta', function() {
         $(this).closest('.respuesta-item').remove();
     });
+
+    // Editar respuestas
+    $('.editar-respuestas').click(function() {
+        var preguntaId = $(this).data('pregunta-id');
+        var preguntaTexto = $(this).closest('.card').find('.card-header strong').text();
+
+        // Mostrar modal de edición
+        mostrarModalEdicion(preguntaId, preguntaTexto);
+    });
+});
+
+// Función para mostrar modal de edición
+function mostrarModalEdicion(preguntaId, preguntaTexto) {
+    // Crear modal dinámicamente
+    var modalHtml = `
+        <div class="modal fade" id="modalEditarRespuestas" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="fas fa-edit"></i> Editar Respuestas
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+                    <form id="formEditarRespuestas" method="POST" action="/encuestas/${preguntaId}/respuestas/editar">
+                        @csrf
+                        @method('PUT')
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label><strong>Pregunta:</strong></label>
+                                <p class="form-control-static">${preguntaTexto}</p>
+                            </div>
+                            <div class="form-group">
+                                <label><strong>Respuestas:</strong></label>
+                                <div id="respuestasContainer">
+                                    <!-- Las respuestas se cargarán aquí -->
+                                </div>
+                                <button type="button" class="btn btn-success btn-sm mt-2" id="agregarNuevaRespuesta">
+                                    <i class="fas fa-plus"></i> Agregar Respuesta
+                                </button>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                <i class="fas fa-times"></i> Cancelar
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Remover modal anterior si existe
+    $('#modalEditarRespuestas').remove();
+
+    // Agregar nuevo modal al body
+    $('body').append(modalHtml);
+
+    // Cargar respuestas actuales
+    cargarRespuestasActuales(preguntaId);
+
+    // Mostrar modal
+    $('#modalEditarRespuestas').modal('show');
+}
+
+// Función para cargar respuestas actuales
+function cargarRespuestasActuales(preguntaId) {
+    $.ajax({
+        url: `/encuestas/${preguntaId}/respuestas/obtener`,
+        method: 'GET',
+        success: function(response) {
+            var container = $('#respuestasContainer');
+            container.empty();
+
+            response.respuestas.forEach(function(respuesta, index) {
+                var respuestaHtml = `
+                    <div class="respuesta-item mb-2">
+                        <div class="input-group">
+                            <input type="text" name="respuestas[${index}][texto]"
+                                   class="form-control" value="${respuesta.texto}" required>
+                            <input type="hidden" name="respuestas[${index}][id]" value="${respuesta.id}">
+                            <input type="hidden" name="respuestas[${index}][orden]" value="${respuesta.orden}">
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-danger eliminar-respuesta-modal">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.append(respuestaHtml);
+            });
+        },
+        error: function() {
+            alert('Error al cargar las respuestas');
+        }
+    });
+}
+
+// Eventos del modal
+$(document).on('click', '#agregarNuevaRespuesta', function() {
+    var container = $('#respuestasContainer');
+    var itemCount = container.find('.respuesta-item').length;
+
+    var newItem = `
+        <div class="respuesta-item mb-2">
+            <div class="input-group">
+                <input type="text" name="respuestas[${itemCount}][texto]"
+                       class="form-control" placeholder="Escriba la respuesta" required>
+                <input type="hidden" name="respuestas[${itemCount}][orden]" value="${itemCount + 1}">
+                <div class="input-group-append">
+                    <button type="button" class="btn btn-danger eliminar-respuesta-modal">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    container.append(newItem);
+});
+
+$(document).on('click', '.eliminar-respuesta-modal', function() {
+    $(this).closest('.respuesta-item').remove();
+});
+
+// Manejar envío del formulario de edición
+$(document).on('submit', '#formEditarRespuestas', function(e) {
+    e.preventDefault();
+
+    $.ajax({
+        url: $(this).attr('action'),
+        method: 'POST',
+        data: $(this).serialize(),
+        success: function(response) {
+            $('#modalEditarRespuestas').modal('hide');
+            location.reload(); // Recargar página para mostrar cambios
+        },
+        error: function(xhr) {
+            alert('Error al guardar los cambios: ' + xhr.responseJSON.message);
+        }
+    });
 });
 </script>
 @endsection
