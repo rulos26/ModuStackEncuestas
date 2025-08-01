@@ -72,8 +72,8 @@
                                                 Pregunta {{ $index + 1 }}: {{ $analisisItem->pregunta->texto }}
                                             </h3>
                                             <div class="card-tools">
-                                                <span class="badge badge-{{ $this->getTipoGraficoColor($analisisItem->tipo_grafico) }}">
-                                                    <i class="fas fa-{{ $this->getTipoGraficoIcon($analisisItem->tipo_grafico) }}"></i>
+                                                <span class="badge badge-{{ $analisisItem->tipo_grafico === 'pastel' ? 'success' : ($analisisItem->tipo_grafico === 'barras' ? 'primary' : 'info') }}">
+                                                    <i class="fas fa-{{ $analisisItem->tipo_grafico === 'pastel' ? 'chart-pie' : ($analisisItem->tipo_grafico === 'lineas' ? 'chart-line' : 'chart-bar') }}"></i>
                                                     {{ ucfirst($analisisItem->tipo_grafico) }}
                                                 </span>
                                             </div>

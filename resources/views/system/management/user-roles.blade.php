@@ -91,7 +91,7 @@
                                     <td>
                                         @if($user->roles->count() > 0)
                                             @foreach($user->roles as $role)
-                                                <span class="badge badge-{{ $this->getRoleBadgeColor($role->name) }}">
+                                                <span class="badge badge-{{ $role->name === 'Superadmin' ? 'danger' : ($role->name === 'Admin' ? 'warning' : 'info') }}">
                                                     {{ $role->name }}
                                                 </span>
                                             @endforeach
