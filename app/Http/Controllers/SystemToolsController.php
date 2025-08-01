@@ -256,257 +256,214 @@ class SystemToolsController extends Controller
                             $resultado = $this->ejecutarComando('encuesta:diagnosticar-estado', ['encuesta_id' => $encuestaId]);
                         }
                         break;
-                            case 'probar_envio':
-            $encuestaId = $request->get('encuesta_id');
-            if (!$encuestaId) {
-                $resultado = "❌ Error: Debes proporcionar el ID de la encuesta";
-            } else {
-                $resultado = $this->ejecutarComando('envio:probar-configuracion', ['encuesta_id' => $encuestaId]);
-            }
-            break;
-        case 'diagnosticar_tipos':
-            $encuestaId = $request->get('encuesta_id');
-            $debug = $request->get('debug', false);
-            if (!$encuestaId) {
-                $resultado = "❌ Error: Debes proporcionar el ID de la encuesta";
-            } else {
-                $params = ['--encuesta_id' => $encuestaId];
-                if ($debug) {
-                    $params['--debug'] = true;
-                }
-                $resultado = $this->ejecutarComando('preguntas:diagnosticar-tipos', $params);
-            }
-            break;
-        case 'diagnosticar_progreso':
-            $encuestaId = $request->get('encuesta_id');
-            $debug = $request->get('debug', false);
-            if (!$encuestaId) {
-                $resultado = "❌ Error: Debes proporcionar el ID de la encuesta";
-            } else {
-                $params = ['encuesta_id' => $encuestaId];
-                if ($debug) {
-                    $params['--debug'] = true;
-                }
-                $resultado = $this->ejecutarComando('encuesta:diagnosticar-progreso', $params);
-            }
-            break;
-        case 'forzar_validaciones':
-            $encuestaId = $request->get('encuesta_id');
-            $debug = $request->get('debug', false);
-            if (!$encuestaId) {
-                $resultado = "❌ Error: Debes proporcionar el ID de la encuesta";
-            } else {
-                $params = ['encuesta_id' => $encuestaId];
-                if ($debug) {
-                    $params['--debug'] = true;
-                }
-                $resultado = $this->ejecutarComando('encuesta:forzar-validaciones', $params);
-            }
-            break;
-
-        case 'diagnosticar_envio_correos':
-            $encuestaId = $request->get('encuesta_id');
-            if (!$encuestaId) {
-                $resultado = "❌ Error: Debes proporcionar el ID de la encuesta";
-            } else {
-                $resultado = $this->ejecutarComando('diagnosticar:envio-correos', ['encuesta_id' => $encuestaId]);
-            }
-            break;
-                if ($debug) {
-                    $params['--debug'] = true;
-                }
-                $resultado = $this->ejecutarComando('encuesta:forzar-validaciones', $params);
-            }
-            break;
-        case 'probar_dashboard':
-            $encuestaId = $request->get('encuesta_id');
-            $debug = $request->get('debug', false);
-            if (!$encuestaId) {
-                $resultado = "❌ Error: Debes proporcionar el ID de la encuesta";
-            } else {
-                $params = ['encuesta_id' => $encuestaId];
-                if ($debug) {
-                    $params['--debug'] = true;
-                }
-                $resultado = $this->ejecutarComando('dashboard:probar-seguimiento', $params);
-            }
-            break;
-        case 'diagnosticar_dashboard':
-            $encuestaId = $request->get('encuesta_id');
-            $debug = $request->get('debug', false);
-            if (!$encuestaId) {
-                $resultado = "❌ Error: Debes proporcionar el ID de la encuesta";
-            } else {
-                $params = ['encuesta_id' => $encuestaId];
-                if ($debug) {
-                    $params['--debug'] = true;
-                }
-                $resultado = $this->ejecutarComando('dashboard:diagnosticar', $params);
-            }
-            break;
-        case 'migracion_sent_mails':
-            $debug = $request->get('debug', false);
-            $params = [];
-            if ($debug) {
-                $params['--debug'] = true;
-            }
-            $resultado = $this->ejecutarComando('migracion:sent-mails', $params);
-            break;
-        case 'corregir_user_id':
-            $encuestaId = $request->get('encuesta_id');
-            $userId = $request->get('user_id');
-            $debug = $request->get('debug', false);
-            if (!$encuestaId) {
-                $resultado = "❌ Error: Debes proporcionar el ID de la encuesta";
-            } else {
-                $params = ['encuesta_id' => $encuestaId];
-                if ($userId) {
-                    $params['--user_id'] = $userId;
-                }
-                if ($debug) {
-                    $params['--debug'] = true;
-                }
-                $resultado = $this->ejecutarComando('encuesta:corregir-user-id', $params);
-            }
-            break;
-        case 'debug_dashboard':
-            $encuestaId = $request->get('encuesta_id');
-            $userId = $request->get('user_id');
-            $debug = $request->get('debug', false);
-            if (!$encuestaId) {
-                $resultado = "❌ Error: Debes proporcionar el ID de la encuesta";
-            } else {
-                $params = ['encuesta_id' => $encuestaId];
-                if ($userId) {
-                    $params['--user_id'] = $userId;
-                }
-                if ($debug) {
-                    $params['--debug'] = true;
-                }
-                $resultado = $this->ejecutarComando('debug:dashboard-encuesta', $params);
-            }
-            break;
-        case 'verificar_enum':
-            $debug = $request->get('debug', false);
-            $params = [];
-            if ($debug) {
-                $params['--debug'] = true;
-            }
-            $resultado = $this->ejecutarComando('verificar:enum-estado', $params);
-            break;
-        case 'tester_flujo_completo':
-            $email = $request->get('email', 'rulos26@gmail.com');
-            $cantidad = $request->get('cantidad', 20);
-            $debug = $request->get('debug', false);
-            $params = [
-                '--email' => $email,
-                '--cantidad' => $cantidad
-            ];
-            if ($debug) {
-                $params['--debug'] = true;
-            }
-            $resultado = $this->ejecutarComando('tester:flujo-completo', $params);
-            break;
-        case 'publicar_encuesta':
-            $encuestaId = $request->get('encuesta_id');
-            $email = $request->get('email', 'test@example.com');
-            $horas = $request->get('horas', 24);
-            if (!$encuestaId) {
-                $resultado = "❌ Error: Debes proporcionar el ID de la encuesta";
-            } else {
-                $params = [
-                    'encuesta_id' => $encuestaId,
-                    '--email' => $email,
-                    '--horas' => $horas
-                ];
-                $resultado = $this->ejecutarComando('encuesta:publicar', $params);
-            }
-            break;
-        case 'verificar_respuestas':
-            $encuestaId = $request->get('encuesta_id');
-            if (!$encuestaId) {
-                $resultado = "❌ Error: Debes proporcionar el ID de la encuesta";
-            } else {
-                $params = ['encuesta_id' => $encuestaId];
-                $resultado = $this->ejecutarComando('encuesta:verificar-respuestas', $params);
-            }
-            break;
-        case 'configurar_sesiones':
-            $resultado = $this->ejecutarComando('hosting:configurar-sesiones');
-            break;
-        case 'verificar_escala':
-            $encuestaId = $request->get('encuesta_id');
-            if ($encuestaId) {
-                $params = ['encuesta_id' => $encuestaId];
-                $resultado = $this->ejecutarComando('preguntas:verificar-escala', $params);
-            } else {
-                $resultado = $this->ejecutarComando('preguntas:verificar-escala');
-            }
-            break;
-        case 'diagnosticar_error_publica':
-            $encuestaId = $request->get('encuesta_id');
-            if ($encuestaId) {
-                $params = ['encuesta_id' => $encuestaId];
-                $resultado = $this->ejecutarComando('encuesta:diagnosticar-error-publica', $params);
-            } else {
-                $resultado = $this->ejecutarComando('encuesta:diagnosticar-error-publica');
-            }
-            break;
-        case 'solucionar_hosting_completa':
-            $resultado = $this->ejecutarComando('hosting:solucionar-completa');
-            break;
-        case 'solucionar_csrf_hosting':
-            $resultado = $this->ejecutarComando('hosting:solucionar-csrf');
-            break;
-        case 'solucion_definitiva_hosting':
-            $resultado = $this->ejecutarComando('hosting:solucion-definitiva');
-            break;
-        case 'emergency_hosting_fix':
-            $resultado = $this->ejecutarComando('hosting:emergency-fix');
-            break;
-        case 'diagnosticar_flujo_publica':
-            $encuestaId = $request->get('encuesta_id');
-            if ($encuestaId) {
-                $params = ['encuesta_id' => $encuestaId];
-                $resultado = $this->ejecutarComando('encuesta:diagnosticar-flujo-publica', $params);
-            } else {
-                $resultado = $this->ejecutarComando('encuesta:diagnosticar-flujo-publica');
-            }
-            break;
-        case 'revisar_logs_prueba':
-            $resultado = $this->ejecutarComando('encuesta:revisar-logs-prueba');
-            break;
-        case 'fix_session_419':
-            $resultado = $this->ejecutarComando('session:fix-419');
-            break;
-                    case 'diagnosticar_redireccion_fin':
-                $slug = $request->get('slug');
-                if ($slug) {
-                    $resultado = $this->ejecutarComando('diagnosticar:redireccion-fin', ['slug' => $slug]);
-                } else {
-                    $resultado = $this->ejecutarComando('diagnosticar:redireccion-fin');
-                }
-                break;
-            case 'probar_numero_encuestas':
-                $valor = $request->get('valor', 100);
-                $resultado = $this->ejecutarComando('probar:numero-encuestas', ['--valor' => $valor]);
-                break;
-            case 'probar_contadores_encuesta':
-                $encuestaId = $request->get('encuesta_id');
-                if ($encuestaId) {
-                    $resultado = $this->ejecutarComando('probar:contadores-encuesta', ['encuesta_id' => $encuestaId]);
-                } else {
-                    $resultado = $this->ejecutarComando('probar:contadores-encuesta');
-                }
-                break;
-                    case 'limpiar_cache':
-                        $resultado = $this->ejecutarComando('config:clear');
-                        $resultado .= "\n\n" . $this->ejecutarComando('route:clear');
-                        $resultado .= "\n\n" . $this->ejecutarComando('view:clear');
-                        $resultado .= "\n\n" . $this->ejecutarComando('cache:clear');
+                    case 'probar_envio':
+                        $encuestaId = $request->get('encuesta_id');
+                        if (!$encuestaId) {
+                            $resultado = "❌ Error: Debes proporcionar el ID de la encuesta";
+                        } else {
+                            $resultado = $this->ejecutarComando('envio:probar-configuracion', ['encuesta_id' => $encuestaId]);
+                        }
                         break;
-                    case 'limpiar_todo':
-                        $resultado = $this->ejecutarComando('optimize:clear');
+                    case 'diagnosticar_tipos':
+                        $encuestaId = $request->get('encuesta_id');
+                        $debug = $request->get('debug', false);
+                        if (!$encuestaId) {
+                            $resultado = "❌ Error: Debes proporcionar el ID de la encuesta";
+                        } else {
+                            $params = ['--encuesta_id' => $encuestaId];
+                            if ($debug) {
+                                $params['--debug'] = true;
+                            }
+                            $resultado = $this->ejecutarComando('preguntas:diagnosticar-tipos', $params);
+                        }
+                        break;
+                    case 'diagnosticar_progreso':
+                        $encuestaId = $request->get('encuesta_id');
+                        $debug = $request->get('debug', false);
+                        if (!$encuestaId) {
+                            $resultado = "❌ Error: Debes proporcionar el ID de la encuesta";
+                        } else {
+                            $params = ['encuesta_id' => $encuestaId];
+                            if ($debug) {
+                                $params['--debug'] = true;
+                            }
+                            $resultado = $this->ejecutarComando('encuesta:diagnosticar-progreso', $params);
+                        }
+                        break;
+                    case 'forzar_validaciones':
+                        $encuestaId = $request->get('encuesta_id');
+                        $debug = $request->get('debug', false);
+                        if (!$encuestaId) {
+                            $resultado = "❌ Error: Debes proporcionar el ID de la encuesta";
+                        } else {
+                            $params = ['encuesta_id' => $encuestaId];
+                            if ($debug) {
+                                $params['--debug'] = true;
+                            }
+                            $resultado = $this->ejecutarComando('encuesta:forzar-validaciones', $params);
+                        }
+                        break;
+                    case 'diagnosticar_envio_correos':
+                        $encuestaId = $request->get('encuesta_id');
+                        if (!$encuestaId) {
+                            $resultado = $this->ejecutarComando('diagnosticar:envio-correos');
+                        } else {
+                            $resultado = $this->ejecutarComando('diagnosticar:envio-correos', ['encuesta_id' => $encuestaId]);
+                        }
+                        break;
+                    case 'probar_dashboard':
+                        $encuestaId = $request->get('encuesta_id');
+                        $debug = $request->get('debug', false);
+                        if (!$encuestaId) {
+                            $resultado = "❌ Error: Debes proporcionar el ID de la encuesta";
+                        } else {
+                            $params = ['encuesta_id' => $encuestaId];
+                            if ($debug) {
+                                $params['--debug'] = true;
+                            }
+                            $resultado = $this->ejecutarComando('dashboard:probar-seguimiento', $params);
+                        }
+                        break;
+                    case 'diagnosticar_dashboard':
+                        $encuestaId = $request->get('encuesta_id');
+                        $debug = $request->get('debug', false);
+                        if (!$encuestaId) {
+                            $resultado = "❌ Error: Debes proporcionar el ID de la encuesta";
+                        } else {
+                            $params = ['encuesta_id' => $encuestaId];
+                            if ($debug) {
+                                $params['--debug'] = true;
+                            }
+                            $resultado = $this->ejecutarComando('dashboard:diagnosticar', $params);
+                        }
+                        break;
+                    case 'migracion_sent_mails':
+                        $debug = $request->get('debug', false);
+                        $params = [];
+                        if ($debug) {
+                            $params['--debug'] = true;
+                        }
+                        $resultado = $this->ejecutarComando('migracion:sent-mails', $params);
+                        break;
+                    case 'corregir_user_id':
+                        $encuestaId = $request->get('encuesta_id');
+                        $userId = $request->get('user_id');
+                        $debug = $request->get('debug', false);
+                        if (!$encuestaId) {
+                            $resultado = "❌ Error: Debes proporcionar el ID de la encuesta";
+                        } else {
+                            $params = ['encuesta_id' => $encuestaId];
+                            if ($userId) {
+                                $params['--user_id'] = $userId;
+                            }
+                            if ($debug) {
+                                $params['--debug'] = true;
+                            }
+                            $resultado = $this->ejecutarComando('encuesta:corregir-user-id', $params);
+                        }
+                        break;
+                    case 'debug_dashboard':
+                        $encuestaId = $request->get('encuesta_id');
+                        $userId = $request->get('user_id');
+                        $debug = $request->get('debug', false);
+                        if (!$encuestaId) {
+                            $resultado = "❌ Error: Debes proporcionar el ID de la encuesta";
+                        } else {
+                            $params = ['encuesta_id' => $encuestaId];
+                            if ($userId) {
+                                $params['--user_id'] = $userId;
+                            }
+                            if ($debug) {
+                                $params['--debug'] = true;
+                            }
+                            $resultado = $this->ejecutarComando('debug:dashboard-encuesta', $params);
+                        }
+                        break;
+                    case 'verificar_enum':
+                        $resultado = $this->ejecutarComando('verificar:enum-estado');
+                        break;
+                    case 'tester_flujo_completo':
+                        $email = $request->get('email');
+                        $cantidad = $request->get('cantidad');
+                        $params = [];
+                        if ($email) $params['--email'] = $email;
+                        if ($cantidad) $params['--cantidad'] = $cantidad;
+                        $resultado = $this->ejecutarComando('tester:flujo-completo', $params);
+                        break;
+                    case 'publicar_encuesta':
+                        $encuestaId = $request->get('encuesta_id');
+                        $email = $request->get('email');
+                        $horas = $request->get('horas');
+                        if (!$encuestaId) {
+                            $resultado = "❌ Error: Debes proporcionar el ID de la encuesta";
+                        } else {
+                            $params = ['encuesta_id' => $encuestaId];
+                            if ($email) $params['--email'] = $email;
+                            if ($horas) $params['--horas'] = $horas;
+                            $resultado = $this->ejecutarComando('encuesta:publicar-y-generar-enlace', $params);
+                        }
+                        break;
+                    case 'verificar_respuestas':
+                        $encuestaId = $request->get('encuesta_id');
+                        if (!$encuestaId) {
+                            $resultado = "❌ Error: Debes proporcionar el ID de la encuesta";
+                        } else {
+                            $resultado = $this->ejecutarComando('encuesta:verificar-respuestas', ['encuesta_id' => $encuestaId]);
+                        }
+                        break;
+                    case 'configurar_sesiones':
+                        $resultado = $this->ejecutarComando('configurar:sesiones-hosting');
+                        break;
+                    case 'verificar_escala':
+                        $encuestaId = $request->get('encuesta_id');
+                        $params = [];
+                        if ($encuestaId) $params['--encuesta_id'] = $encuestaId;
+                        $resultado = $this->ejecutarComando('verificar:escala-preguntas', $params);
+                        break;
+                    case 'diagnosticar_error_publica':
+                        $encuestaId = $request->get('encuesta_id');
+                        $params = [];
+                        if ($encuestaId) $params['--encuesta_id'] = $encuestaId;
+                        $resultado = $this->ejecutarComando('diagnosticar:error-publica', $params);
+                        break;
+                    case 'solucionar_hosting_completa':
+                        $resultado = $this->ejecutarComando('solucionar:hosting-completa');
+                        break;
+                    case 'solucionar_csrf_hosting':
+                        $resultado = $this->ejecutarComando('solucionar:csrf-hosting');
+                        break;
+                    case 'solucion_definitiva_hosting':
+                        $resultado = $this->ejecutarComando('solucion:definitiva-hosting');
+                        break;
+                    case 'emergency_hosting_fix':
+                        $resultado = $this->ejecutarComando('emergency:hosting-fix');
+                        break;
+                    case 'diagnosticar_flujo_publica':
+                        $encuestaId = $request->get('encuesta_id');
+                        $params = [];
+                        if ($encuestaId) $params['--encuesta_id'] = $encuestaId;
+                        $resultado = $this->ejecutarComando('diagnosticar:flujo-encuesta-publica', $params);
+                        break;
+                    case 'revisar_logs_prueba':
+                        $resultado = $this->ejecutarComando('revisar:logs-prueba');
+                        break;
+                    case 'fix_session_419':
+                        $resultado = $this->ejecutarComando('fix:session-419');
+                        break;
+                    case 'diagnosticar_redireccion_fin':
+                        $resultado = $this->ejecutarComando('diagnosticar:redireccion-fin');
+                        break;
+                    case 'probar_numero_encuestas':
+                        $encuestaId = $request->get('encuesta_id');
+                        $params = [];
+                        if ($encuestaId) $params['--encuesta_id'] = $encuestaId;
+                        $resultado = $this->ejecutarComando('probar:numero-encuestas', $params);
+                        break;
+                    case 'probar_contadores_encuesta':
+                        $encuestaId = $request->get('encuesta_id');
+                        $params = [];
+                        if ($encuestaId) $params['--encuesta_id'] = $encuestaId;
+                        $resultado = $this->ejecutarComando('probar:contadores-encuesta', $params);
                         break;
                 }
             }
