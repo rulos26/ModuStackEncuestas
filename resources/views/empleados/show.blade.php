@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header bg-primary text-white">Detalles del Empleado</div>
+                <div class="card-header bg-primary text-white">Detalles del Empleado Cliente</div>
                 <div class="card-body">
                     <dl class="row">
                         <dt class="col-sm-4">Empleado Cliente</dt>

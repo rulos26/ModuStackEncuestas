@@ -37,7 +37,7 @@ class EmpleadoController extends Controller
 
         Empleado::create($validated);
 
-        return redirect()->route('empleados.index')->with('success', 'Empleado registrado correctamente.');
+        return redirect()->route('empleados.index')->with('success', 'Empleado cliente registrado correctamente.');
     }
 
     public function importForm()
@@ -97,13 +97,13 @@ class EmpleadoController extends Controller
             'empresa_id' => 'nullable|exists:empresas_clientes,id',
         ]);
         $empleado->update($validated);
-        return redirect()->route('empleados.index')->with('success', 'Empleado actualizado correctamente.');
+        return redirect()->route('empleados.index')->with('success', 'Empleado cliente actualizado correctamente.');
     }
 
     public function destroy($id)
     {
         $empleado = Empleado::findOrFail($id);
         $empleado->delete();
-        return redirect()->route('empleados.index')->with('success', 'Empleado eliminado correctamente.');
+        return redirect()->route('empleados.index')->with('success', 'Empleado cliente eliminado correctamente.');
     }
 }

@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header bg-primary text-white">Editar Empleado</div>
+                <div class="card-header bg-primary text-white">Editar Empleado Cliente</div>
                 <div class="card-body">
                     @if ($errors->any())
                         <div class="alert alert-danger">

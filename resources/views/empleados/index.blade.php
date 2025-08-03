@@ -1,9 +1,9 @@
 @extends('adminlte::page')
 
-@section('title', 'Lista de Empleados')
+@section('title', 'Lista de Empleado Cliente')
 
 @section('content_header')
-    <h1>Lista de Empleados</h1>
+    <h1>Lista de Empleado Cliente</h1>
 @stop
 
 @section('content')
@@ -12,10 +12,10 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Gestión de Empleados</h3>
+                    <h3 class="card-title">Gestión de Empleado Cliente</h3>
                     <div class="card-tools">
                         <a href="{{ route('empleados.create') }}" class="btn btn-success btn-sm">
-                            <i class="fas fa-plus"></i> Nuevo Empleado
+                            <i class="fas fa-plus"></i> Nuevo Empleado Cliente
                         </a>
                         <a href="{{ route('empleados.import.form') }}" class="btn btn-info btn-sm">
                             <i class="fas fa-upload"></i> Importar
@@ -57,9 +57,9 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($empleados as $empleado)
+                                @foreach($empleados as $index => $empleado)
                                     <tr>
-                                        <td>{{ $empleado->id }}</td>
+                                        <td>{{ $index + 1 }}</td>
                                         <td>{{ $empleado->nombre }}</td>
                                         <td>{{ $empleado->telefono }}</td>
                                         <td>{{ $empleado->correo_electronico }}</td>
@@ -76,10 +76,10 @@
                                                    title="Editar">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <form action="{{ route('empleados.destroy', $empleado->id) }}"
+                                                                                            <form action="{{ route('empleados.destroy', $empleado->id) }}"
                                                       method="POST"
                                                       style="display: inline;"
-                                                      onsubmit="return confirm('¿Está seguro de eliminar este empleado?');">
+                                                      onsubmit="return confirm('¿Está seguro de eliminar este empleado cliente?');">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit"
