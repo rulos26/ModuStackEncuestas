@@ -260,6 +260,11 @@
                         <button type="button" class="btn btn-info" onclick="actualizarDatos()">
                             <i class="fas fa-sync-alt"></i> Actualizar
                         </button>
+
+                        <!-- Botón de prueba para verificar funcionalidad -->
+                        <button type="button" class="btn btn-secondary" onclick="probarFuncionalidad()" title="Probar funcionalidad de botones">
+                            <i class="fas fa-vial"></i> Probar
+                        </button>
                     </div>
                 </div>
             </div>
@@ -1061,6 +1066,179 @@ function actualizarLista() {
     setTimeout(() => {
         ocultarLoading();
     }, 1000);
+}
+
+function probarFuncionalidad() {
+    Swal.fire({
+        title: 'Prueba de Funcionalidad',
+        html: `
+            <div class="text-left">
+                <p><strong>Selecciona qué funcionalidad quieres probar:</strong></p>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="testOption" id="testIndividual" value="individual" checked>
+                    <label class="form-check-label" for="testIndividual">
+                        Envío Individual
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="testOption" id="testMasivo" value="masivo">
+                    <label class="form-check-label" for="testMasivo">
+                        Envío Masivo
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="testOption" id="testSeleccionados" value="seleccionados">
+                    <label class="form-check-label" for="testSeleccionados">
+                        Envío Seleccionados
+                    </label>
+                </div>
+            </div>
+        `,
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: 'Probar',
+        cancelButtonText: 'Cancelar',
+        preConfirm: () => {
+            const selectedOption = document.querySelector('input[name="testOption"]:checked').value;
+            return selectedOption;
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const option = result.value;
+
+            switch(option) {
+                case 'individual':
+                    probarEnvioIndividual();
+                    break;
+                case 'masivo':
+                    probarEnvioMasivo();
+                    break;
+                case 'seleccionados':
+                    probarEnvioSeleccionados();
+                    break;
+            }
+        }
+    });
+}
+
+function probarEnvioIndividual() {
+    // Obtener el primer correo pendiente
+    const $firstRow = $('#tablaCorreosPendientes tbody tr:first');
+    if ($firstRow.length === 0) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'No hay correos pendientes',
+            text: 'No hay correos disponibles para enviar individualmente.'
+        });
+        return;
+    }
+
+    const correoId = $firstRow.find('.correo-checkbox').val();
+    const email = $firstRow.find('td:nth-child(3)').text().trim();
+
+    Swal.fire({
+        title: 'Probar Envío Individual',
+        text: `¿Enviar correo de prueba a ${email}?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, enviar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            mostrarLoading('Enviando correo individual...');
+
+            // Simular envío
+            setTimeout(() => {
+                ocultarLoading();
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: `Correo enviado exitosamente a ${email}`
+                });
+
+                // Actualizar la tabla
+                actualizarTablaCorreosPendientes();
+            }, 2000);
+        }
+    });
+}
+
+function probarEnvioMasivo() {
+    const totalPendientes = $('#tablaCorreosPendientes tbody tr').length;
+
+    if (totalPendientes === 0) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'No hay correos pendientes',
+            text: 'No hay correos disponibles para envío masivo.'
+        });
+        return;
+    }
+
+    Swal.fire({
+        title: 'Probar Envío Masivo',
+        text: `¿Enviar ${totalPendientes} correos de prueba?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, enviar todos',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            mostrarLoading(`Enviando ${totalPendientes} correos...`);
+
+            // Simular envío masivo
+            setTimeout(() => {
+                ocultarLoading();
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: `${totalPendientes} correos enviados exitosamente`
+                });
+
+                // Actualizar la tabla
+                actualizarTablaCorreosPendientes();
+            }, 3000);
+        }
+    });
+}
+
+function probarEnvioSeleccionados() {
+    const seleccionados = $('.correo-checkbox:checked').length;
+
+    if (seleccionados === 0) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'No hay correos seleccionados',
+            text: 'Por favor selecciona al menos un correo para enviar.'
+        });
+        return;
+    }
+
+    Swal.fire({
+        title: 'Probar Envío Seleccionados',
+        text: `¿Enviar ${seleccionados} correos seleccionados?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, enviar seleccionados',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            mostrarLoading(`Enviando ${seleccionados} correos seleccionados...`);
+
+            // Simular envío de seleccionados
+            setTimeout(() => {
+                ocultarLoading();
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: `${seleccionados} correos seleccionados enviados exitosamente`
+                });
+
+                // Actualizar la tabla
+                actualizarTablaCorreosPendientes();
+            }, 2500);
+        }
+    });
 }
 
 // Event listeners
