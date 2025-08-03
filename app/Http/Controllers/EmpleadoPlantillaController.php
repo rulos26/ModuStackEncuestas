@@ -19,7 +19,7 @@ class EmpleadoPlantillaController extends Controller
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->fromArray([
-            ['Nombre', 'Teléfono', 'Correo']
+            ['Nombre', 'Teléfono', 'Correo', 'Empresa']
         ], null, 'A1');
 
         $writer = new Xlsx($spreadsheet);
@@ -41,7 +41,7 @@ class EmpleadoPlantillaController extends Controller
         ];
         $callback = function() {
             $file = fopen('php://output', 'w');
-            fputcsv($file, ['Nombre', 'Teléfono', 'Correo']);
+            fputcsv($file, ['Nombre', 'Teléfono', 'Correo', 'Empresa']);
             fclose($file);
         };
         return response()->stream($callback, 200, $headers);

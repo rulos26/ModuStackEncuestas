@@ -48,11 +48,12 @@
                         <table id="empleados-table" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
-                                    <th width="10%">ID</th>
-                                    <th width="30%">Nombre</th>
+                                    <th width="8%">ID</th>
+                                    <th width="25%">Empleado Cliente</th>
                                     <th width="20%">Teléfono</th>
-                                    <th width="25%">Correo Electrónico</th>
-                                    <th width="15%">Acciones</th>
+                                    <th width="20%">Correo Electrónico</th>
+                                    <th width="17%">Empresa</th>
+                                    <th width="10%">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -62,6 +63,7 @@
                                         <td>{{ $empleado->nombre }}</td>
                                         <td>{{ $empleado->telefono }}</td>
                                         <td>{{ $empleado->correo_electronico }}</td>
+                                        <td>{{ $empleado->empresa ? $empleado->empresa->nombre : 'Sin empresa' }}</td>
                                         <td>
                                             <div class="btn-group" role="group">
                                                 <a href="{{ route('empleados.show', $empleado->id) }}"
@@ -123,7 +125,7 @@ $(document).ready(function() {
         order: [[0, 'asc']],
         columnDefs: [
             {
-                targets: 4, // Columna de acciones
+                targets: 5, // Columna de acciones
                 orderable: false,
                 searchable: false,
                 responsivePriority: 1

@@ -15,5 +15,11 @@ class Empleado extends Model
         'nombre',
         'telefono',
         'correo_electronico',
+        'empresa_id',
     ];
+
+    public function empresa()
+    {
+        return $this->belongsTo(EmpresasCliente::class, 'empresa_id');
+    }
 }

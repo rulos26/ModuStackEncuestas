@@ -101,7 +101,7 @@ class EncuestaSeguimientoController extends Controller
                 'id' => 'emp_' . $empleado->id,
                 'nombre' => $empleado->nombre,
                 'email' => $empleado->correo_electronico,
-                'cargo' => null,
+                'cargo' => $empleado->empresa ? $empleado->empresa->nombre : null,
                 'tipo' => 'empleado',
                 'empleado_id' => $empleado->id
             ]);

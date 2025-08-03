@@ -85,11 +85,26 @@ class EmpleadosImport
             $this->fallidas++;
             return;
         }
+
+        // Buscar empresa por nombre si se proporciona
+        $empresa_id = null;
+        if (isset($data['empresa']) && !empty($data['empresa'])) {
+            $empresa = \App\Models\EmpresasCliente::where('nombre', $data['empresa'])->first();
+            if ($empresa) {
+                $empresa_id = $empresa->id;
+            } else {
+                $this->errores[] = "Fila $fila: La empresa '{$data['empresa']}' no existe en la base de datos.";
+                $this->fallidas++;
+                return;
+            }
+        }
+
         try {
             Empleado::create([
                 'nombre' => $data['nombre'],
                 'telefono' => $data['telefono'],
                 'correo_electronico' => $data['correo'],
+                'empresa_id' => $empresa_id,
             ]);
             $this->exitosas++;
         } catch (\Exception $e) {

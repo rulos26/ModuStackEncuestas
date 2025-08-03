@@ -8,13 +8,15 @@
                 <div class="card-header bg-primary text-white">Detalles del Empleado</div>
                 <div class="card-body">
                     <dl class="row">
-                        <dt class="col-sm-4">Nombre</dt>
+                        <dt class="col-sm-4">Empleado Cliente</dt>
                         <dd class="col-sm-8">{{ $empleado->nombre }}</dd>
 
                         <dt class="col-sm-4">Teléfono</dt>
                         <dd class="col-sm-8">{{ $empleado->telefono }}</dd>
                         <dt class="col-sm-4">Correo electrónico</dt>
                         <dd class="col-sm-8">{{ $empleado->correo_electronico }}</dd>
+                        <dt class="col-sm-4">Empresa Cliente</dt>
+                        <dd class="col-sm-8">{{ $empleado->empresa ? $empleado->empresa->nombre : 'Sin empresa asignada' }}</dd>
                     </dl>
                     <a href="{{ route('empleados.index') }}" class="btn btn-secondary">Volver</a>
                 </div>

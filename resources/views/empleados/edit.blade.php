@@ -20,9 +20,21 @@
                         @csrf
                         @method('PUT')
                         <div class="form-group mb-3">
-                            <label for="nombre">Nombre</label>
+                            <label for="nombre">Empleado Cliente</label>
                             <input type="text" class="form-control" id="nombre" name="nombre" value="{{ old('nombre', $empleado->nombre) }}" required maxlength="255" pattern="^(?:\b\w+\b\s?){1,10}$" title="Máximo 10 palabras">
                             <small class="form-text text-muted">Máximo 10 palabras y 255 caracteres.</small>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="empresa_id">Empresa Cliente</label>
+                            <select class="form-control" id="empresa_id" name="empresa_id">
+                                <option value="">Seleccione una empresa</option>
+                                @foreach($empresas as $empresa)
+                                    <option value="{{ $empresa->id }}" {{ old('empresa_id', $empleado->empresa_id) == $empresa->id ? 'selected' : '' }}>
+                                        {{ $empresa->nombre }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <small class="form-text text-muted">Seleccione la empresa a la que pertenece el empleado.</small>
                         </div>
 
                         <div class="form-group mb-3">

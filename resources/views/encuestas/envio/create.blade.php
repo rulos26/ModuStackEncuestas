@@ -136,6 +136,9 @@
                                                             <strong>{{ $empleado->nombre }}</strong><br>
                                                             <small class="text-muted">
                                                                 {{ $empleado->correo_electronico }}
+                                                                @if($empleado->empresa)
+                                                                    <br><span class="text-info">{{ $empleado->empresa->nombre }}</span>
+                                                                @endif
                                                             </small>
                                                         </label>
                                                     </div>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Empleado;
+use App\Models\EmpresasCliente;
 use Illuminate\Http\Request;
 use App\Imports\EmpleadosImport;
 use Maatwebsite\Excel\Facades\Excel;
@@ -17,7 +18,8 @@ class EmpleadoController extends Controller
 
     public function create()
     {
-        return view('empleados.create');
+        $empresas = EmpresasCliente::orderBy('nombre')->get();
+        return view('empleados.create', compact('empresas'));
     }
 
     public function store(Request $request)
@@ -30,6 +32,7 @@ class EmpleadoController extends Controller
             }],
             'telefono' => ['required', 'digits:10', 'regex:/^[0-9]{10}$/'],
             'correo_electronico' => 'required|email|unique:empleados,correo_electronico',
+            'empresa_id' => 'nullable|exists:empresas_clientes,id',
         ]);
 
         Empleado::create($validated);
@@ -76,7 +79,8 @@ class EmpleadoController extends Controller
     public function edit($id)
     {
         $empleado = Empleado::findOrFail($id);
-        return view('empleados.edit', compact('empleado'));
+        $empresas = EmpresasCliente::orderBy('nombre')->get();
+        return view('empleados.edit', compact('empleado', 'empresas'));
     }
 
     public function update(Request $request, $id)
@@ -90,6 +94,7 @@ class EmpleadoController extends Controller
             }],
             'telefono' => ['required', 'digits:10', 'regex:/^[0-9]{10}$/'],
             'correo_electronico' => 'required|email|unique:empleados,correo_electronico,' . $empleado->id,
+            'empresa_id' => 'nullable|exists:empresas_clientes,id',
         ]);
         $empleado->update($validated);
         return redirect()->route('empleados.index')->with('success', 'Empleado actualizado correctamente.');
