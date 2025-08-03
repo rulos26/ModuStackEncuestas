@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use App\Helpers\FechaHelper;
 
 class EncuestaRequest extends FormRequest
 {
@@ -18,8 +19,24 @@ class EncuestaRequest extends FormRequest
             'titulo' => 'required|string|max:255|min:3',
             'empresa_id' => 'required|exists:empresa,id',
             'numero_encuestas' => 'nullable|integer|min:1|max:10000',
-            'fecha_inicio' => 'nullable|date|after_or_equal:today',
-            'fecha_fin' => 'nullable|date|after:fecha_inicio',
+            'fecha_inicio' => [
+                'nullable',
+                'date',
+                function ($attribute, $value, $fail) {
+                    if ($value && !FechaHelper::esFechaInicioValida($value)) {
+                        $fail(FechaHelper::getMensajeErrorFechaInicio());
+                    }
+                }
+            ],
+            'fecha_fin' => [
+                'nullable',
+                'date',
+                function ($attribute, $value, $fail) {
+                    if ($value && $this->input('fecha_inicio') && !FechaHelper::esFechaFinValida($value, $this->input('fecha_inicio'))) {
+                        $fail(FechaHelper::getMensajeErrorFechaFin());
+                    }
+                }
+            ],
             'enviar_por_correo' => 'boolean',
             'plantilla_correo' => 'nullable|string|max:5000',
             'asunto_correo' => 'nullable|string|max:255',
@@ -27,16 +44,6 @@ class EncuestaRequest extends FormRequest
             // 'estado' => 'required|in:borrador,enviada,publicada', // Removido: se maneja automáticamente
             'habilitada' => 'boolean',
         ];
-
-        // Validaciones adicionales (estado se maneja automáticamente)
-        // if ($this->input('estado') === 'publicada') {
-        //     $rules['titulo'] .= '|unique:encuestas,titulo,' . $this->route('encuesta');
-        // }
-
-        // Validar fechas si ambas están presentes
-        if ($this->input('fecha_inicio') && $this->input('fecha_fin')) {
-            $rules['fecha_fin'] = 'required|date|after_or_equal:fecha_inicio';
-        }
 
         return $rules;
     }
