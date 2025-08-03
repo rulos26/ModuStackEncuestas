@@ -55,7 +55,12 @@ class EmpresasClienteController extends Controller
 
     public function exportPdf(EmpresasCliente $empresas_cliente)
     {
-        $pdf = Pdf::loadView('empresas_clientes.pdf', compact('empresas_cliente'));
-        return $pdf->download('empresa_cliente_' . $empresas_cliente->id . '.pdf');
+        try {
+            $pdf = Pdf::loadView('empresas_clientes.pdf', compact('empresas_cliente'));
+            $pdf->setPaper('A4', 'portrait');
+            return $pdf->download('empresa_cliente_' . $empresas_cliente->id . '_' . now()->format('Y-m-d') . '.pdf');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error al generar el PDF: ' . $e->getMessage());
+        }
     }
 }
