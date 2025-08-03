@@ -10,17 +10,17 @@
 <div class="card">
     <div class="card-body">
         <dl class="row">
-            <dt class="col-sm-3">Nombre</dt>
+            <dt class="col-sm-3">Nombre del Cliente</dt>
             <dd class="col-sm-9">{{ $empresas_cliente->nombre }}</dd>
             <dt class="col-sm-3">NIT</dt>
             <dd class="col-sm-9">{{ $empresas_cliente->nit }}</dd>
-            <dt class="col-sm-3">Teléfono</dt>
+            <dt class="col-sm-3">Teléfono de la Empresa</dt>
             <dd class="col-sm-9">{{ $empresas_cliente->telefono }}</dd>
-            <dt class="col-sm-3">Correo electrónico</dt>
+            <dt class="col-sm-3">Correo Institucional</dt>
             <dd class="col-sm-9">{{ $empresas_cliente->correo_electronico }}</dd>
-            <dt class="col-sm-3">Dirección</dt>
+            <dt class="col-sm-3">Dirección Local</dt>
             <dd class="col-sm-9">{{ $empresas_cliente->direccion }}</dd>
-            <dt class="col-sm-3">Nombre del Contacto</dt>
+            <dt class="col-sm-3">Representante Legal</dt>
             <dd class="col-sm-9">{{ $empresas_cliente->contacto }}</dd>
 
         </dl>

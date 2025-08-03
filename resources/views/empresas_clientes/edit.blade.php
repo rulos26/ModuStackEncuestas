@@ -22,7 +22,7 @@
             @csrf
             @method('PUT')
             <div class="form-group">
-                <label for="nombre">Nombre</label>
+                <label for="nombre">Nombre del Cliente</label>
                 <input type="text" name="nombre" id="nombre" class="form-control" value="{{ old('nombre', $empresas_cliente->nombre) }}" required maxlength="255">
             </div>
             <div class="form-group">
@@ -30,19 +30,19 @@
                 <input type="text" name="nit" id="nit" class="form-control" value="{{ old('nit', $empresas_cliente->nit) }}" required maxlength="255">
             </div>
             <div class="form-group">
-                <label for="telefono">Teléfono</label>
+                <label for="telefono">Teléfono de la Empresa</label>
                 <input type="text" name="telefono" id="telefono" class="form-control" value="{{ old('telefono', $empresas_cliente->telefono) }}" maxlength="30">
             </div>
             <div class="form-group">
-                <label for="correo_electronico">Correo electrónico</label>
+                <label for="correo_electronico">Correo Institucional</label>
                 <input type="email" name="correo_electronico" id="correo_electronico" class="form-control" value="{{ old('correo_electronico', $empresas_cliente->correo_electronico) }}" maxlength="255">
             </div>
             <div class="form-group">
-                <label for="direccion">Dirección</label>
+                <label for="direccion">Dirección Local</label>
                 <input type="text" name="direccion" id="direccion" class="form-control" value="{{ old('direccion', $empresas_cliente->direccion) }}" maxlength="255">
             </div>
             <div class="form-group">
-                <label for="contacto">Nombre del Contacto</label>
+                <label for="contacto">Representante Legal</label>
                 <input type="text" name="contacto" id="contacto" class="form-control" value="{{ old('contacto', $empresas_cliente->contacto) }}" maxlength="255">
             </div>
 

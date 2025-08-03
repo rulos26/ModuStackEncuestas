@@ -15,17 +15,17 @@
 <body>
     <h1>Empresa Cliente</h1>
     <dl>
-        <dt>Nombre</dt>
+        <dt>Nombre del Cliente</dt>
         <dd>{{ $empresas_cliente->nombre }}</dd>
         <dt>NIT</dt>
         <dd>{{ $empresas_cliente->nit }}</dd>
-        <dt>Teléfono</dt>
+        <dt>Teléfono de la Empresa</dt>
         <dd>{{ $empresas_cliente->telefono }}</dd>
-        <dt>Correo electrónico</dt>
+        <dt>Correo Institucional</dt>
         <dd>{{ $empresas_cliente->correo_electronico }}</dd>
-        <dt>Dirección</dt>
+        <dt>Dirección Local</dt>
         <dd>{{ $empresas_cliente->direccion }}</dd>
-        <dt>Nombre del Contacto</dt>
+        <dt>Representante Legal</dt>
         <dd>{{ $empresas_cliente->contacto }}</dd>
 
     </dl>

@@ -19,11 +19,11 @@
     <table class="table table-hover table-striped mb-0">
         <thead>
             <tr>
-                <th>Nombre</th>
+                <th>Nombre del Cliente</th>
                 <th>NIT</th>
-                <th>Teléfono</th>
-                <th>Correo</th>
-                <th>Contacto</th>
+                <th>Teléfono de la Empresa</th>
+                <th>Correo Institucional</th>
+                <th>Representante Legal</th>
                 <th>Acciones</th>
             </tr>
         </thead>
