@@ -70,10 +70,17 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="fecha_inicio">Fecha de inicio</label>
-                        <input type="date" name="fecha_inicio" id="fecha_inicio"
-                               class="form-control @error('fecha_inicio') is-invalid @enderror"
-                               value="{{ old('fecha_inicio') }}"
-                               min="{{ date('Y-m-d') }}">
+                        <div class="input-group">
+                            <input type="text" name="fecha_inicio" id="fecha_inicio"
+                                   class="form-control @error('fecha_inicio') is-invalid @enderror"
+                                   value="{{ old('fecha_inicio') }}"
+                                   placeholder="dd/mm/aaaa" readonly>
+                            <div class="input-group-append">
+                                <span class="input-group-text">
+                                    <i class="fas fa-calendar"></i>
+                                </span>
+                            </div>
+                        </div>
                         @error('fecha_inicio')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -85,10 +92,17 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="fecha_fin">Fecha de fin</label>
-                        <input type="date" name="fecha_fin" id="fecha_fin"
-                               class="form-control @error('fecha_fin') is-invalid @enderror"
-                               value="{{ old('fecha_fin') }}"
-                               min="{{ date('Y-m-d') }}">
+                        <div class="input-group">
+                            <input type="text" name="fecha_fin" id="fecha_fin"
+                                   class="form-control @error('fecha_fin') is-invalid @enderror"
+                                   value="{{ old('fecha_fin') }}"
+                                   placeholder="dd/mm/aaaa" readonly>
+                            <div class="input-group-append">
+                                <span class="input-group-text">
+                                    <i class="fas fa-calendar"></i>
+                                </span>
+                            </div>
+                        </div>
                         @error('fecha_fin')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -182,51 +196,130 @@
     </div>
 </div>
 
+@endsection
+
+@section('css')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+<style>
+    .datepicker {
+        z-index: 9999 !important;
+    }
+    .datepicker table tr td.disabled {
+        background-color: #f8f9fa !important;
+        color: #6c757d !important;
+        cursor: not-allowed !important;
+    }
+    .datepicker table tr td.disabled:hover {
+        background-color: #f8f9fa !important;
+    }
+    .input-group-text {
+        cursor: pointer;
+    }
+</style>
+@endsection
+
+@section('js')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.es.min.js"></script>
+
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+$(document).ready(function() {
+    // Configuración común para los datepickers
+    const datepickerConfig = {
+        format: 'dd/mm/yyyy',
+        language: 'es',
+        autoclose: true,
+        todayHighlight: true,
+        startDate: '0d', // No permite fechas pasadas
+        clearBtn: true,
+        orientation: 'auto'
+    };
+
+    // Inicializar datepicker para fecha de inicio
+    $('#fecha_inicio').datepicker(datepickerConfig);
+
+    // Inicializar datepicker para fecha de fin
+    $('#fecha_fin').datepicker(datepickerConfig);
+
+    // Evento para abrir el calendario al hacer clic en el ícono
+    $('.input-group-text').click(function() {
+        $(this).closest('.input-group').find('input').focus();
+    });
+
     // Validación del número de encuestas
-    const numeroEncuestas = document.getElementById('numero_encuestas');
-    numeroEncuestas.addEventListener('input', function() {
-        if (this.value < 0) {
-            this.value = 0;
+    $('#numero_encuestas').on('input', function() {
+        let value = parseInt(this.value);
+        if (value < 1) {
+            this.value = 1;
         }
-        if (this.value > 10000) {
+        if (value > 10000) {
             this.value = 10000;
         }
     });
 
-    // Validación de fechas
-    const fechaInicio = document.getElementById('fecha_inicio');
-    const fechaFin = document.getElementById('fecha_fin');
+    // Validación de fechas cuando cambian
+    $('#fecha_inicio').on('changeDate', function(e) {
+        const fechaInicio = e.date;
+        const fechaFin = $('#fecha_fin').datepicker('getDate');
 
-    // Validar fecha de inicio
-    fechaInicio.addEventListener('change', function() {
-        const fechaSeleccionada = new Date(this.value);
-        const hoy = new Date();
-        hoy.setHours(0, 0, 0, 0);
-
-        if (fechaSeleccionada < hoy) {
-            alert('La fecha de inicio debe ser igual o posterior a hoy.');
-            this.value = '';
+        if (fechaInicio && fechaFin && fechaFin < fechaInicio) {
+            $('#fecha_fin').datepicker('setDate', null);
+            alert('La fecha de fin debe ser igual o posterior a la fecha de inicio.');
         }
 
-        // Actualizar fecha mínima de fin
-        if (fechaFin) {
-            fechaFin.min = this.value;
+        // Actualizar fecha mínima para fecha de fin
+        $('#fecha_fin').datepicker('setStartDate', fechaInicio);
+    });
+
+    $('#fecha_fin').on('changeDate', function(e) {
+        const fechaFin = e.date;
+        const fechaInicio = $('#fecha_inicio').datepicker('getDate');
+
+        if (fechaFin && fechaInicio && fechaFin < fechaInicio) {
+            alert('La fecha de fin debe ser igual o posterior a la fecha de inicio.');
+            $(this).datepicker('setDate', null);
         }
     });
 
-    // Validar fecha de fin
-    if (fechaFin) {
-        fechaFin.addEventListener('change', function() {
-            const fechaInicioValor = fechaInicio.value;
+    // Validación del formulario antes de enviar
+    $('form').on('submit', function(e) {
+        const fechaInicio = $('#fecha_inicio').datepicker('getDate');
+        const fechaFin = $('#fecha_fin').datepicker('getDate');
+        const hoy = new Date();
+        hoy.setHours(0, 0, 0, 0);
 
-            if (fechaInicioValor && this.value < fechaInicioValor) {
-                alert('La fecha de fin debe ser igual o posterior a la fecha de inicio.');
-                this.value = '';
-            }
-        });
-    }
+        // Validar fecha de inicio
+        if (fechaInicio && fechaInicio < hoy) {
+            e.preventDefault();
+            alert('La fecha de inicio debe ser igual o posterior a hoy.');
+            $('#fecha_inicio').focus();
+            return false;
+        }
+
+        // Validar fecha de fin
+        if (fechaFin && fechaInicio && fechaFin < fechaInicio) {
+            e.preventDefault();
+            alert('La fecha de fin debe ser igual o posterior a la fecha de inicio.');
+            $('#fecha_fin').focus();
+            return false;
+        }
+
+        // Convertir fechas al formato correcto para el backend
+        if (fechaInicio) {
+            const fechaInicioFormateada = fechaInicio.getFullYear() + '-' +
+                String(fechaInicio.getMonth() + 1).padStart(2, '0') + '-' +
+                String(fechaInicio.getDate()).padStart(2, '0');
+            $('#fecha_inicio').val(fechaInicioFormateada);
+        }
+
+        if (fechaFin) {
+            const fechaFinFormateada = fechaFin.getFullYear() + '-' +
+                String(fechaFin.getMonth() + 1).padStart(2, '0') + '-' +
+                String(fechaFin.getDate()).padStart(2, '0');
+            $('#fecha_fin').val(fechaFinFormateada);
+        }
+    });
 });
 </script>
+@endsection
 @endsection

@@ -23,8 +23,21 @@ class EncuestaRequest extends FormRequest
                 'nullable',
                 'date',
                 function ($attribute, $value, $fail) {
-                    if ($value && !FechaHelper::esFechaInicioValida($value)) {
-                        $fail(FechaHelper::getMensajeErrorFechaInicio());
+                    // Si no hay valor, es válido (opcional)
+                    if (!$value) {
+                        return;
+                    }
+
+                    try {
+                        // Convertir a Carbon y validar
+                        $fechaInicio = \Carbon\Carbon::parse($value);
+                        $hoy = \Carbon\Carbon::now()->startOfDay();
+
+                        if ($fechaInicio->lt($hoy)) {
+                            $fail('La fecha de inicio debe ser igual o posterior a hoy (' . $hoy->format('d/m/Y') . ').');
+                        }
+                    } catch (\Exception $e) {
+                        $fail('La fecha de inicio no tiene un formato válido.');
                     }
                 }
             ],
@@ -32,8 +45,21 @@ class EncuestaRequest extends FormRequest
                 'nullable',
                 'date',
                 function ($attribute, $value, $fail) {
-                    if ($value && $this->input('fecha_inicio') && !FechaHelper::esFechaFinValida($value, $this->input('fecha_inicio'))) {
-                        $fail(FechaHelper::getMensajeErrorFechaFin());
+                    // Si no hay valor, es válido (opcional)
+                    if (!$value) {
+                        return;
+                    }
+
+                    try {
+                        $fechaFin = \Carbon\Carbon::parse($value);
+                        $fechaInicio = $this->input('fecha_inicio') ? \Carbon\Carbon::parse($this->input('fecha_inicio')) : null;
+
+                        // Si hay fecha de inicio, validar que la fecha de fin sea posterior
+                        if ($fechaInicio && $fechaFin->lt($fechaInicio)) {
+                            $fail('La fecha de fin debe ser igual o posterior a la fecha de inicio.');
+                        }
+                    } catch (\Exception $e) {
+                        $fail('La fecha de fin no tiene un formato válido.');
                     }
                 }
             ],

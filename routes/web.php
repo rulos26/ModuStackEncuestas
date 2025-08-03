@@ -72,6 +72,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('testing/run', [App\Http\Controllers\TestRunnerController::class, 'run'])->name('testing.run');
 });
 
+// Información del sistema
+Route::get('system/info', [App\Http\Controllers\SystemController::class, 'info'])->name('system.info');
+
 // Módulo de pruebas internas
 Route::get('/test', [App\Http\Controllers\UsuarioTestController::class, 'index'])->name('test.index');
 Route::post('/test/ejecutar', [App\Http\Controllers\UsuarioTestController::class, 'ejecutar'])->name('test.ejecutar');
@@ -206,6 +209,10 @@ Route::middleware(['auth'])->prefix('encuestas')->name('encuestas.')->group(func
     // CRUD principal de encuestas
     Route::resource('/', App\Http\Controllers\EncuestaController::class)->parameters(['' => 'encuesta']);
     Route::post('{encuesta}/clonar', [App\Http\Controllers\EncuestaController::class, 'clonar'])->name('clone');
+
+    // Aplicar middleware de validación de fechas a las rutas de creación y edición
+    Route::post('/', [App\Http\Controllers\EncuestaController::class, 'store'])->name('store')->middleware('validar.fechas');
+    Route::put('{encuesta}', [App\Http\Controllers\EncuestaController::class, 'update'])->name('update')->middleware('validar.fechas');
 
     // Gestión de preguntas
     Route::get('{encuesta}/preguntas', [PreguntaController::class, 'create'])

@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         'verificar.token.encuesta' => \App\Http\Middleware\VerificarTokenEncuesta::class,
         'validar.flujo.encuesta' => \App\Http\Middleware\ValidarFlujoEncuesta::class,
         'fix.session.hosting' => \App\Http\Middleware\FixSessionForHosting::class,
+        'validar.fechas' => \App\Http\Middleware\ValidarFechas::class,
     ]);
 
     // Aplicar middleware de sesiones para hosting globalmente
