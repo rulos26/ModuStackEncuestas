@@ -75,7 +75,15 @@ $(document).ready(function() {
         },
         responsive: true,
         autoWidth: false,
-        pageLength: 10
+        pageLength: 10,
+        columns: [
+            { data: 0, name: 'id' },
+            { data: 1, name: 'nombre' },
+            { data: 2, name: 'cargo' },
+            { data: 3, name: 'telefono' },
+            { data: 4, name: 'correo_electronico' },
+            { data: 5, name: 'acciones', orderable: false, searchable: false }
+        ]
     });
 });
 </script>
