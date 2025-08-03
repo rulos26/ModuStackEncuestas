@@ -43,7 +43,7 @@
                     <option value="">Seleccione una empresa</option>
                     @foreach($empresas as $empresa)
                         <option value="{{ $empresa->id }}" {{ old('empresa_id') == $empresa->id ? 'selected' : '' }}>
-                            {{ $empresa->nombre_legal }}
+                            {{ $empresa->nombre }}
                         </option>
                     @endforeach
                 </select>

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Encuesta;
-use App\Models\Empresa;
+use App\Models\EmpresasCliente;
 use App\Http\Requests\EncuestaRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -72,10 +72,10 @@ class EncuestaController extends Controller
                 return $this->redirectIfNoAccess('No tienes permisos para crear encuestas.');
             }
 
-            $empresas = Empresa::orderBy('nombre_legal')->get();
+            $empresas = EmpresasCliente::orderBy('nombre')->get();
 
             if ($empresas->isEmpty()) {
-                return redirect()->back()->with('warning', 'Debes crear una empresa antes de crear encuestas.');
+                return redirect()->back()->with('warning', 'Debes crear una empresa cliente antes de crear encuestas.');
             }
 
             return view('encuestas.create', compact('empresas'));
@@ -174,7 +174,7 @@ class EncuestaController extends Controller
                 return $this->redirectIfNoAccess('No tienes permisos para editar esta encuesta.');
             }
 
-            $empresas = Empresa::orderBy('nombre_legal')->get();
+            $empresas = EmpresasCliente::orderBy('nombre')->get();
 
             return view('encuestas.edit', compact('encuesta', 'empresas'));
         } catch (Exception $e) {
