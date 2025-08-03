@@ -10,8 +10,7 @@
                     <dl class="row">
                         <dt class="col-sm-4">Nombre</dt>
                         <dd class="col-sm-8">{{ $empleado->nombre }}</dd>
-                        <dt class="col-sm-4">Cargo</dt>
-                        <dd class="col-sm-8">{{ $empleado->cargo }}</dd>
+
                         <dt class="col-sm-4">Teléfono</dt>
                         <dd class="col-sm-8">{{ $empleado->telefono }}</dd>
                         <dt class="col-sm-4">Correo electrónico</dt>

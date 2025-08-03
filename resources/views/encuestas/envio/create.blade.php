@@ -135,7 +135,7 @@
                                                         <label class="form-check-label" for="empleado_{{ $empleado->id }}">
                                                             <strong>{{ $empleado->nombre }}</strong><br>
                                                             <small class="text-muted">
-                                                                {{ $empleado->cargo }} - {{ $empleado->correo_electronico }}
+                                                                {{ $empleado->correo_electronico }}
                                                             </small>
                                                         </label>
                                                     </div>
@@ -196,9 +196,7 @@
                                     <div class="col-md-4">
                                         <input type="email" id="nuevoEmail" class="form-control" placeholder="Correo electrónico">
                                     </div>
-                                    <div class="col-md-3">
-                                        <input type="text" id="nuevoCargo" class="form-control" placeholder="Cargo (opcional)">
-                                    </div>
+
                                     <div class="col-md-1">
                                         <button type="button" id="btnAgregarUsuario" class="btn btn-success">
                                             <i class="fas fa-plus"></i>

@@ -48,11 +48,10 @@
                         <table id="empleados-table" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
-                                    <th width="5%">ID</th>
-                                    <th width="25%">Nombre</th>
-                                    <th width="20%">Cargo</th>
-                                    <th width="15%">Teléfono</th>
-                                    <th width="20%">Correo Electrónico</th>
+                                    <th width="10%">ID</th>
+                                    <th width="30%">Nombre</th>
+                                    <th width="20%">Teléfono</th>
+                                    <th width="25%">Correo Electrónico</th>
                                     <th width="15%">Acciones</th>
                                 </tr>
                             </thead>
@@ -61,7 +60,6 @@
                                     <tr>
                                         <td>{{ $empleado->id }}</td>
                                         <td>{{ $empleado->nombre }}</td>
-                                        <td>{{ $empleado->cargo }}</td>
                                         <td>{{ $empleado->telefono }}</td>
                                         <td>{{ $empleado->correo_electronico }}</td>
                                         <td>
@@ -125,13 +123,13 @@ $(document).ready(function() {
         order: [[0, 'asc']],
         columnDefs: [
             {
-                targets: 5, // Columna de acciones
+                targets: 4, // Columna de acciones
                 orderable: false,
                 searchable: false,
                 responsivePriority: 1
             },
             {
-                targets: [0, 3], // ID y Teléfono
+                targets: [0, 2], // ID y Teléfono
                 responsivePriority: 2
             }
         ]

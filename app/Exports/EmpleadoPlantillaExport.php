@@ -14,6 +14,6 @@ class EmpleadoPlantillaExport implements FromArray, WithHeadings
 
     public function headings(): array
     {
-        return ['Nombre', 'Cargo', 'Teléfono', 'Correo'];
+        return ['Nombre', 'Teléfono', 'Correo'];
     }
 }

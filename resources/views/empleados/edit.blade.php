@@ -24,11 +24,7 @@
                             <input type="text" class="form-control" id="nombre" name="nombre" value="{{ old('nombre', $empleado->nombre) }}" required maxlength="255" pattern="^(?:\b\w+\b\s?){1,10}$" title="Máximo 10 palabras">
                             <small class="form-text text-muted">Máximo 10 palabras y 255 caracteres.</small>
                         </div>
-                        <div class="form-group mb-3">
-                            <label for="cargo">Cargo</label>
-                            <input type="text" class="form-control" id="cargo" name="cargo" value="{{ old('cargo', $empleado->cargo) }}" required maxlength="255" pattern="^(?:\b\w+\b\s?){1,10}$" title="Máximo 10 palabras">
-                            <small class="form-text text-muted">Máximo 10 palabras y 255 caracteres.</small>
-                        </div>
+
                         <div class="form-group mb-3">
                             <label for="telefono">Teléfono</label>
                             <input type="number" class="form-control" id="telefono" name="telefono" value="{{ old('telefono', $empleado->telefono) }}" required pattern="^[0-9]{10}$" maxlength="10" minlength="10" title="Debe ser un número de 10 dígitos">

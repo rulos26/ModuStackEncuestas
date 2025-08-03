@@ -60,7 +60,7 @@ class EmpleadosImport
 
     private function guardarEmpleado($data, $fila)
     {
-        if (!isset($data['nombre'], $data['cargo'], $data['telefono'], $data['correo'])) {
+        if (!isset($data['nombre'], $data['telefono'], $data['correo'])) {
             $this->errores[] = "Fila $fila: Faltan campos obligatorios.";
             $this->fallidas++;
             return;
@@ -80,11 +80,6 @@ class EmpleadosImport
             $this->fallidas++;
             return;
         }
-        if (str_word_count($data['cargo']) > 10) {
-            $this->errores[] = "Fila $fila: El cargo tiene más de 10 palabras.";
-            $this->fallidas++;
-            return;
-        }
         if (Empleado::where('correo_electronico', $data['correo'])->exists()) {
             $this->errores[] = "Fila $fila: El correo ya existe en la base de datos.";
             $this->fallidas++;
@@ -93,7 +88,6 @@ class EmpleadosImport
         try {
             Empleado::create([
                 'nombre' => $data['nombre'],
-                'cargo' => $data['cargo'],
                 'telefono' => $data['telefono'],
                 'correo_electronico' => $data['correo'],
             ]);
