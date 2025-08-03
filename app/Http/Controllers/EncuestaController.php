@@ -29,7 +29,7 @@ class EncuestaController extends Controller
 
             $encuestas = Encuesta::with(['empresa', 'user'])
                 ->orderByDesc('created_at')
-                ->paginate(10);
+                ->get();
 
             return view('encuestas.index', compact('encuestas'));
         } catch (Exception $e) {
