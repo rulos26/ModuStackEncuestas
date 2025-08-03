@@ -22,8 +22,7 @@
             <dd class="col-sm-9">{{ $empresas_cliente->direccion }}</dd>
             <dt class="col-sm-3">Nombre del Contacto</dt>
             <dd class="col-sm-9">{{ $empresas_cliente->contacto }}</dd>
-            <dt class="col-sm-3">Cargo del Contacto</dt>
-            <dd class="col-sm-9">{{ $empresas_cliente->cargo_contacto }}</dd>
+
         </dl>
         <a href="{{ route('empresas_clientes.index') }}" class="btn btn-secondary">Volver</a>
         <a href="{{ route('empresas_clientes.edit', $empresas_cliente) }}" class="btn btn-warning">Editar</a>

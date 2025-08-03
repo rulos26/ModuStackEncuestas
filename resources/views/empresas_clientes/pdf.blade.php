@@ -27,8 +27,7 @@
         <dd>{{ $empresas_cliente->direccion }}</dd>
         <dt>Nombre del Contacto</dt>
         <dd>{{ $empresas_cliente->contacto }}</dd>
-        <dt>Cargo del Contacto</dt>
-        <dd>{{ $empresas_cliente->cargo_contacto }}</dd>
+
     </dl>
     <div class="clearfix"></div>
 </body>

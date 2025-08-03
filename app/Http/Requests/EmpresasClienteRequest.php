@@ -22,7 +22,6 @@ class EmpresasClienteRequest extends FormRequest
             'correo_electronico' => 'nullable|email|max:255|unique:empresas_clientes,correo_electronico' . ($empresaId ? ",{$empresaId}" : ''),
             'direccion' => 'nullable|string|max:255',
             'contacto' => 'nullable|string|max:255',
-            'cargo_contacto' => 'nullable|string|max:255',
         ];
     }
 

@@ -45,10 +45,7 @@
                 <label for="contacto">Nombre del Contacto</label>
                 <input type="text" name="contacto" id="contacto" class="form-control" value="{{ old('contacto', $empresas_cliente->contacto) }}" maxlength="255">
             </div>
-            <div class="form-group">
-                <label for="cargo_contacto">Cargo del Contacto</label>
-                <input type="text" name="cargo_contacto" id="cargo_contacto" class="form-control" value="{{ old('cargo_contacto', $empresas_cliente->cargo_contacto) }}" maxlength="255">
-            </div>
+
             <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Guardar Cambios</button>
             <a href="{{ route('empresas_clientes.index') }}" class="btn btn-secondary">Cancelar</a>
         </form>

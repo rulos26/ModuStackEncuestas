@@ -24,7 +24,6 @@
                 <th>Teléfono</th>
                 <th>Correo</th>
                 <th>Contacto</th>
-                <th>Cargo</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -36,7 +35,6 @@
                     <td>{{ $empresa->telefono }}</td>
                     <td>{{ $empresa->correo_electronico }}</td>
                     <td>{{ $empresa->contacto }}</td>
-                    <td>{{ $empresa->cargo_contacto }}</td>
                     <td>
                         <a href="{{ route('empresas_clientes.show', $empresa) }}" class="btn btn-info btn-sm" title="Ver"><i class="fas fa-eye"></i></a>
                         <a href="{{ route('empresas_clientes.edit', $empresa) }}" class="btn btn-warning btn-sm" title="Editar"><i class="fas fa-edit"></i></a>
@@ -49,7 +47,7 @@
                     </td>
                 </tr>
             @empty
-                <tr><td colspan="7">No hay empresas clientes registradas.</td></tr>
+                <tr><td colspan="6">No hay empresas clientes registradas.</td></tr>
             @endforelse
         </tbody>
     </table>

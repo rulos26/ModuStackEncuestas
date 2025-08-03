@@ -8,6 +8,6 @@ class EmpresasCliente extends Model
 {
     protected $table = 'empresas_clientes';
     protected $fillable = [
-        'nombre', 'nit', 'telefono', 'correo_electronico', 'direccion', 'contacto', 'cargo_contacto'
+        'nombre', 'nit', 'telefono', 'correo_electronico', 'direccion', 'contacto'
     ];
 }
