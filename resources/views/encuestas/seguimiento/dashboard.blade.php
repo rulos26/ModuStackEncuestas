@@ -3,40 +3,59 @@
 @section('title', 'Dashboard de Seguimiento')
 
 @section('content_header')
-    <h1>
-        <i class="fas fa-chart-line"></i> Dashboard de Seguimiento
-        <small>{{ $encuesta->titulo }}</small>
-    </h1>
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="m-0">
+                <i class="fas fa-chart-line text-primary"></i> Dashboard de Seguimiento
+                <small class="text-muted">{{ $encuesta->titulo }}</small>
+            </h1>
+        </div>
+        <div class="d-flex align-items-center">
+            <span class="badge badge-{{ $estadisticas['estado_encuesta'] === 'enviada' ? 'success' : 'warning' }} badge-lg mr-2">
+                {{ ucfirst($estadisticas['estado_encuesta']) }}
+            </span>
+            <button type="button" class="btn btn-outline-info btn-sm" onclick="actualizarDatos()" title="Actualizar datos">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+        </div>
+    </div>
 @endsection
 
 @section('content')
     <!-- DEBUG: Mostrar información de debug si está habilitado -->
     @if(config('app.debug'))
-        <div class="alert alert-info">
+        <div class="alert alert-info alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
             <h5><i class="fas fa-bug"></i> Modo Debug Activo</h5>
-            <p><strong>Encuesta ID:</strong> {{ $encuesta->id }}</p>
-            <p><strong>Estado Actual:</strong> {{ $encuesta->estado }}</p>
-            <p><strong>User ID:</strong> {{ $encuesta->user_id }}</p>
-            <p><strong>Usuario Autenticado:</strong> {{ auth()->id() }}</p>
-            <p><strong>¿Coinciden?:</strong> {{ $encuesta->user_id == auth()->id() ? 'Sí' : 'No' }}</p>
-            <p><strong>Enviar por correo:</strong> {{ $encuesta->enviar_por_correo ? 'Sí' : 'No' }}</p>
-            <p><strong>Envío masivo activado:</strong> {{ $encuesta->envio_masivo_activado ? 'Sí' : 'No' }}</p>
-            <p><strong>Validación completada:</strong> {{ $encuesta->validacion_completada ? 'Sí' : 'No' }}</p>
+            <div class="row">
+                <div class="col-md-3">
+                    <strong>Encuesta ID:</strong> {{ $encuesta->id }}
+                </div>
+                <div class="col-md-3">
+                    <strong>Estado:</strong> {{ $encuesta->estado }}
+                </div>
+                <div class="col-md-3">
+                    <strong>User ID:</strong> {{ $encuesta->user_id }}
+                </div>
+                <div class="col-md-3">
+                    <strong>Usuario:</strong> {{ auth()->id() }}
+                </div>
+            </div>
         </div>
     @endif
 
     <!-- BREADCRUMBS -->
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('encuestas.index') }}">Encuestas</a></li>
-            <li class="breadcrumb-item"><a href="{{ route('encuestas.show', $encuesta->id) }}">{{ $encuesta->titulo }}</a></li>
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb bg-transparent p-0">
+            <li class="breadcrumb-item"><a href="{{ route('encuestas.index') }}" class="text-decoration-none">Encuestas</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('encuestas.show', $encuesta->id) }}" class="text-decoration-none">{{ $encuesta->titulo }}</a></li>
             <li class="breadcrumb-item active">Dashboard de Seguimiento</li>
         </ol>
     </nav>
 
     <!-- ALERTAS -->
     @if(session('success'))
-        <div class="alert alert-success alert-dismissible">
+        <div class="alert alert-success alert-dismissible fade show">
             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
             <h5><i class="icon fas fa-check"></i> ¡Éxito!</h5>
             {{ session('success') }}
@@ -44,81 +63,232 @@
     @endif
 
     @if(session('error'))
-        <div class="alert alert-danger alert-dismissible">
+        <div class="alert alert-danger alert-dismissible fade show">
             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
             <h5><i class="icon fas fa-ban"></i> Error</h5>
             {{ session('error') }}
         </div>
     @endif
 
-    <!-- ESTADÍSTICAS PRINCIPALES -->
+    <!-- RESUMEN EJECUTIVO -->
     <div class="row mb-4">
-        <div class="col-lg-3 col-6">
-            <div class="small-box bg-info">
-                <div class="inner">
-                    <h3>{{ $estadisticas['total_encuestas'] }}</h3>
-                    <p>Total de Encuestas</p>
-                </div>
-                <div class="icon">
-                    <i class="fas fa-clipboard-list"></i>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-3 col-6">
-            <div class="small-box bg-success">
-                <div class="inner">
-                    <h3>{{ $estadisticas['encuestas_enviadas'] }}</h3>
-                    <p>Encuestas Enviadas</p>
-                </div>
-                <div class="icon">
-                    <i class="fas fa-paper-plane"></i>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-3 col-6">
-            <div class="small-box bg-warning">
-                <div class="inner">
-                    <h3>{{ $estadisticas['encuestas_pendientes'] }}</h3>
-                    <p>Encuestas Pendientes</p>
-                </div>
-                <div class="icon">
-                    <i class="fas fa-clock"></i>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-3 col-6">
-            <div class="small-box bg-primary">
-                <div class="inner">
-                    <h3>{{ $estadisticas['encuestas_respondidas'] }}</h3>
-                    <p>Encuestas Respondidas</p>
-                </div>
-                <div class="icon">
-                    <i class="fas fa-check-circle"></i>
+        <div class="col-12">
+            <div class="card bg-gradient-primary text-white">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h4 class="mb-1">
+                                <i class="fas fa-tasks mr-2"></i>
+                                Resumen de Envío
+                            </h4>
+                            <p class="mb-0">Monitoreo en tiempo real del progreso de envío de encuestas</p>
+                        </div>
+                        <div class="col-md-4 text-right">
+                            <div class="progress bg-white bg-opacity-25" style="height: 8px;">
+                                <div class="progress-bar bg-white" role="progressbar"
+                                     style="width: {{ $estadisticas['progreso_porcentaje'] }}%">
+                                </div>
+                            </div>
+                            <small class="mt-2 d-block">{{ $estadisticas['progreso_porcentaje'] }}% Completado</small>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- CORREOS NO ENVIADOS -->
+    <!-- ESTADÍSTICAS PRINCIPALES -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-6 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="d-flex align-items-center justify-content-center mb-3">
+                        <div class="bg-info bg-opacity-10 p-3 rounded-circle">
+                            <i class="fas fa-clipboard-list fa-2x text-info"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-info mb-1">{{ $estadisticas['total_encuestas'] }}</h3>
+                    <p class="text-muted mb-0">Total de Encuestas</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-6 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="d-flex align-items-center justify-content-center mb-3">
+                        <div class="bg-success bg-opacity-10 p-3 rounded-circle">
+                            <i class="fas fa-paper-plane fa-2x text-success"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-success mb-1">{{ $estadisticas['encuestas_enviadas'] }}</h3>
+                    <p class="text-muted mb-0">Encuestas Enviadas</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-6 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="d-flex align-items-center justify-content-center mb-3">
+                        <div class="bg-warning bg-opacity-10 p-3 rounded-circle">
+                            <i class="fas fa-clock fa-2x text-warning"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-warning mb-1">{{ $estadisticas['encuestas_pendientes'] }}</h3>
+                    <p class="text-muted mb-0">Encuestas Pendientes</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-6 mb-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <div class="d-flex align-items-center justify-content-center mb-3">
+                        <div class="bg-primary bg-opacity-10 p-3 rounded-circle">
+                            <i class="fas fa-check-circle fa-2x text-primary"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-primary mb-1">{{ $estadisticas['encuestas_respondidas'] }}</h3>
+                    <p class="text-muted mb-0">Encuestas Respondidas</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROGRESO DETALLADO -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">
-                        <i class="fas fa-envelope-open"></i> Correos Pendientes de Envío
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent border-0">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-tasks text-primary"></i> Progreso de Envío
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="progress mb-4" style="height: 25px;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar"
+                             style="width: {{ $estadisticas['progreso_porcentaje'] }}%"
+                             aria-valuenow="{{ $estadisticas['progreso_porcentaje'] }}"
+                             aria-valuemin="0" aria-valuemax="100">
+                            <strong class="text-white">{{ $estadisticas['progreso_porcentaje'] }}% Completado</strong>
+                        </div>
+                    </div>
+
+                    <div class="row text-center">
+                        <div class="col-md-2 col-6 mb-3">
+                            <div class="bg-success bg-opacity-10 p-3 rounded">
+                                <i class="fas fa-check fa-2x text-success mb-2"></i>
+                                <h5 class="text-success mb-1">{{ $estadisticas['bloques_enviados'] }}</h5>
+                                <small class="text-muted">Enviados</small>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <div class="bg-warning bg-opacity-10 p-3 rounded">
+                                <i class="fas fa-clock fa-2x text-warning mb-2"></i>
+                                <h5 class="text-warning mb-1">{{ $estadisticas['bloques_pendientes'] }}</h5>
+                                <small class="text-muted">Pendientes</small>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <div class="bg-info bg-opacity-10 p-3 rounded">
+                                <i class="fas fa-spinner fa-2x text-info mb-2"></i>
+                                <h5 class="text-info mb-1">{{ $estadisticas['bloques_en_proceso'] }}</h5>
+                                <small class="text-muted">En Proceso</small>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <div class="bg-danger bg-opacity-10 p-3 rounded">
+                                <i class="fas fa-exclamation-triangle fa-2x text-danger mb-2"></i>
+                                <h5 class="text-danger mb-1">{{ $estadisticas['bloques_error'] }}</h5>
+                                <small class="text-muted">Errores</small>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <div class="bg-secondary bg-opacity-10 p-3 rounded">
+                                <i class="fas fa-ban fa-2x text-secondary mb-2"></i>
+                                <h5 class="text-secondary mb-1">{{ $estadisticas['bloques_cancelados'] }}</h5>
+                                <small class="text-muted">Cancelados</small>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-6 mb-3">
+                            <div class="bg-primary bg-opacity-10 p-3 rounded">
+                                <i class="fas fa-envelope fa-2x text-primary mb-2"></i>
+                                <h5 class="text-primary mb-1">{{ $estadisticas['correos_enviados'] }}</h5>
+                                <small class="text-muted">Correos</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTROLES DE ENVÍO -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent border-0">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-cogs text-primary"></i> Controles de Envío
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="btn-group" role="group">
+                        @if($estadisticas['estado_encuesta'] === 'enviada')
+                            <form method="POST" action="{{ route('encuestas.seguimiento.pausar', $encuesta->id) }}" style="display: inline;">
+                                @csrf
+                                <button type="submit" class="btn btn-warning">
+                                    <i class="fas fa-pause"></i> Pausar Envío
+                                </button>
+                            </form>
+                        @endif
+
+                        @if($estadisticas['estado_encuesta'] === 'pausada')
+                            <form method="POST" action="{{ route('encuestas.seguimiento.reanudar', $encuesta->id) }}" style="display: inline;">
+                                @csrf
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-play"></i> Reanudar Envío
+                                </button>
+                            </form>
+                        @endif
+
+                        <form method="POST" action="{{ route('encuestas.seguimiento.cancelar', $encuesta->id) }}" style="display: inline;">
+                            @csrf
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de cancelar el envío?')">
+                                <i class="fas fa-stop"></i> Cancelar Envío
+                            </button>
+                        </form>
+
+                        <button type="button" class="btn btn-info" onclick="actualizarDatos()">
+                            <i class="fas fa-sync-alt"></i> Actualizar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CORREOS PENDIENTES -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-envelope-open text-primary"></i> Correos Pendientes de Envío
                         <span class="badge badge-warning ml-2">{{ count($correosPendientes) }}</span>
-                    </h3>
-                    <div class="card-tools">
+                    </h5>
+                    <div class="btn-group" role="group">
                         <button type="button" class="btn btn-success btn-sm" onclick="enviarCorreosMasivos()">
                             <i class="fas fa-paper-plane"></i> Enviar Todos
+                        </button>
+                        <button type="button" class="btn btn-info btn-sm" onclick="exportarLista()">
+                            <i class="fas fa-download"></i> Exportar
                         </button>
                     </div>
                 </div>
                 <div class="card-body">
                     @if(count($correosPendientes) > 0)
                         <div class="table-responsive">
-                            <table class="table table-bordered table-striped" id="tablaCorreosPendientes">
-                                <thead>
+                            <table class="table table-hover" id="tablaCorreosPendientes">
+                                <thead class="thead-light">
                                     <tr>
                                         <th width="5%">
                                             <input type="checkbox" id="seleccionarTodos" onchange="seleccionarTodosCorreos()">
@@ -157,21 +327,25 @@
                                                 <span class="badge badge-warning">Pendiente</span>
                                             </td>
                                             <td>
-                                                <button type="button" class="btn btn-primary btn-sm"
-                                                        onclick="enviarCorreoIndividual('{{ $correo['id'] }}', '{{ $correo['email'] }}')">
-                                                    <i class="fas fa-paper-plane"></i> Enviar
-                                                </button>
-                                                <button type="button" class="btn btn-info btn-sm"
-                                                        onclick="verDetallesCorreo('{{ $correo['id'] }}')">
-                                                    <i class="fas fa-eye"></i> Ver
-                                                </button>
+                                                <div class="btn-group" role="group">
+                                                    <button type="button" class="btn btn-primary btn-sm"
+                                                            onclick="enviarCorreoIndividual('{{ $correo['id'] }}', '{{ $correo['email'] }}')"
+                                                            title="Enviar correo individual">
+                                                        <i class="fas fa-paper-plane"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-info btn-sm"
+                                                            onclick="verDetallesCorreo('{{ $correo['id'] }}')"
+                                                            title="Ver detalles">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
                             </table>
                         </div>
-                        
+
                         <!-- BOTONES DE ACCIÓN MASIVA -->
                         <div class="row mt-3 botones-accion-masiva">
                             <div class="col-md-6">
@@ -184,17 +358,14 @@
                                 </button>
                             </div>
                             <div class="col-md-6 text-right">
-                                <button type="button" class="btn btn-info" onclick="exportarLista()">
-                                    <i class="fas fa-download"></i> Exportar Lista
-                                </button>
                                 <button type="button" class="btn btn-secondary" onclick="actualizarLista()">
                                     <i class="fas fa-sync-alt"></i> Actualizar
                                 </button>
                             </div>
                         </div>
                     @else
-                        <div class="text-center py-4 mensaje-no-correos">
-                            <i class="fas fa-check-circle text-success" style="font-size: 3rem;"></i>
+                        <div class="text-center py-5 mensaje-no-correos">
+                            <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
                             <h4 class="mt-3 text-success">¡Todos los correos han sido enviados!</h4>
                             <p class="text-muted">No hay correos pendientes de envío.</p>
                         </div>
@@ -204,149 +375,19 @@
         </div>
     </div>
 
-    <!-- PROGRESO DE ENVÍO -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">
-                        <i class="fas fa-tasks"></i> Progreso de Envío
-                    </h3>
-                    <div class="card-tools">
-                        <span class="badge badge-{{ $estadisticas['estado_encuesta'] === 'enviada' ? 'success' : 'warning' }}">
-                            {{ ucfirst($estadisticas['estado_encuesta']) }}
-                        </span>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="progress mb-3" style="height: 30px;">
-                        <div class="progress-bar bg-success" role="progressbar"
-                             style="width: {{ $estadisticas['progreso_porcentaje'] }}%;"
-                             aria-valuenow="{{ $estadisticas['progreso_porcentaje'] }}"
-                             aria-valuemin="0" aria-valuemax="100">
-                            <strong>{{ $estadisticas['progreso_porcentaje'] }}% Completado</strong>
-                        </div>
-                    </div>
-
-                    <div class="row text-center">
-                        <div class="col-md-2">
-                            <div class="info-box bg-success">
-                                <span class="info-box-icon"><i class="fas fa-check"></i></span>
-                                <div class="info-box-content">
-                                    <span class="info-box-text">Enviados</span>
-                                    <span class="info-box-number">{{ $estadisticas['bloques_enviados'] }}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="info-box bg-warning">
-                                <span class="info-box-icon"><i class="fas fa-clock"></i></span>
-                                <div class="info-box-content">
-                                    <span class="info-box-text">Pendientes</span>
-                                    <span class="info-box-number">{{ $estadisticas['bloques_pendientes'] }}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="info-box bg-info">
-                                <span class="info-box-icon"><i class="fas fa-spinner"></i></span>
-                                <div class="info-box-content">
-                                    <span class="info-box-text">En Proceso</span>
-                                    <span class="info-box-number">{{ $estadisticas['bloques_en_proceso'] }}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="info-box bg-danger">
-                                <span class="info-box-icon"><i class="fas fa-exclamation-triangle"></i></span>
-                                <div class="info-box-content">
-                                    <span class="info-box-text">Errores</span>
-                                    <span class="info-box-number">{{ $estadisticas['bloques_error'] }}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="info-box bg-secondary">
-                                <span class="info-box-icon"><i class="fas fa-ban"></i></span>
-                                <div class="info-box-content">
-                                    <span class="info-box-text">Cancelados</span>
-                                    <span class="info-box-number">{{ $estadisticas['bloques_cancelados'] }}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="info-box bg-primary">
-                                <span class="info-box-icon"><i class="fas fa-envelope"></i></span>
-                                <div class="info-box-content">
-                                    <span class="info-box-text">Correos</span>
-                                    <span class="info-box-number">{{ $estadisticas['correos_enviados'] }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- CONTROLES DE ENVÍO -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">
-                        <i class="fas fa-cogs"></i> Controles de Envío
-                    </h3>
-                </div>
-                <div class="card-body">
-                    <div class="btn-group" role="group">
-                        @if($estadisticas['estado_encuesta'] === 'enviada')
-                            <form method="POST" action="{{ route('encuestas.seguimiento.pausar', $encuesta->id) }}" style="display: inline;">
-                                @csrf
-                                <button type="submit" class="btn btn-warning">
-                                    <i class="fas fa-pause"></i> Pausar Envío
-                                </button>
-                            </form>
-                        @endif
-
-                        @if($estadisticas['estado_encuesta'] === 'pausada')
-                            <form method="POST" action="{{ route('encuestas.seguimiento.reanudar', $encuesta->id) }}" style="display: inline;">
-                                @csrf
-                                <button type="submit" class="btn btn-success">
-                                    <i class="fas fa-play"></i> Reanudar Envío
-                                </button>
-                            </form>
-                        @endif
-
-                        <form method="POST" action="{{ route('encuestas.seguimiento.cancelar', $encuesta->id) }}" style="display: inline;">
-                            @csrf
-                            <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de cancelar el envío?')">
-                                <i class="fas fa-stop"></i> Cancelar Envío
-                            </button>
-                        </form>
-
-                        <button type="button" class="btn btn-info" onclick="actualizarDatos()">
-                            <i class="fas fa-sync-alt"></i> Actualizar
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- BLOQUES DE ENVÍO -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">
-                        <i class="fas fa-list"></i> Bloques de Envío
-                    </h3>
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent border-0">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-list text-primary"></i> Bloques de Envío
+                    </h5>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-bordered table-striped">
-                            <thead>
+                        <table class="table table-hover">
+                            <thead class="thead-light">
                                 <tr>
                                     <th>Bloque</th>
                                     <th>Cantidad</th>
@@ -358,7 +399,7 @@
                             <tbody>
                                 @foreach($bloques as $bloque)
                                     <tr>
-                                        <td>{{ $bloque->numero_bloque }}</td>
+                                        <td><strong>#{{ $bloque->numero_bloque }}</strong></td>
                                         <td>{{ $bloque->cantidad_correos }}</td>
                                         <td>
                                             @switch($bloque->estado)
@@ -381,8 +422,8 @@
                                                     <span class="badge badge-light">{{ $bloque->estado }}</span>
                                             @endswitch
                                         </td>
-                                        <td>{{ $bloque->fecha_programada ? $bloque->fecha_programada->format('Y-m-d H:i:s') : 'N/A' }}</td>
-                                        <td>{{ $bloque->fecha_envio ? $bloque->fecha_envio->format('Y-m-d H:i:s') : 'N/A' }}</td>
+                                        <td>{{ $bloque->fecha_programada ? $bloque->fecha_programada->format('d/m/Y H:i') : 'N/A' }}</td>
+                                        <td>{{ $bloque->fecha_envio ? $bloque->fecha_envio->format('d/m/Y H:i') : 'N/A' }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -396,16 +437,16 @@
     <!-- CORREOS ENVIADOS -->
     <div class="row">
         <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">
-                        <i class="fas fa-envelope"></i> Correos Enviados (Últimos 50)
-                    </h3>
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-transparent border-0">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-envelope text-primary"></i> Correos Enviados (Últimos 50)
+                    </h5>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-bordered table-striped">
-                            <thead>
+                        <table class="table table-hover">
+                            <thead class="thead-light">
                                 <tr>
                                     <th>Destinatario</th>
                                     <th>Asunto</th>
@@ -428,7 +469,7 @@
                                                 <span class="badge badge-warning">{{ $correo->status }}</span>
                                             @endif
                                         </td>
-                                        <td>{{ $correo->created_at->format('Y-m-d H:i:s') }}</td>
+                                        <td>{{ $correo->created_at->format('d/m/Y H:i') }}</td>
                                         <td>
                                             @if($correo->error_message)
                                                 <span class="text-danger">{{ $correo->error_message }}</span>
@@ -472,11 +513,97 @@
     </div>
 @endsection
 
+@section('css')
+<link rel="stylesheet" href="{{ asset('css/dashboard-improvements.css') }}">
+<style>
+.card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.progress-bar {
+    transition: width 0.6s ease;
+}
+
+.badge-lg {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+}
+
+.bg-opacity-10 {
+    background-color: rgba(var(--bs-primary-rgb), 0.1) !important;
+}
+
+.bg-opacity-25 {
+    background-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+.btn-group .btn {
+    margin-right: 0.25rem;
+}
+
+.btn-group .btn:last-child {
+    margin-right: 0;
+}
+
+.rounded-circle {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.shadow-sm {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .btn-group {
+        flex-direction: column;
+    }
+
+    .btn-group .btn {
+        margin-bottom: 0.25rem;
+        margin-right: 0;
+    }
+}
+</style>
+@endsection
+
 @section('js')
+<script src="{{ asset('js/dashboard-enhancements.js') }}"></script>
 <script>
 let actualizacionAutomatica;
 
 function actualizarDatos() {
+    // Mostrar indicador de carga
+    mostrarIndicadorCarga();
+
     $.ajax({
         url: '{{ route("encuestas.seguimiento.actualizar", $encuesta->id) }}',
         method: 'GET',
@@ -492,31 +619,61 @@ function actualizarDatos() {
 
             // Mostrar timestamp
             mostrarUltimaActualizacion(response.timestamp);
+
+            // Ocultar indicador de carga
+            ocultarIndicadorCarga();
+
+            // Mostrar notificación de éxito
+            mostrarNotificacion('Datos actualizados correctamente', 'success');
         },
         error: function(xhr) {
             console.error('Error actualizando datos:', xhr.responseText);
+            ocultarIndicadorCarga();
+            mostrarNotificacion('Error al actualizar datos', 'error');
         }
     });
 }
 
 function actualizarEstadisticas(estadisticas) {
-    // Actualizar progreso
+    // Actualizar progreso con animación
     $('.progress-bar').css('width', estadisticas.progreso_porcentaje + '%');
     $('.progress-bar strong').text(estadisticas.progreso_porcentaje + '% Completado');
 
-    // Actualizar contadores
-    $('.info-box-number').each(function() {
-        const text = $(this).siblings('.info-box-text').text();
-        if (text === 'Enviados') $(this).text(estadisticas.bloques_enviados);
-        if (text === 'Pendientes') $(this).text(estadisticas.bloques_pendientes);
-        if (text === 'En Proceso') $(this).text(estadisticas.bloques_en_proceso);
-        if (text === 'Errores') $(this).text(estadisticas.bloques_error);
-        if (text === 'Cancelados') $(this).text(estadisticas.bloques_cancelados);
-        if (text === 'Correos') $(this).text(estadisticas.correos_enviados);
+    // Actualizar contadores con animación
+    $('.card-body h3').each(function() {
+        const $this = $(this);
+        const newValue = estadisticas[getEstadisticaKey($this)];
+        if (newValue !== undefined) {
+            animateCounter($this, newValue);
+        }
     });
 
     // Actualizar estado
-    $('.card-tools .badge').text(estadisticas.estado_encuesta.charAt(0).toUpperCase() + estadisticas.estado_encuesta.slice(1));
+    $('.badge-lg').text(estadisticas.estado_encuesta.charAt(0).toUpperCase() + estadisticas.estado_encuesta.slice(1));
+}
+
+function getEstadisticaKey($element) {
+    const text = $element.siblings('p').text();
+    if (text.includes('Total')) return 'total_encuestas';
+    if (text.includes('Enviadas')) return 'encuestas_enviadas';
+    if (text.includes('Pendientes')) return 'encuestas_pendientes';
+    if (text.includes('Respondidas')) return 'encuestas_respondidas';
+}
+
+function animateCounter($element, newValue) {
+    const currentValue = parseInt($element.text());
+    const increment = (newValue - currentValue) / 20;
+    let current = currentValue;
+
+    const timer = setInterval(() => {
+        current += increment;
+        if ((increment > 0 && current >= newValue) || (increment < 0 && current <= newValue)) {
+            $element.text(newValue);
+            clearInterval(timer);
+        } else {
+            $element.text(Math.floor(current));
+        }
+    }, 50);
 }
 
 function actualizarBloques(bloques) {
@@ -532,6 +689,35 @@ function actualizarCorreos(correos) {
 function mostrarUltimaActualizacion(timestamp) {
     // Mostrar timestamp de última actualización
     console.log('Última actualización:', timestamp);
+}
+
+function mostrarIndicadorCarga() {
+    // Mostrar spinner en el botón de actualizar
+    $('button[onclick="actualizarDatos()"] i').removeClass('fa-sync-alt').addClass('fa-spinner fa-spin');
+}
+
+function ocultarIndicadorCarga() {
+    // Restaurar icono del botón
+    $('button[onclick="actualizarDatos()"] i').removeClass('fa-spinner fa-spin').addClass('fa-sync-alt');
+}
+
+function mostrarNotificacion(mensaje, tipo) {
+    const icon = tipo === 'success' ? 'fas fa-check' : 'fas fa-exclamation-triangle';
+    const bgClass = tipo === 'success' ? 'bg-success' : 'bg-danger';
+
+    const notificacion = $(`
+        <div class="alert ${bgClass} alert-dismissible fade show" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <i class="${icon}"></i> ${mensaje}
+        </div>
+    `);
+
+    $('body').append(notificacion);
+
+    // Auto-ocultar después de 3 segundos
+    setTimeout(function() {
+        notificacion.fadeOut();
+    }, 3000);
 }
 
 // FUNCIONES PARA CORREOS PENDIENTES
@@ -889,6 +1075,9 @@ $(document).ready(function() {
     $(window).on('beforeunload', function() {
         clearInterval(actualizacionAutomatica);
     });
+
+    // Tooltips
+    $('[title]').tooltip();
 });
 </script>
 @endsection
