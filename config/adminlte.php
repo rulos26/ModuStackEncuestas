@@ -576,6 +576,11 @@ return [
                     'icon' => 'fas fa-chart-bar',
                 ],
                 [
+                    'text' => 'Configuración de Envío',
+                    'route' => 'configuracion-envio.index',
+                    'icon' => 'fas fa-envelope-open-text',
+                ],
+                [
                     'text' => 'Vista Previa',
                     'url'  => '#', // Cambia por la ruta real si tienes una vista previa general
                     'icon' => 'fas fa-eye',

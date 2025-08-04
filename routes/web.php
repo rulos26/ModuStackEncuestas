@@ -316,4 +316,15 @@ Route::middleware(['auth'])->prefix('system/tools')->name('system.tools.')->grou
         Route::post('guardar-correccion-incompatibilidad', [App\Http\Controllers\CargaMasivaEncuestasController::class, 'guardarCorreccionIncompatibilidad'])->name('guardar-correccion-incompatibilidad');
     });
 
+// Rutas para configuración de envío de correos
+Route::middleware(['auth'])->prefix('configuracion-envio')->name('configuracion-envio.')->group(function () {
+    Route::get('/', [App\Http\Controllers\ConfiguracionEnvioController::class, 'index'])->name('index');
+    Route::post('/get-encuestas', [App\Http\Controllers\ConfiguracionEnvioController::class, 'getEncuestasPorEmpresa'])->name('get-encuestas');
+    Route::post('/get-configuracion', [App\Http\Controllers\ConfiguracionEnvioController::class, 'getConfiguracion'])->name('get-configuracion');
+    Route::post('/store', [App\Http\Controllers\ConfiguracionEnvioController::class, 'store'])->name('store');
+    Route::put('/update/{id}', [App\Http\Controllers\ConfiguracionEnvioController::class, 'update'])->name('update');
+    Route::get('/configurar', [App\Http\Controllers\ConfiguracionEnvioController::class, 'configurar'])->name('configurar');
+    Route::get('/resumen', [App\Http\Controllers\ConfiguracionEnvioController::class, 'resumen'])->name('resumen');
+});
+
 

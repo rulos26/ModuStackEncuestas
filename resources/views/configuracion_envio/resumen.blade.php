@@ -1,0 +1,425 @@
+@extends('adminlte::page')
+
+@section('title', 'Resumen de Configuraciones de Envío')
+
+@section('content_header')
+    <h1>
+        <i class="fas fa-list"></i> Resumen de Configuraciones de Envío
+        <small>{{ $empresa->nombre }}</small>
+    </h1>
+@endsection
+
+@section('content')
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- Información de la empresa -->
+            <div class="card card-outline card-info">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-building"></i> Empresa: {{ $empresa->nombre }}
+                    </h3>
+                    <div class="card-tools">
+                        <a href="{{ route('configuracion-envio.index') }}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-plus"></i> Nueva Configuración
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="info-box bg-success">
+                                <span class="info-box-icon"><i class="fas fa-check"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Configuraciones Activas</span>
+                                    <span class="info-box-number">{{ $configuraciones->where('activo', true)->count() }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="info-box bg-warning">
+                                <span class="info-box-icon"><i class="fas fa-pause"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Configuraciones Inactivas</span>
+                                    <span class="info-box-number">{{ $configuraciones->where('activo', false)->count() }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="info-box bg-info">
+                                <span class="info-box-icon"><i class="fas fa-envelope"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Total Configuraciones</span>
+                                    <span class="info-box-number">{{ $configuraciones->count() }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="info-box bg-primary">
+                                <span class="info-box-icon"><i class="fas fa-clock"></i></span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Última Actualización</span>
+                                    <span class="info-box-number">{{ $configuraciones->max('updated_at') ? $configuraciones->max('updated_at')->format('d/m/Y') : 'N/A' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @if($configuraciones->isNotEmpty())
+                <!-- Lista de configuraciones -->
+                <div class="card card-outline card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-list"></i> Configuraciones de Envío
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Encuesta</th>
+                                        <th>Remitente</th>
+                                        <th>Correo</th>
+                                        <th>Asunto</th>
+                                        <th>Tipo de Envío</th>
+                                        <th>Estado</th>
+                                        <th>Última Actualización</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($configuraciones as $configuracion)
+                                        <tr>
+                                            <td>
+                                                <strong>{{ $configuracion->encuesta->titulo }}</strong>
+                                                <br>
+                                                <small class="text-muted">{{ $configuracion->encuesta->estado }}</small>
+                                            </td>
+                                            <td>{{ $configuracion->nombre_remitente }}</td>
+                                            <td>
+                                                <a href="mailto:{{ $configuracion->correo_remitente }}">
+                                                    {{ $configuracion->correo_remitente }}
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <span title="{{ $configuracion->asunto }}">
+                                                    {{ Str::limit($configuracion->asunto, 50) }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-{{ $configuracion->tipo_envio === 'automatico' ? 'success' : ($configuracion->tipo_envio === 'manual' ? 'info' : 'warning') }}">
+                                                    {{ ucfirst($configuracion->tipo_envio) }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-{{ $configuracion->activo ? 'success' : 'danger' }}">
+                                                    {{ $configuracion->activo ? 'Activo' : 'Inactivo' }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <small>{{ $configuracion->updated_at->format('d/m/Y H:i') }}</small>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <button type="button" class="btn btn-sm btn-info"
+                                                            onclick="verDetalles({{ $configuracion->id }})"
+                                                            title="Ver detalles">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-warning"
+                                                            onclick="editarConfiguracion({{ $configuracion->id }})"
+                                                            title="Editar">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-{{ $configuracion->activo ? 'danger' : 'success' }}"
+                                                            onclick="toggleEstado({{ $configuracion->id }}, {{ $configuracion->activo ? 'false' : 'true' }})"
+                                                            title="{{ $configuracion->activo ? 'Desactivar' : 'Activar' }}">
+                                                        <i class="fas fa-{{ $configuracion->activo ? 'pause' : 'play' }}"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            @else
+                <!-- Sin configuraciones -->
+                <div class="card card-outline card-warning">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-exclamation-triangle"></i> Sin Configuraciones
+                        </h3>
+                    </div>
+                    <div class="card-body text-center">
+                        <i class="fas fa-envelope-open-text fa-3x text-muted mb-3"></i>
+                        <h4>No hay configuraciones de envío</h4>
+                        <p class="text-muted">
+                            No se han encontrado configuraciones de envío de correos para esta empresa.
+                        </p>
+                        <a href="{{ route('configuracion-envio.index') }}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Crear Primera Configuración
+                        </a>
+                    </div>
+                </div>
+            @endif
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Detalles -->
+<div class="modal fade" id="detallesModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-eye"></i> Detalles de la Configuración
+                </h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="detalles-content">
+                <!-- El contenido se cargará dinámicamente -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Edición -->
+<div class="modal fade" id="editarModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-edit"></i> Editar Configuración
+                </h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="editar-content">
+                <!-- El formulario se cargará dinámicamente -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btn-guardar-edicion">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.info-box {
+    margin-bottom: 20px;
+}
+
+.table th {
+    background-color: #f8f9fa;
+    border-color: #dee2e6;
+}
+
+.btn-group .btn {
+    margin-right: 2px;
+}
+
+.modal-lg {
+    max-width: 800px;
+}
+
+.detalles-item {
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+}
+
+.detalles-item strong {
+    color: #495057;
+}
+
+.cuerpo-mensaje {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 15px;
+    white-space: pre-wrap;
+    font-family: inherit;
+    max-height: 200px;
+    overflow-y: auto;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Funciones globales
+    window.verDetalles = function(configuracionId) {
+        fetch(`{{ route('configuracion-envio.get-configuracion') }}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                encuesta_id: configuracionId,
+                empresa_id: {{ $empresa->id }}
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.data) {
+                mostrarDetalles(data.data);
+            } else {
+                showError('No se pudo cargar los detalles');
+            }
+        })
+        .catch(error => {
+            showError('Error de conexión: ' + error.message);
+        });
+    };
+
+    window.editarConfiguracion = function(configuracionId) {
+        // Implementar edición
+        showInfo('Función de edición en desarrollo');
+    };
+
+    window.toggleEstado = function(configuracionId, nuevoEstado) {
+        const accion = nuevoEstado ? 'activar' : 'desactivar';
+
+        if (confirm(`¿Está seguro de que desea ${accion} esta configuración?`)) {
+            // Implementar cambio de estado
+            showInfo('Función de cambio de estado en desarrollo');
+        }
+    };
+
+    function mostrarDetalles(configuracion) {
+        const content = document.getElementById('detalles-content');
+        content.innerHTML = `
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="detalles-item">
+                        <strong>Encuesta:</strong><br>
+                        ${configuracion.encuesta ? configuracion.encuesta.titulo : 'N/A'}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="detalles-item">
+                        <strong>Estado:</strong><br>
+                        <span class="badge badge-${configuracion.activo ? 'success' : 'danger'}">
+                            ${configuracion.activo ? 'Activo' : 'Inactivo'}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="detalles-item">
+                        <strong>Nombre del Remitente:</strong><br>
+                        ${configuracion.nombre_remitente}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="detalles-item">
+                        <strong>Correo del Remitente:</strong><br>
+                        <a href="mailto:${configuracion.correo_remitente}">${configuracion.correo_remitente}</a>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="detalles-item">
+                        <strong>Asunto:</strong><br>
+                        ${configuracion.asunto}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="detalles-item">
+                        <strong>Tipo de Envío:</strong><br>
+                        <span class="badge badge-${configuracion.tipo_envio === 'automatico' ? 'success' : (configuracion.tipo_envio === 'manual' ? 'info' : 'warning')}">
+                            ${configuracion.tipo_envio.charAt(0).toUpperCase() + configuracion.tipo_envio.slice(1)}
+                        </span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="detalles-item">
+                        <strong>Plantilla:</strong><br>
+                        ${configuracion.plantilla || 'Sin plantilla'}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="detalles-item">
+                        <strong>Cuerpo del Mensaje:</strong><br>
+                        <div class="cuerpo-mensaje">${configuracion.cuerpo_mensaje}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="detalles-item">
+                        <strong>Creado:</strong><br>
+                        ${new Date(configuracion.created_at).toLocaleString()}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="detalles-item">
+                        <strong>Última Actualización:</strong><br>
+                        ${new Date(configuracion.updated_at).toLocaleString()}
+                    </div>
+                </div>
+            </div>
+        `;
+
+        $('#detallesModal').modal('show');
+    };
+
+    function showSuccess(message) {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Éxito!',
+                text: message,
+                timer: 3000
+            });
+        } else {
+            alert('Éxito: ' + message);
+        }
+    }
+
+    function showError(message) {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: message
+            });
+        } else {
+            alert('Error: ' + message);
+        }
+    }
+
+    function showInfo(message) {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'info',
+                title: 'Información',
+                text: message
+            });
+        } else {
+            alert('Info: ' + message);
+        }
+    }
+});
+</script>
+@endsection
