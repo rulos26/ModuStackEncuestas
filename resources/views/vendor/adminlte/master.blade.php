@@ -252,6 +252,239 @@
             background-color: #495057 !important;
             opacity: 0.65 !important;
         }
+
+        /* ====== CARDS ARMÓNICAS ====== */
+
+        /* Cards básicas - Fondo suave */
+        .card {
+            background-color: #f8f9fa !important;
+            border: 1px solid #dee2e6 !important;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+        }
+
+        /* Modo oscuro para cards */
+        body.dark-mode .card {
+            background-color: #343a40 !important;
+            border-color: #495057 !important;
+            color: #fff !important;
+        }
+
+        /* Card headers */
+        .card-header {
+            background-color: #e9ecef !important;
+            border-bottom: 1px solid #dee2e6 !important;
+            color: #495057 !important;
+        }
+
+        body.dark-mode .card-header {
+            background-color: #495057 !important;
+            border-bottom-color: #6c757d !important;
+            color: #fff !important;
+        }
+
+        /* Card body */
+        .card-body {
+            color: #212529 !important;
+        }
+
+        body.dark-mode .card-body {
+            color: #fff !important;
+        }
+
+        /* Card titles */
+        .card-title {
+            color: #495057 !important;
+        }
+
+        body.dark-mode .card-title {
+            color: #fff !important;
+        }
+
+        /* Cards con colores específicos */
+        .card.bg-primary {
+            background-color: #007bff !important;
+            color: #fff !important;
+        }
+
+        .card.bg-success {
+            background-color: #28a745 !important;
+            color: #fff !important;
+        }
+
+        .card.bg-info {
+            background-color: #17a2b8 !important;
+            color: #fff !important;
+        }
+
+        .card.bg-warning {
+            background-color: #ffc107 !important;
+            color: #212529 !important;
+        }
+
+        .card.bg-danger {
+            background-color: #dc3545 !important;
+            color: #fff !important;
+        }
+
+        .card.bg-secondary {
+            background-color: #6c757d !important;
+            color: #fff !important;
+        }
+
+        .card.bg-dark {
+            background-color: #343a40 !important;
+            color: #fff !important;
+        }
+
+        /* Cards con gradientes */
+        .card.bg-gradient-primary {
+            background: linear-gradient(45deg, #007bff, #0056b3) !important;
+            color: #fff !important;
+        }
+
+        .card.bg-gradient-success {
+            background: linear-gradient(45deg, #28a745, #1e7e34) !important;
+            color: #fff !important;
+        }
+
+        .card.bg-gradient-info {
+            background: linear-gradient(45deg, #17a2b8, #117a8b) !important;
+            color: #fff !important;
+        }
+
+        /* Texto en cards */
+        .card .text-white {
+            color: #fff !important;
+        }
+
+        .card .text-dark {
+            color: #212529 !important;
+        }
+
+        /* Botones en cards */
+        .card .btn {
+            border-radius: 0.25rem !important;
+            font-weight: 500 !important;
+        }
+
+        /* Formularios dentro de cards */
+        .card .form-control {
+            border-color: #ced4da !important;
+        }
+
+        body.dark-mode .card .form-control {
+            background-color: #495057 !important;
+            border-color: #6c757d !important;
+            color: #fff !important;
+        }
+
+        /* Tablas en cards */
+        .card .table {
+            color: inherit !important;
+        }
+
+        .card .table th {
+            border-top-color: #dee2e6 !important;
+            color: inherit !important;
+        }
+
+        .card .table td {
+            border-top-color: #dee2e6 !important;
+            color: inherit !important;
+        }
+
+        body.dark-mode .card .table th,
+        body.dark-mode .card .table td {
+            border-top-color: #495057 !important;
+        }
+
+        /* Alertas en cards */
+        .card .alert {
+            border: 1px solid transparent !important;
+            border-radius: 0.25rem !important;
+        }
+
+        /* Listas en cards */
+        .card ul,
+        .card ol {
+            color: inherit !important;
+        }
+
+        /* Enlaces en cards */
+        .card a {
+            color: #007bff !important;
+        }
+
+        body.dark-mode .card a {
+            color: #66b0ff !important;
+        }
+
+        .card a:hover {
+            color: #0056b3 !important;
+        }
+
+        body.dark-mode .card a:hover {
+            color: #99ccff !important;
+        }
+
+        /* Badges en cards */
+        .card .badge {
+            font-size: 0.75em !important;
+            font-weight: 600 !important;
+        }
+
+        /* Progress bars en cards */
+        .card .progress {
+            background-color: #e9ecef !important;
+        }
+
+        body.dark-mode .card .progress {
+            background-color: #495057 !important;
+        }
+
+        /* Modales y popovers en cards */
+        .card .modal-content {
+            background-color: #fff !important;
+            color: #212529 !important;
+        }
+
+        body.dark-mode .card .modal-content {
+            background-color: #343a40 !important;
+            color: #fff !important;
+        }
+
+        /* Tooltips en cards */
+        .card .tooltip-inner {
+            background-color: #000 !important;
+            color: #fff !important;
+        }
+
+        /* Dropdowns en cards */
+        .card .dropdown-menu {
+            background-color: #fff !important;
+            border-color: #dee2e6 !important;
+        }
+
+        body.dark-mode .card .dropdown-menu {
+            background-color: #343a40 !important;
+            border-color: #495057 !important;
+        }
+
+        .card .dropdown-item {
+            color: #212529 !important;
+        }
+
+        body.dark-mode .card .dropdown-item {
+            color: #fff !important;
+        }
+
+        .card .dropdown-item:hover {
+            background-color: #f8f9fa !important;
+        }
+
+        body.dark-mode .card .dropdown-item:hover {
+            background-color: #495057 !important;
+        }
     </style>
 
     {{--
