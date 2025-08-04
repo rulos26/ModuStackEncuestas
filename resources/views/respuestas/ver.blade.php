@@ -2,10 +2,6 @@
 
 @section('title', 'Análisis de Respuestas - ' . $encuesta->titulo)
 
-@section('css')
-<link rel="stylesheet" href="{{ asset('css/charts.css') }}">
-@endsection
-
 @section('content_header')
     <h1>
         <i class="fas fa-chart-bar"></i> Análisis de Respuestas
@@ -83,7 +79,7 @@
                                                 Pregunta {{ $index + 1 }}: {{ $analisisItem->pregunta->texto }}
                                             </h3>
                                             <div class="card-tools">
-                                                <span class="badge badge-{{ $analisisItem->tipo_grafico === 'pastel' ? 'success' : ($analisisItem->tipo_grafico === 'barras' ? 'primary' : 'info') }}">
+                                                <span class="badge badge-{{ $analisisItem->tipo_grafico === 'pastel' ? 'success' : ($analisisItem->tipo_grafico === 'lineas' ? 'info' : 'primary') }}">
                                                     <i class="fas fa-{{ $analisisItem->tipo_grafico === 'pastel' ? 'chart-pie' : ($analisisItem->tipo_grafico === 'lineas' ? 'chart-line' : 'chart-bar') }}"></i>
                                                     {{ ucfirst($analisisItem->tipo_grafico) }}
                                                 </span>
@@ -347,6 +343,12 @@ body.dark-mode canvas {
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 Iniciando renderizado de gráficas...');
 
+    // Verificar que Chart.js esté disponible
+    if (typeof Chart === 'undefined') {
+        console.error('❌ Chart.js no está disponible');
+        return;
+    }
+
     // Función para mostrar estado de carga
     function showLoading(canvasId) {
         const container = document.getElementById(canvasId).parentElement;
@@ -365,42 +367,13 @@ document.addEventListener('DOMContentLoaded', function() {
         container.innerHTML = '<div class="chart-empty">No hay datos para mostrar</div>';
     }
 
-    // Procesar cada análisis
-    @foreach($analisis as $analisisItem)
-        console.log('📊 Procesando gráfica para análisis ID: {{ $analisisItem->id }}');
-
-        const canvasId = 'chart-{{ $analisisItem->id }}';
-        const canvas = document.getElementById(canvasId);
-
-        if (!canvas) {
-            console.error('❌ No se encontró el canvas:', canvasId);
-        } else {
-            // Verificar que el canvas esté visible
-            const rect = canvas.getBoundingClientRect();
-            if (rect.width === 0 || rect.height === 0) {
-                console.warn('⚠️ Canvas no visible, esperando...');
-                setTimeout(() => {
-                    renderChart(canvasId, {{ $analisisItem->id }});
-                }, 1000);
-            } else {
-                renderChart(canvasId, {{ $analisisItem->id }});
-            }
-        }
-    @endforeach
-
+    // Función para renderizar gráfica
     function renderChart(canvasId, analisisId) {
         console.log('🎨 Iniciando renderizado para:', canvasId, 'Análisis ID:', analisisId);
 
         const canvas = document.getElementById(canvasId);
         if (!canvas) {
             console.error('❌ Canvas no encontrado:', canvasId);
-            return;
-        }
-
-        // Verificar que Chart.js esté disponible
-        if (typeof Chart === 'undefined') {
-            console.error('❌ Chart.js no está disponible');
-            showError(canvasId, 'Chart.js no está disponible');
             return;
         }
 
@@ -556,6 +529,29 @@ document.addEventListener('DOMContentLoaded', function() {
             showError(canvasId, `Error: ${error.message}`);
         }
     }
+
+    // Procesar cada análisis
+    @foreach($analisis as $analisisItem)
+        console.log('📊 Procesando gráfica para análisis ID: {{ $analisisItem->id }}');
+
+        const currentCanvasId = 'chart-{{ $analisisItem->id }}';
+        const canvas = document.getElementById(currentCanvasId);
+
+        if (!canvas) {
+            console.error('❌ No se encontró el canvas:', currentCanvasId);
+        } else {
+            // Verificar que el canvas esté visible
+            const rect = canvas.getBoundingClientRect();
+            if (rect.width === 0 || rect.height === 0) {
+                console.warn('⚠️ Canvas no visible, esperando...');
+                setTimeout(() => {
+                    renderChart(currentCanvasId, {{ $analisisItem->id }});
+                }, 1000);
+            } else {
+                renderChart(currentCanvasId, {{ $analisisItem->id }});
+            }
+        }
+    @endforeach
 
     console.log('🎉 Renderizado de gráficas completado');
 
