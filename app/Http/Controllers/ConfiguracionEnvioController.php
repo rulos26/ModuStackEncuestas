@@ -18,7 +18,7 @@ class ConfiguracionEnvioController extends Controller
      */
     public function index()
     {
-        $empresas = Empresa::orderBy('nombre')->get();
+        $empresas = DB::table('empresas_clientes')->orderBy('nombre', 'asc')->get();
 
         return view('configuracion_envio.index', compact('empresas'));
     }
@@ -39,7 +39,7 @@ class ConfiguracionEnvioController extends Controller
             }
 
             // Verificar que la empresa existe
-            $empresa = Empresa::find($empresaId);
+            $empresa = DB::table('empresas_clientes')->where('id', $empresaId)->first();
             if (!$empresa) {
                 return response()->json([
                     'success' => false,

@@ -111,8 +111,8 @@ class ProbarMigracionConfiguracionEnvio extends Command
                     $empresas = 0;
                     $encuestas = 0;
 
-                    if (Schema::hasTable('empresas')) {
-                        $empresas = DB::table('empresas')->count();
+                    if (Schema::hasTable('empresas_clientes')) {
+                        $empresas = DB::table('empresas_clientes')->count();
                     }
 
                     if (Schema::hasTable('encuestas')) {
@@ -124,7 +124,7 @@ class ProbarMigracionConfiguracionEnvio extends Command
 
                     if ($empresas > 0 && $encuestas > 0) {
                         // Obtener primera empresa y encuesta
-                        $empresa = DB::table('empresas')->first();
+                        $empresa = DB::table('empresas_clientes')->first();
                         $encuesta = DB::table('encuestas')->first();
 
                         if ($empresa && $encuesta) {

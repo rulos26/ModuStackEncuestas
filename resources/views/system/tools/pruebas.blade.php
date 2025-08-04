@@ -78,6 +78,9 @@
                         <option value="probar_migracion_simple" {{ $tipo === 'probar_migracion_simple' ? 'selected' : '' }}>
                             🧪 Probar Migración Simple
                         </option>
+                        <option value="verificar_tabla_empresas" {{ $tipo === 'verificar_tabla_empresas' ? 'selected' : '' }}>
+                            🔍 Verificar Tabla Empresas
+                        </option>
                         <option value="corregir_user_id" {{ $tipo === 'corregir_user_id' ? 'selected' : '' }}>
                             Corregir User ID de Encuesta
                         </option>

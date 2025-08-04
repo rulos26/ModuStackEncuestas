@@ -40,7 +40,7 @@ class ConfiguracionEnvio extends Model
      */
     public function empresa(): BelongsTo
     {
-        return $this->belongsTo(Empresa::class);
+        return $this->belongsTo(Empresa::class, 'empresa_id');
     }
 
     /**

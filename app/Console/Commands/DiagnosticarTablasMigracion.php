@@ -16,21 +16,21 @@ class DiagnosticarTablasMigracion extends Command
         $this->info('🔍 DIAGNÓSTICO DE TABLAS PARA MIGRACIÓN');
         $this->info('========================================');
 
-        // Verificar tabla empresas
-        $this->info('📋 Verificando tabla empresas...');
-        if (Schema::hasTable('empresas')) {
-            $this->info('✅ Tabla empresas existe');
+        // Verificar tabla empresas_clientes
+        $this->info('📋 Verificando tabla empresas_clientes...');
+        if (Schema::hasTable('empresas_clientes')) {
+            $this->info('✅ Tabla empresas_clientes existe');
 
-            // Verificar columnas de empresas
-            $columnasEmpresas = Schema::getColumnListing('empresas');
-            $this->table(['Columnas de empresas'], array_map(function($col) { return [$col]; }, $columnasEmpresas));
+            // Verificar columnas de empresas_clientes
+            $columnasEmpresas = Schema::getColumnListing('empresas_clientes');
+            $this->table(['Columnas de empresas_clientes'], array_map(function($col) { return [$col]; }, $columnasEmpresas));
 
             // Verificar si tiene columna id
             if (in_array('id', $columnasEmpresas)) {
-                $this->info('✅ Columna id existe en empresas');
+                $this->info('✅ Columna id existe en empresas_clientes');
 
                 // Verificar tipo de datos de id
-                $tipoId = DB::select("SHOW COLUMNS FROM empresas WHERE Field = 'id'")[0];
+                $tipoId = DB::select("SHOW COLUMNS FROM empresas_clientes WHERE Field = 'id'")[0];
                 $this->info("📊 Tipo de datos de id: {$tipoId->Type}");
 
                 // Verificar si es primary key
@@ -40,15 +40,29 @@ class DiagnosticarTablasMigracion extends Command
                     $this->warn('⚠️  Columna id NO es Primary Key');
                 }
             } else {
-                $this->error('❌ Columna id NO existe en empresas');
+                $this->error('❌ Columna id NO existe en empresas_clientes');
+            }
+
+            // Verificar columna nombre
+            if (in_array('nombre', $columnasEmpresas)) {
+                $this->info('✅ Columna nombre existe en empresas_clientes');
+            } else {
+                $this->warn('⚠️  Columna nombre NO existe en empresas_clientes');
+                // Buscar columnas similares
+                $columnasSimilares = array_filter($columnasEmpresas, function($col) {
+                    return strpos($col, 'nom') !== false || strpos($col, 'name') !== false;
+                });
+                if (!empty($columnasSimilares)) {
+                    $this->info('💡 Columnas similares encontradas: ' . implode(', ', $columnasSimilares));
+                }
             }
 
             // Contar registros
-            $registrosEmpresas = DB::table('empresas')->count();
-            $this->info("📊 Registros en empresas: {$registrosEmpresas}");
+            $registrosEmpresas = DB::table('empresas_clientes')->count();
+            $this->info("📊 Registros en empresas_clientes: {$registrosEmpresas}");
 
         } else {
-            $this->error('❌ Tabla empresas NO existe');
+            $this->error('❌ Tabla empresas_clientes NO existe');
         }
 
         $this->info('');
@@ -155,15 +169,15 @@ class DiagnosticarTablasMigracion extends Command
         // Recomendaciones
         $this->info('💡 RECOMENDACIONES:');
 
-        if (!Schema::hasTable('empresas')) {
-            $this->error('❌ Crear tabla empresas primero');
+        if (!Schema::hasTable('empresas_clientes')) {
+            $this->error('❌ Crear tabla empresas_clientes primero');
         }
 
         if (!Schema::hasTable('encuestas')) {
             $this->error('❌ Crear tabla encuestas primero');
         }
 
-        if (Schema::hasTable('empresas') && Schema::hasTable('encuestas')) {
+        if (Schema::hasTable('empresas_clientes') && Schema::hasTable('encuestas')) {
             $this->info('✅ Las tablas necesarias existen');
             $this->info('✅ Puedes ejecutar la migración de configuracion_envios');
         }
