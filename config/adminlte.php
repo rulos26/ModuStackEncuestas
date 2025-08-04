@@ -566,6 +566,11 @@ return [
                     'icon' => 'fas fa-list',
                 ],
                 [
+                    'text' => 'Carga Masiva',
+                    'route' => 'carga-masiva.index',
+                    'icon' => 'fas fa-upload',
+                ],
+                [
                     'text' => 'Análisis de Respuestas',
                     'route' => 'respuestas.index',
                     'icon' => 'fas fa-chart-bar',
