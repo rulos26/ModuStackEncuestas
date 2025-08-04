@@ -542,7 +542,198 @@
         body.dark-mode .card .dropdown-item:hover {
             background-color: #495057 !important;
         }
+
+        /* ====== CHART.JS GLOBAL CONFIGURATION ====== */
+
+        /* Configuración para contenedores de gráficas */
+        .chart-container {
+            background: #ffffff !important;
+            border: 1px solid #dee2e6 !important;
+            border-radius: 8px !important;
+            padding: 20px !important;
+            margin-bottom: 20px !important;
+            position: relative !important;
+            min-height: 400px !important;
+        }
+
+        body.dark-mode .chart-container {
+            background: #343a40 !important;
+            border-color: #495057 !important;
+        }
+
+        /* Estados de carga y error para gráficas */
+        .chart-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 400px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            color: #6c757d;
+            font-size: 16px;
+        }
+
+        body.dark-mode .chart-loading {
+            background: #495057;
+            color: #adb5bd;
+        }
+
+        .chart-error {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 400px;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 8px;
+            color: #721c24;
+            font-size: 16px;
+            text-align: center;
+            padding: 20px;
+        }
+
+        body.dark-mode .chart-error {
+            background: #2d1b1b;
+            border-color: #721c24;
+            color: #f8d7da;
+        }
+
+        .chart-empty {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 400px;
+            background: #e2e3e5;
+            border: 1px solid #d6d8db;
+            border-radius: 8px;
+            color: #6c757d;
+            font-size: 16px;
+        }
+
+        body.dark-mode .chart-empty {
+            background: #495057;
+            border-color: #6c757d;
+            color: #adb5bd;
+        }
     </style>
+
+    <!-- ====== CHART.JS GLOBAL CONFIGURATION SCRIPT ====== -->
+    <script>
+        // Configuración global de Chart.js para modo claro y oscuro
+        document.addEventListener('DOMContentLoaded', function() {
+            // Detectar modo oscuro
+            function isDarkMode() {
+                return document.body.classList.contains('dark-mode') ||
+                       window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            }
+
+            // Configuración de colores para modo claro
+            const lightModeColors = {
+                text: '#495057',
+                grid: 'rgba(0,0,0,0.1)',
+                background: '#ffffff',
+                border: '#dee2e6',
+                tooltip: {
+                    background: 'rgba(0, 0, 0, 0.8)',
+                    title: '#ffffff',
+                    body: '#ffffff',
+                    border: '#ffffff'
+                }
+            };
+
+            // Configuración de colores para modo oscuro
+            const darkModeColors = {
+                text: '#ffffff',
+                grid: 'rgba(255,255,255,0.1)',
+                background: '#343a40',
+                border: '#495057',
+                tooltip: {
+                    background: 'rgba(255, 255, 255, 0.9)',
+                    title: '#000000',
+                    body: '#000000',
+                    border: '#000000'
+                }
+            };
+
+            // Función para obtener colores actuales
+            function getCurrentColors() {
+                return isDarkMode() ? darkModeColors : lightModeColors;
+            }
+
+            // Configurar Chart.js globalmente
+            if (typeof Chart !== 'undefined') {
+                const colors = getCurrentColors();
+
+                // Configuración global de Chart.js
+                Chart.defaults.color = colors.text;
+                Chart.defaults.borderColor = colors.border;
+
+                // Configuración de plugins
+                Chart.defaults.plugins.legend.labels.color = colors.text;
+                Chart.defaults.plugins.title.color = colors.text;
+                Chart.defaults.plugins.tooltip.backgroundColor = colors.tooltip.background;
+                Chart.defaults.plugins.tooltip.titleColor = colors.tooltip.title;
+                Chart.defaults.plugins.tooltip.bodyColor = colors.tooltip.body;
+                Chart.defaults.plugins.tooltip.borderColor = colors.tooltip.border;
+
+                // Configuración de escalas
+                Chart.defaults.scales.linear.grid.color = colors.grid;
+                Chart.defaults.scales.linear.ticks.color = colors.text;
+                Chart.defaults.scales.category.grid.color = colors.grid;
+                Chart.defaults.scales.category.ticks.color = colors.text;
+
+                console.log('🎨 Chart.js configurado para modo:', isDarkMode() ? 'oscuro' : 'claro');
+            }
+
+            // Función para actualizar configuración cuando cambie el modo
+            function updateChartColors() {
+                const colors = getCurrentColors();
+
+                if (typeof Chart !== 'undefined') {
+                    Chart.defaults.color = colors.text;
+                    Chart.defaults.borderColor = colors.border;
+                    Chart.defaults.plugins.legend.labels.color = colors.text;
+                    Chart.defaults.plugins.title.color = colors.text;
+                    Chart.defaults.plugins.tooltip.backgroundColor = colors.tooltip.background;
+                    Chart.defaults.plugins.tooltip.titleColor = colors.tooltip.title;
+                    Chart.defaults.plugins.tooltip.bodyColor = colors.tooltip.body;
+                    Chart.defaults.plugins.tooltip.borderColor = colors.tooltip.border;
+                    Chart.defaults.scales.linear.grid.color = colors.grid;
+                    Chart.defaults.scales.linear.ticks.color = colors.text;
+                    Chart.defaults.scales.category.grid.color = colors.grid;
+                    Chart.defaults.scales.category.ticks.color = colors.text;
+                }
+
+                // Actualizar gráficas existentes
+                if (window.charts) {
+                    Object.values(window.charts).forEach(chart => {
+                        if (chart && typeof chart.update === 'function') {
+                            chart.update('none'); // Actualizar sin animación
+                        }
+                    });
+                }
+            }
+
+            // Observar cambios en el modo oscuro
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                        updateChartColors();
+                    }
+                });
+            });
+
+            observer.observe(document.body, {
+                attributes: true,
+                attributeFilter: ['class']
+            });
+
+            // También escuchar cambios en preferencias del sistema
+            if (window.matchMedia) {
+                window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateChartColors);
+            }
+        });
+    </script>
 
     {{--
         INTEGRACIÓN CON MÓDULO DE CONFIGURACIÓN DE IMÁGENES:

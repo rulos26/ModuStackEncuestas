@@ -219,74 +219,124 @@
 </div>
 
 <style>
+/* Configuración específica para gráficas en esta vista */
 .chart-container {
-    background: #ffffff;
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 20px;
-    position: relative;
-    height: 400px;
-    min-height: 400px;
+    background: #ffffff !important;
+    border: 1px solid #dee2e6 !important;
+    border-radius: 8px !important;
+    padding: 20px !important;
+    margin-bottom: 20px !important;
+    position: relative !important;
+    height: 400px !important;
+    min-height: 400px !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+}
+
+body.dark-mode .chart-container {
+    background: #343a40 !important;
+    border-color: #495057 !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
 }
 
 .chart-container canvas {
     width: 100% !important;
     height: 100% !important;
-}
-
-.analysis-info {
-    padding: 15px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    border: 1px solid #dee2e6;
-}
-
-.analysis-info h5, .analysis-info h6 {
-    color: #495057;
-    margin-bottom: 10px;
-}
-
-.card-tools .badge {
-    font-size: 0.8rem;
+    border-radius: 4px !important;
 }
 
 /* Asegurar que los contenedores de gráficas tengan dimensiones */
 .chart-wrapper {
-    position: relative;
-    height: 400px;
-    width: 100%;
+    position: relative !important;
+    height: 400px !important;
+    width: 100% !important;
+    background: transparent !important;
 }
 
-/* Estilos para diferentes tipos de gráficas */
-.chart-container.bar-chart {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+/* Estados de carga y error específicos */
+.chart-loading {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 400px !important;
+    background: #f8f9fa !important;
+    border-radius: 8px !important;
+    color: #6c757d !important;
+    font-size: 16px !important;
+    border: 2px dashed #dee2e6 !important;
 }
 
-.chart-container.pie-chart {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+body.dark-mode .chart-loading {
+    background: #495057 !important;
+    color: #adb5bd !important;
+    border-color: #6c757d !important;
 }
 
-.chart-container.line-chart {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+.chart-error {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 400px !important;
+    background: #f8d7da !important;
+    border: 1px solid #f5c6cb !important;
+    border-radius: 8px !important;
+    color: #721c24 !important;
+    font-size: 16px !important;
+    text-align: center !important;
+    padding: 20px !important;
+}
+
+body.dark-mode .chart-error {
+    background: #2d1b1b !important;
+    border-color: #721c24 !important;
+    color: #f8d7da !important;
+}
+
+.chart-empty {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 400px !important;
+    background: #e2e3e5 !important;
+    border: 1px solid #d6d8db !important;
+    border-radius: 8px !important;
+    color: #6c757d !important;
+    font-size: 16px !important;
+}
+
+body.dark-mode .chart-empty {
+    background: #495057 !important;
+    border-color: #6c757d !important;
+    color: #adb5bd !important;
 }
 
 /* Debug styles */
 .chart-debug {
-    border: 2px solid red;
-    background: rgba(255, 0, 0, 0.1);
+    border: 2px solid red !important;
+    background: rgba(255, 0, 0, 0.1) !important;
 }
 
 .chart-debug::before {
-    content: "DEBUG: Chart Container";
-    position: absolute;
-    top: 5px;
-    left: 5px;
-    background: red;
-    color: white;
-    padding: 2px 5px;
-    font-size: 10px;
-    z-index: 1000;
+    content: "DEBUG: Chart Container" !important;
+    position: absolute !important;
+    top: 5px !important;
+    left: 5px !important;
+    background: red !important;
+    color: white !important;
+    padding: 2px 5px !important;
+    font-size: 10px !important;
+    z-index: 1000 !important;
+}
+
+/* Asegurar que las gráficas sean visibles */
+canvas {
+    display: block !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+}
+
+/* Forzar visibilidad en modo oscuro */
+body.dark-mode canvas {
+    filter: brightness(1.2) contrast(1.1) !important;
 }
 </style>
 
@@ -340,9 +390,18 @@ document.addEventListener('DOMContentLoaded', function() {
     @endforeach
 
     function renderChart(canvasId, analisisId) {
+        console.log('🎨 Iniciando renderizado para:', canvasId, 'Análisis ID:', analisisId);
+
         const canvas = document.getElementById(canvasId);
         if (!canvas) {
             console.error('❌ Canvas no encontrado:', canvasId);
+            return;
+        }
+
+        // Verificar que Chart.js esté disponible
+        if (typeof Chart === 'undefined') {
+            console.error('❌ Chart.js no está disponible');
+            showError(canvasId, 'Chart.js no está disponible');
             return;
         }
 
@@ -351,6 +410,12 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('❌ No se pudo obtener el contexto 2D');
             showError(canvasId, 'Error al obtener contexto 2D');
             return;
+        }
+
+        // Asegurar que el canvas tenga dimensiones
+        if (canvas.width === 0 || canvas.height === 0) {
+            canvas.width = canvas.offsetWidth || 400;
+            canvas.height = canvas.offsetHeight || 400;
         }
 
         // Obtener datos del análisis
@@ -381,7 +446,32 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // Configuración mejorada
+        // Configuración mejorada con colores dinámicos
+        const isDarkMode = document.body.classList.contains('dark-mode') ||
+                          (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+        const chartColors = isDarkMode ? {
+            text: '#ffffff',
+            grid: 'rgba(255,255,255,0.1)',
+            background: '#343a40',
+            tooltip: {
+                background: 'rgba(255, 255, 255, 0.9)',
+                title: '#000000',
+                body: '#000000',
+                border: '#000000'
+            }
+        } : {
+            text: '#495057',
+            grid: 'rgba(0,0,0,0.1)',
+            background: '#ffffff',
+            tooltip: {
+                background: 'rgba(0, 0, 0, 0.8)',
+                title: '#ffffff',
+                body: '#ffffff',
+                border: '#ffffff'
+            }
+        };
+
         const chartConfig = {
             type: config?.type || 'bar',
             data: data,
@@ -392,7 +482,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     legend: {
                         position: 'bottom',
                         labels: {
-                            color: '#495057',
+                            color: chartColors.text,
                             font: { size: 12 },
                             usePointStyle: true
                         }
@@ -400,26 +490,26 @@ document.addEventListener('DOMContentLoaded', function() {
                     title: {
                         display: true,
                         text: '{{ $analisisItem->pregunta->texto }}',
-                        color: '#495057',
+                        color: chartColors.text,
                         font: { size: 16, weight: 'bold' }
                     },
                     tooltip: {
-                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                        titleColor: '#ffffff',
-                        bodyColor: '#ffffff',
-                        borderColor: '#ffffff',
+                        backgroundColor: chartColors.tooltip.background,
+                        titleColor: chartColors.tooltip.title,
+                        bodyColor: chartColors.tooltip.body,
+                        borderColor: chartColors.tooltip.border,
                         borderWidth: 1
                     }
                 },
                 scales: {
                     y: {
                         beginAtZero: true,
-                        grid: { color: 'rgba(0,0,0,0.1)' },
-                        ticks: { color: '#495057' }
+                        grid: { color: chartColors.grid },
+                        ticks: { color: chartColors.text }
                     },
                     x: {
-                        grid: { color: 'rgba(0,0,0,0.1)' },
-                        ticks: { color: '#495057' }
+                        grid: { color: chartColors.grid },
+                        ticks: { color: chartColors.text }
                     }
                 },
                 elements: {
@@ -469,6 +559,50 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     console.log('🎉 Renderizado de gráficas completado');
+
+    // Función para forzar actualización de gráficas
+    function forceChartUpdate() {
+        if (window.charts) {
+            Object.values(window.charts).forEach(chart => {
+                if (chart && typeof chart.update === 'function') {
+                    chart.update('none');
+                }
+            });
+        }
+    }
+
+    // Actualizar gráficas cuando cambie el modo oscuro
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                setTimeout(forceChartUpdate, 100);
+            }
+        });
+    });
+
+    observer.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class']
+    });
+
+    // También actualizar cuando cambie el tamaño de la ventana
+    window.addEventListener('resize', function() {
+        setTimeout(forceChartUpdate, 100);
+    });
+
+    // Verificar que las gráficas se rendericen correctamente después de un tiempo
+    setTimeout(function() {
+        console.log('🔍 Verificando estado final de gráficas...');
+        if (window.charts) {
+            Object.keys(window.charts).forEach(canvasId => {
+                const chart = window.charts[canvasId];
+                if (chart && chart.canvas) {
+                    const rect = chart.canvas.getBoundingClientRect();
+                    console.log(`📊 Gráfica ${canvasId}: ${rect.width}x${rect.height}`);
+                }
+            });
+        }
+    }, 2000);
 });
 </script>
 @endsection
