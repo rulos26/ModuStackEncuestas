@@ -218,7 +218,7 @@ Saludos cordiales,
                                                    class="form-control"
                                                    id="fecha_envio_{{ $encuesta->id }}"
                                                    name="encuestas[{{ $loop->index }}][fecha_envio]"
-                                                   value="{{ old('encuestas.' . $loop->index . '.fecha_envio', isset($configuracion) ? $configuracion->fecha_envio : date('Y-m-d')) }}"
+                                                   value="{{ old('encuestas.' . $loop->index . '.fecha_envio', isset($configuracion) ? $configuracion->fecha_envio->format('Y-m-d') : date('Y-m-d')) }}"
                                                    min="{{ date('Y-m-d') }}">
                                             <small class="form-text text-muted">
                                                 Fecha en la que se enviarán los correos
@@ -313,7 +313,7 @@ Saludos cordiales,
                                                        id="modo_prueba_{{ $encuesta->id }}"
                                                        name="encuestas[{{ $loop->index }}][modo_prueba]"
                                                        value="1"
-                                                       {{ old('encuestas.' . $loop->index . '.modo_prueba') ? 'checked' : '' }}>
+                                                       {{ old('encuestas.' . $loop->index . '.modo_prueba', isset($configuracion) ? $configuracion->modo_prueba : false) ? 'checked' : '' }}>
                                                 <label class="custom-control-label" for="modo_prueba_{{ $encuesta->id }}">
                                                     <i class="fas fa-bug"></i> Modo Debug/Prueba
                                                 </label>
@@ -348,7 +348,7 @@ Saludos cordiales,
                                                    id="activo_{{ $encuesta->id }}"
                                                    name="encuestas[{{ $loop->index }}][activo]"
                                                    value="1"
-                                                   {{ old('encuestas.' . $loop->index . '.activo', '1') ? 'checked' : '' }}>
+                                                   {{ old('encuestas.' . $loop->index . '.activo', isset($configuracion) ? $configuracion->activo : true) ? 'checked' : '' }}>
                                             <label class="custom-control-label" for="activo_{{ $encuesta->id }}">
                                                 <i class="fas fa-toggle-on"></i> Configuración Activa
                                             </label>
@@ -448,6 +448,17 @@ $(document).ready(function() {
                 $('.configuracion-programado').show();
                 $('.btn-enviar-prueba').show();
             }
+
+            // Verificar que los campos de fecha y hora tengan valores válidos
+            $('input[type="date"]').each(function() {
+                const value = $(this).val();
+                if (value && value.includes(' ')) {
+                    console.log('Campo de fecha con formato incorrecto:', value);
+                    // Extraer solo la fecha si contiene hora
+                    const dateOnly = value.split(' ')[0];
+                    $(this).val(dateOnly);
+                }
+            });
         }, 100);
 
         console.log('Campos de programación mostrados');
