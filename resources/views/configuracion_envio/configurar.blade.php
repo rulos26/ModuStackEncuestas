@@ -412,6 +412,16 @@ Saludos cordiales,
 
 @push('scripts')
 <script>
+// Manejo global de errores de JavaScript
+window.addEventListener('error', function(e) {
+    console.error('Error de JavaScript:', e.error);
+    console.error('Archivo:', e.filename);
+    console.error('Línea:', e.lineno);
+    console.error('Columna:', e.colno);
+});
+
+// Verificar que jQuery esté disponible
+if (typeof $ !== 'undefined') {
 $(document).ready(function() {
     // Manejar cambio de tipo de envío
     $('.tipo-envio-select').change(function() {
@@ -440,11 +450,15 @@ $(document).ready(function() {
     $('.tipo-destinatario-select').change(function() {
         const encuestaId = $(this).data('encuesta-id');
         const selectedOption = $(this).find('option:selected');
-        const cantidad = selectedOption.data('cantidad') || 0;
 
-        if (cantidad > 0) {
-            const bloquesSugeridos = calcularBloquesSugeridos(cantidad);
-            $(`#numero_bloques_${encuestaId}`).val(bloquesSugeridos);
+        // Verificar que selectedOption existe y tiene datos
+        if (selectedOption && selectedOption.length > 0) {
+            const cantidad = selectedOption.data('cantidad') || 0;
+
+            if (cantidad > 0) {
+                const bloquesSugeridos = calcularBloquesSugeridos(cantidad);
+                $(`#numero_bloques_${encuestaId}`).val(bloquesSugeridos);
+            }
         }
     });
 
@@ -533,13 +547,18 @@ $(document).ready(function() {
 
         // Mostrar loading en el botón de guardar
         const submitBtn = $(this).find('button[type="submit"]');
-        const originalText = submitBtn.html();
-        submitBtn.html('<i class="fas fa-spinner fa-spin"></i> Guardando...');
-        submitBtn.prop('disabled', true);
+        if (submitBtn && submitBtn.length > 0) {
+            const originalText = submitBtn.html();
+            submitBtn.html('<i class="fas fa-spinner fa-spin"></i> Guardando...');
+            submitBtn.prop('disabled', true);
+        }
 
         // Permitir que el formulario se envíe normalmente
         return true;
     });
 });
+} else {
+    console.error('jQuery no está disponible');
+}
 </script>
 @endpush

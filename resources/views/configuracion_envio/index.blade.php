@@ -425,6 +425,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const containerDiv = document.getElementById('encuestas-container');
         const noEncuestasDiv = document.getElementById('no-encuestas');
 
+        // Verificar que los elementos existan
+        if (!loadingDiv || !containerDiv || !noEncuestasDiv) {
+            console.error('No se encontraron elementos necesarios para cargar encuestas');
+            return;
+        }
+
         loadingDiv.style.display = 'block';
         containerDiv.style.display = 'none';
         noEncuestasDiv.style.display = 'none';
@@ -444,8 +450,8 @@ document.addEventListener('DOMContentLoaded', function() {
             loadingDiv.style.display = 'none';
 
             if (data.success) {
-                if (data.data.encuestas.length > 0) {
-                    renderEncuestas(data.data.encuestas, data.data.empresa);
+                if (data.data && data.data.length > 0) {
+                    renderEncuestas(data.data, { nombre: 'Empresa' }); // Usar datos simplificados
                     containerDiv.style.display = 'block';
                 } else {
                     noEncuestasDiv.style.display = 'block';
@@ -461,9 +467,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function renderEncuestas(encuestas, empresa) {
-        document.getElementById('empresa-nombre').textContent = empresa.nombre;
+        if (document.getElementById('empresa-nombre')) {
+            document.getElementById('empresa-nombre').textContent = empresa.nombre;
+        }
 
         const container = document.getElementById('encuestas-list');
+        if (!container) {
+            console.error('No se encontró el contenedor de encuestas');
+            return;
+        }
+
         container.innerHTML = '';
 
         encuestas.forEach(encuesta => {
@@ -472,12 +485,12 @@ document.addEventListener('DOMContentLoaded', function() {
             card.innerHTML = `
                 <div class="encuesta-card" data-encuesta-id="${encuesta.id}">
                     <div class="estado-badge">
-                        <span class="badge badge-${encuesta.configurado ? 'success' : 'warning'}">
-                            ${encuesta.estado_configuracion}
+                        <span class="badge badge-${encuesta.configurada ? 'success' : 'warning'}">
+                            ${encuesta.configurada ? 'Configurado' : 'No Configurado'}
                         </span>
                     </div>
                     <h6 class="mb-2">${encuesta.titulo}</h6>
-                    <p class="text-muted mb-2">${encuesta.descripcion || 'Sin descripción'}</p>
+                    <p class="text-muted mb-2">Estado: ${encuesta.estado}</p>
                     <small class="text-muted">
                         <i class="fas fa-calendar"></i> Creada: ${new Date(encuesta.created_at).toLocaleDateString()}
                     </small>
@@ -492,11 +505,22 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // Event listeners para botones de selección
-        document.getElementById('select-all').addEventListener('click', selectAllEncuestas);
-        document.getElementById('deselect-all').addEventListener('click', deselectAllEncuestas);
+        const selectAllBtn = document.getElementById('select-all');
+        const deselectAllBtn = document.getElementById('deselect-all');
+
+        if (selectAllBtn) {
+            selectAllBtn.addEventListener('click', selectAllEncuestas);
+        }
+        if (deselectAllBtn) {
+            deselectAllBtn.addEventListener('click', deselectAllEncuestas);
+        }
     }
 
     function toggleEncuestaSelection(encuestaId, element) {
+        if (!selectedEncuestas) {
+            selectedEncuestas = [];
+        }
+
         const index = selectedEncuestas.indexOf(encuestaId);
 
         if (index > -1) {
@@ -507,7 +531,9 @@ document.addEventListener('DOMContentLoaded', function() {
             element.classList.add('selected');
         }
 
-        btnNextStep2.disabled = selectedEncuestas.length === 0;
+        if (btnNextStep2) {
+            btnNextStep2.disabled = selectedEncuestas.length === 0;
+        }
     }
 
     function selectAllEncuestas() {
