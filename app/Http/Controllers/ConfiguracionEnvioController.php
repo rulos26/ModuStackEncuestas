@@ -304,9 +304,7 @@ class ConfiguracionEnvioController extends Controller
      */
     private function obtenerEstadisticasDestinatarios($empresaId): array
     {
-        $empleados = Empleado::where('empresa_id', $empresaId)
-            ->where('activo', true)
-            ->count();
+        $empleados = Empleado::where('empresa_id', $empresaId)->count();
 
         return [
             'empleados' => $empleados,

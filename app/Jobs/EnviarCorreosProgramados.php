@@ -148,8 +148,7 @@ class EnviarCorreosProgramados implements ShouldQueue
         switch ($configuracion->tipo_destinatario) {
             case ConfiguracionEnvio::DESTINATARIO_EMPLEADOS:
                 return Empleado::where('empresa_id', $configuracion->empresa_id)
-                    ->where('activo', true)
-                    ->get(['nombre', 'email'])
+                    ->get(['nombre', 'correo_electronico as email'])
                     ->toArray();
 
             case ConfiguracionEnvio::DESTINATARIO_CLIENTES:
