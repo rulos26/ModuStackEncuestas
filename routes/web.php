@@ -302,16 +302,18 @@ Route::middleware(['auth'])->prefix('system/tools')->name('system.tools.')->grou
     Route::match(['GET', 'POST'], 'pruebas', [App\Http\Controllers\SystemToolsController::class, 'pruebas'])->name('pruebas');
 });
 
-// Rutas para carga masiva de encuestas
-Route::middleware(['auth'])->prefix('carga-masiva')->name('carga-masiva.')->group(function () {
-    Route::get('/', [App\Http\Controllers\CargaMasivaEncuestasController::class, 'index'])->name('index');
-    Route::post('procesar-preguntas', [App\Http\Controllers\CargaMasivaEncuestasController::class, 'procesarPreguntas'])->name('procesar-preguntas');
-    Route::get('wizard-preguntas', [App\Http\Controllers\CargaMasivaEncuestasController::class, 'wizardPreguntas'])->name('wizard-preguntas');
-    Route::post('guardar-tipo-pregunta', [App\Http\Controllers\CargaMasivaEncuestasController::class, 'guardarTipoPregunta'])->name('guardar-tipo-pregunta');
-    Route::get('confirmar-preguntas', [App\Http\Controllers\CargaMasivaEncuestasController::class, 'confirmarPreguntas'])->name('confirmar-preguntas');
-    Route::post('guardar-preguntas', [App\Http\Controllers\CargaMasivaEncuestasController::class, 'guardarPreguntas'])->name('guardar-preguntas');
-    Route::get('cargar-respuestas', [App\Http\Controllers\CargaMasivaEncuestasController::class, 'cargarRespuestas'])->name('cargar-respuestas');
-    Route::post('procesar-respuestas', [App\Http\Controllers\CargaMasivaEncuestasController::class, 'procesarRespuestas'])->name('procesar-respuestas');
-});
+    // Rutas para carga masiva de encuestas
+    Route::middleware(['auth'])->prefix('carga-masiva')->name('carga-masiva.')->group(function () {
+        Route::get('/', [App\Http\Controllers\CargaMasivaEncuestasController::class, 'index'])->name('index');
+        Route::post('procesar-preguntas', [App\Http\Controllers\CargaMasivaEncuestasController::class, 'procesarPreguntas'])->name('procesar-preguntas');
+        Route::get('wizard-preguntas', [App\Http\Controllers\CargaMasivaEncuestasController::class, 'wizardPreguntas'])->name('wizard-preguntas');
+        Route::post('guardar-tipo-pregunta', [App\Http\Controllers\CargaMasivaEncuestasController::class, 'guardarTipoPregunta'])->name('guardar-tipo-pregunta');
+        Route::get('confirmar-preguntas', [App\Http\Controllers\CargaMasivaEncuestasController::class, 'confirmarPreguntas'])->name('confirmar-preguntas');
+        Route::post('guardar-preguntas', [App\Http\Controllers\CargaMasivaEncuestasController::class, 'guardarPreguntas'])->name('guardar-preguntas');
+        Route::get('cargar-respuestas', [App\Http\Controllers\CargaMasivaEncuestasController::class, 'cargarRespuestas'])->name('cargar-respuestas');
+        Route::post('procesar-respuestas', [App\Http\Controllers\CargaMasivaEncuestasController::class, 'procesarRespuestas'])->name('procesar-respuestas');
+        Route::get('corregir-incompatibilidades', [App\Http\Controllers\CargaMasivaEncuestasController::class, 'corregirIncompatibilidades'])->name('corregir-incompatibilidades');
+        Route::post('guardar-correccion-incompatibilidad', [App\Http\Controllers\CargaMasivaEncuestasController::class, 'guardarCorreccionIncompatibilidad'])->name('guardar-correccion-incompatibilidad');
+    });
 
 

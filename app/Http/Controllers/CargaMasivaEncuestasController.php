@@ -172,6 +172,23 @@ class CargaMasivaEncuestasController extends Controller
         $preguntas = $datos['preguntas'];
         $controller = $this;
 
+        // Detectar preguntas problemáticas (sin tipo asignado)
+        $preguntasProblematicas = [];
+        foreach ($preguntas as $index => $pregunta) {
+            if (empty($pregunta['tipo']) || $pregunta['tipo'] === null) {
+                $preguntasProblematicas[] = $index;
+            }
+        }
+
+        // Si hay preguntas problemáticas, redirigir al wizard
+        if (!empty($preguntasProblematicas)) {
+            return redirect()->route('carga-masiva.wizard-preguntas', [
+                'cache_key' => $cacheKey,
+                'pregunta' => $preguntasProblematicas[0],
+                'correccion_automatica' => true
+            ])->with('warning', 'Se detectaron preguntas sin tipo asignado. Por favor, asigna los tipos manualmente.');
+        }
+
         return view('carga-masiva.confirmar-preguntas', compact('cacheKey', 'encuesta', 'preguntas', 'controller'));
     }
 
@@ -261,6 +278,25 @@ class CargaMasivaEncuestasController extends Controller
             // Leer y procesar respuestas
             $respuestas = $this->leerArchivoRespuestas($archivo);
             $preguntas = $encuesta->preguntas()->orderBy('orden')->get();
+
+            // Detectar incompatibilidades antes de procesar
+            $incompatibilidades = $this->detectarIncompatibilidades($respuestas, $preguntas);
+
+            if (!empty($incompatibilidades)) {
+                // Crear caché temporal para corrección
+                $cacheKey = "correccion_temp_{$encuesta->id}_" . time();
+                Cache::put($cacheKey, [
+                    'encuesta_id' => $encuesta->id,
+                    'preguntas' => $preguntas->toArray(),
+                    'respuestas' => $respuestas,
+                    'incompatibilidades' => $incompatibilidades,
+                    'timestamp' => now()
+                ], 3600);
+
+                return redirect()->route('carga-masiva.corregir-incompatibilidades', [
+                    'cache_key' => $cacheKey
+                ])->with('warning', 'Se detectaron incompatibilidades entre preguntas y respuestas. Por favor, ajusta los tipos de pregunta.');
+            }
 
             // Validar y asociar respuestas
             $resultado = $this->procesarRespuestasConPreguntas($respuestas, $preguntas);
@@ -467,6 +503,63 @@ class CargaMasivaEncuestasController extends Controller
     }
 
     /**
+     * Detectar incompatibilidades entre preguntas y respuestas
+     */
+    private function detectarIncompatibilidades($respuestas, $preguntas)
+    {
+        $incompatibilidades = [];
+
+        foreach ($respuestas as $respuesta) {
+            $numeroPregunta = $respuesta['numero_pregunta'];
+            $pregunta = $preguntas->where('orden', $numeroPregunta)->first();
+
+            if ($pregunta) {
+                $tipoRespuesta = $this->determinarTipoRespuesta($respuesta['contenido']);
+                $esCompatible = $this->validarCompatibilidad($pregunta->tipo, $tipoRespuesta);
+
+                if (!$esCompatible) {
+                    $incompatibilidades[] = [
+                        'numero_pregunta' => $numeroPregunta,
+                        'pregunta_texto' => $pregunta->texto,
+                        'pregunta_tipo' => $pregunta->tipo,
+                        'respuesta_contenido' => $respuesta['contenido'],
+                        'respuesta_tipo' => $tipoRespuesta,
+                        'sugerencia_tipo' => $this->sugerirTipoPregunta($respuesta['contenido'])
+                    ];
+                }
+            }
+        }
+
+        return $incompatibilidades;
+    }
+
+    /**
+     * Sugerir tipo de pregunta basado en el contenido de la respuesta
+     */
+    private function sugerirTipoPregunta($contenido)
+    {
+        $contenido = trim($contenido);
+
+        // Si contiene comas, probablemente es múltiple
+        if (strpos($contenido, ',') !== false) {
+            return 'casilla';
+        }
+
+        // Si es numérico, podría ser escala
+        if (is_numeric($contenido)) {
+            return 'escala';
+        }
+
+        // Si es muy corto, texto corto
+        if (strlen($contenido) <= 50) {
+            return 'texto_corto';
+        }
+
+        // Por defecto, texto corto
+        return 'texto_corto';
+    }
+
+    /**
      * Validar compatibilidad entre tipo de pregunta y respuesta
      */
     private function validarCompatibilidad($tipoPregunta, $tipoRespuesta)
@@ -482,6 +575,78 @@ class CargaMasivaEncuestasController extends Controller
         ];
 
         return in_array($tipoRespuesta, $compatibilidades[$tipoPregunta] ?? []);
+    }
+
+    /**
+     * Mostrar vista para corregir incompatibilidades
+     */
+    public function corregirIncompatibilidades(Request $request)
+    {
+        $cacheKey = $request->cache_key;
+        $datos = Cache::get($cacheKey);
+
+        if (!$datos) {
+            return redirect()->route('carga-masiva.index')
+                ->withErrors(['error' => 'Sesión de corrección expirada.']);
+        }
+
+        $encuesta = Encuesta::findOrFail($datos['encuesta_id']);
+        $incompatibilidades = $datos['incompatibilidades'];
+        $controller = $this;
+
+        return view('carga-masiva.corregir-incompatibilidades', compact('cacheKey', 'encuesta', 'incompatibilidades', 'controller'));
+    }
+
+    /**
+     * Guardar corrección de incompatibilidad
+     */
+    public function guardarCorreccionIncompatibilidad(Request $request)
+    {
+        $request->validate([
+            'cache_key' => 'required',
+            'numero_pregunta' => 'required|integer',
+            'nuevo_tipo' => 'required|string'
+        ]);
+
+        $cacheKey = $request->cache_key;
+        $datos = Cache::get($cacheKey);
+
+        if (!$datos) {
+            return redirect()->route('carga-masiva.index')
+                ->withErrors(['error' => 'Sesión de corrección expirada.']);
+        }
+
+        // Actualizar tipo de pregunta en la base de datos
+        $numeroPregunta = $request->numero_pregunta;
+        $nuevoTipo = $request->nuevo_tipo;
+
+        $pregunta = Pregunta::where('encuesta_id', $datos['encuesta_id'])
+            ->where('orden', $numeroPregunta)
+            ->first();
+
+        if ($pregunta) {
+            $pregunta->update(['tipo' => $nuevoTipo]);
+        }
+
+        // Remover la incompatibilidad corregida
+        $datos['incompatibilidades'] = array_filter($datos['incompatibilidades'], function($inc) use ($numeroPregunta) {
+            return $inc['numero_pregunta'] != $numeroPregunta;
+        });
+
+        Cache::put($cacheKey, $datos, 3600);
+
+        // Si no hay más incompatibilidades, procesar respuestas
+        if (empty($datos['incompatibilidades'])) {
+            $encuesta = Encuesta::findOrFail($datos['encuesta_id']);
+            $preguntas = $encuesta->preguntas()->orderBy('orden')->get();
+            $resultado = $this->procesarRespuestasConPreguntas($datos['respuestas'], $preguntas);
+
+            return view('carga-masiva.resumen-final', compact('encuesta', 'resultado'))
+                ->with('success', 'Todas las incompatibilidades han sido corregidas y las respuestas han sido procesadas.');
+        }
+
+        return redirect()->route('carga-masiva.corregir-incompatibilidades', ['cache_key' => $cacheKey])
+            ->with('success', 'Tipo de pregunta corregido exitosamente.');
     }
 
     /**
