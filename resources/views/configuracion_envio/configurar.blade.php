@@ -383,6 +383,11 @@ Saludos cordiales,
                                 <button type="submit" class="btn btn-success">
                                     <i class="fas fa-save"></i> Guardar Configuración
                                 </button>
+                                @if(isset($configuracion) && $configuracion->tipo_envio === 'programado')
+                                <button type="button" class="btn btn-warning" id="btn-forzar-campos">
+                                    <i class="fas fa-eye"></i> Mostrar Campos Programación
+                                </button>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -431,14 +436,16 @@ if (typeof $ !== 'undefined') {
 $(document).ready(function() {
     console.log('Script de configuración cargado');
 
-    // Si estamos editando y la configuración es programada, mostrar la sección
-    @if(isset($configuracion) && $configuracion->tipo_envio === 'programado')
+    // Verificar si estamos editando una configuración programada
+    const isEditingProgramado = {{ isset($configuracion) && $configuracion->tipo_envio === 'programado' ? 'true' : 'false' }};
+
+    if (isEditingProgramado) {
         console.log('Editando configuración programada - mostrando campos');
         // Mostrar todas las secciones de configuración programada
         $('.configuracion-programado').show();
         $('.btn-enviar-prueba').show();
 
-                // También activar el select de tipo de envío
+        // También activar el select de tipo de envío
         $('.tipo-envio-select').val('programado').trigger('change');
 
         // Verificar que los campos se mostraron correctamente
@@ -462,7 +469,21 @@ $(document).ready(function() {
         }, 100);
 
         console.log('Campos de programación mostrados');
-    @endif
+
+        // Verificación adicional después de un tiempo
+        setTimeout(function() {
+            console.log('Verificación final - campos visibles:', $('.configuracion-programado:visible').length);
+            if ($('.configuracion-programado:visible').length === 0) {
+                console.log('FORZANDO MOSTRAR CAMPOS - ULTIMO INTENTO');
+                $('.configuracion-programado').show();
+                $('.btn-enviar-prueba').show();
+
+                // Forzar también con CSS
+                $('.configuracion-programado').css('display', 'block !important');
+                $('.btn-enviar-prueba').css('display', 'inline-block !important');
+            }
+        }, 500);
+    }
 
     // Manejar cambio de tipo de envío
     $('.tipo-envio-select').change(function() {
@@ -546,6 +567,16 @@ $(document).ready(function() {
     $('#btn-preview').click(function() {
         // Implementar lógica de vista previa
         $('#previewModal').modal('show');
+    });
+
+    // Botón para forzar mostrar campos de programación
+    $('#btn-forzar-campos').click(function() {
+        console.log('Forzando mostrar campos de programación manualmente');
+        $('.configuracion-programado').show();
+        $('.btn-enviar-prueba').show();
+        $('.configuracion-programado').css('display', 'block !important');
+        $('.btn-enviar-prueba').css('display', 'inline-block !important');
+        alert('Campos de programación mostrados');
     });
 
     // Validación del formulario
