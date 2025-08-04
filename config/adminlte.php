@@ -585,6 +585,11 @@ return [
                     'url'  => '#', // Cambia por la ruta real si tienes una vista previa general
                     'icon' => 'fas fa-eye',
                 ],
+                [
+                    'text' => 'Sistema de Pruebas',
+                    'route' => 'testing.index',
+                    'icon' => 'fas fa-vial',
+                ],
             ],
         ],
         // Entradas públicas al final del menú principal

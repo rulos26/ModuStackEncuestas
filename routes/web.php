@@ -70,6 +70,8 @@ Route::prefix('system')->name('system.')->middleware(['auth'])->group(function (
 Route::middleware(['auth'])->group(function () {
     Route::get('testing', [App\Http\Controllers\TestRunnerController::class, 'index'])->name('testing.index');
     Route::post('testing/run', [App\Http\Controllers\TestRunnerController::class, 'run'])->name('testing.run');
+    Route::post('testing/command', [App\Http\Controllers\TestRunnerController::class, 'runCommand'])->name('testing.command');
+    Route::get('testing/system-info', [App\Http\Controllers\TestRunnerController::class, 'systemInfo'])->name('testing.system-info');
 });
 
 // Información del sistema
@@ -324,6 +326,7 @@ Route::middleware(['auth'])->prefix('configuracion-envio')->name('configuracion-
     Route::post('/store', [App\Http\Controllers\ConfiguracionEnvioController::class, 'store'])->name('store');
     Route::put('/update/{id}', [App\Http\Controllers\ConfiguracionEnvioController::class, 'update'])->name('update');
     Route::get('/configurar', [App\Http\Controllers\ConfiguracionEnvioController::class, 'configurar'])->name('configurar');
+    Route::get('/editar/{id}', [App\Http\Controllers\ConfiguracionEnvioController::class, 'editar'])->name('editar');
     Route::get('/resumen', [App\Http\Controllers\ConfiguracionEnvioController::class, 'resumen'])->name('resumen');
     Route::post('/enviar-prueba', [App\Http\Controllers\ConfiguracionEnvioController::class, 'enviarPrueba'])->name('enviar-prueba');
 });

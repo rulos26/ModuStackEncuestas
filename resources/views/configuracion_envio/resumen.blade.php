@@ -178,6 +178,14 @@
                                                 <strong class="text-white">{{ $configuracion->encuesta->titulo }}</strong>
                                                 <br>
                                                 <small class="text-light">{{ $configuracion->encuesta->estado }}</small>
+                                                @if(isset($configuracion->destinatarios_info))
+                                                    <br>
+                                                    <small class="text-info">
+                                                        <i class="fas fa-users"></i>
+                                                        {{ $configuracion->destinatarios_info['total'] }} destinatarios
+                                                        ({{ ucfirst($configuracion->destinatarios_info['tipo']) }})
+                                                    </small>
+                                                @endif
                                             </td>
                                             <td class="text-white">{{ $configuracion->nombre_remitente }}</td>
                                             <td>
@@ -464,8 +472,8 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     window.editarConfiguracion = function(configuracionId) {
-        // Implementar edición
-        showInfo('Función de edición en desarrollo');
+        // Redirigir a la página de edición
+        window.location.href = `{{ route('configuracion-envio.editar', ['id' => ':id']) }}`.replace(':id', configuracionId);
     };
 
     window.toggleEstado = function(configuracionId, nuevoEstado) {
@@ -531,6 +539,24 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="detalles-item">
                         <strong>Plantilla:</strong><br>
                         ${configuracion.plantilla || 'Sin plantilla'}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="detalles-item">
+                        <strong>Destinatarios:</strong><br>
+                        ${configuracion.destinatarios_info ?
+                            `${configuracion.destinatarios_info.total} ${configuracion.destinatarios_info.tipo}` :
+                            'No especificado'}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="detalles-item">
+                        <strong>Programación:</strong><br>
+                        ${configuracion.tipo_envio === 'programado' ?
+                            `Fecha: ${configuracion.fecha_envio}<br>Hora: ${configuracion.hora_envio}` :
+                            'Envío manual'}
                     </div>
                 </div>
             </div>

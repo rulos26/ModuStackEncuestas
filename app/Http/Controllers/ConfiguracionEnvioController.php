@@ -398,6 +398,74 @@ class ConfiguracionEnvioController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
+        // Agregar información de destinatarios a cada configuración
+        $configuraciones->each(function ($configuracion) use ($empresaId) {
+            $configuracion->destinatarios_info = $this->obtenerInfoDestinatarios($configuracion, $empresaId);
+        });
+
         return view('configuracion_envio.resumen', compact('empresa', 'configuraciones'));
+    }
+
+    /**
+     * Obtener información de destinatarios para una configuración
+     */
+    private function obtenerInfoDestinatarios($configuracion, $empresaId): array
+    {
+        $info = [
+            'total' => 0,
+            'tipo' => $configuracion->tipo_destinatario ?? 'empleados',
+            'detalle' => []
+        ];
+
+        if ($configuracion->tipo_destinatario === 'empleados') {
+            $empleados = Empleado::where('empresa_id', $empresaId)
+                ->select('id', 'nombre', 'apellido', 'correo_electronico')
+                ->get();
+
+            $info['total'] = $empleados->count();
+            $info['detalle'] = $empleados->take(5)->map(function ($empleado) {
+                return [
+                    'nombre' => $empleado->nombre . ' ' . $empleado->apellido,
+                    'email' => $empleado->correo_electronico
+                ];
+            })->toArray();
+
+            if ($empleados->count() > 5) {
+                $info['detalle'][] = [
+                    'nombre' => '... y ' . ($empleados->count() - 5) . ' más',
+                    'email' => ''
+                ];
+            }
+        }
+
+        return $info;
+    }
+
+    /**
+     * Editar configuración
+     */
+    public function editar($id)
+    {
+        $configuracion = ConfiguracionEnvio::with(['encuesta', 'empresa'])->findOrFail($id);
+
+        $empresa = DB::table('empresas_clientes')->where('id', $configuracion->empresa_id)->first();
+
+        $tiposEnvio = ConfiguracionEnvio::getTiposEnvio();
+        $tiposDestinatario = ConfiguracionEnvio::getTiposDestinatario();
+
+        // Generar el enlace base para las encuestas
+        $link_encuesta = route('encuestas.publica', ['slug' => 'SLUG_PLACEHOLDER']);
+
+        // Obtener estadísticas de destinatarios
+        $estadisticasDestinatarios = $this->obtenerEstadisticasDestinatarios($configuracion->empresa_id);
+
+        return view('configuracion_envio.configurar', compact(
+            'configuracion',
+            'empresa',
+            'tiposEnvio',
+            'tiposDestinatario',
+            'link_encuesta',
+            'estadisticasDestinatarios'
+        ));
     }
 }
