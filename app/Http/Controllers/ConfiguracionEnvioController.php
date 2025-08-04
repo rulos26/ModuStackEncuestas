@@ -289,7 +289,7 @@ class ConfiguracionEnvioController extends Controller
         $tiposEnvio = ConfiguracionEnvio::getTiposEnvio();
 
         // Generar el enlace base para las encuestas
-        $link_encuesta = route('encuestas.mostrar', ['slug' => 'SLUG_PLACEHOLDER']);
+        $link_encuesta = route('encuestas.publica', ['slug' => 'SLUG_PLACEHOLDER']);
 
         return view('configuracion_envio.configurar', compact('empresa', 'encuestas', 'tiposEnvio', 'link_encuesta'));
     }
