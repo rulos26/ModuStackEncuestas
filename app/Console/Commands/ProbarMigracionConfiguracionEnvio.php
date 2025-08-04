@@ -38,11 +38,7 @@ class ProbarMigracionConfiguracionEnvio extends Command
                 $registros = DB::table('configuracion_envios')->count();
                 $this->info("📊 Registros existentes: {$registros}");
 
-                $this->question('¿Desea continuar con la prueba? (y/N)');
-                if (!$this->confirm('¿Continuar?')) {
-                    $this->info('❌ Prueba cancelada por el usuario');
-                    return 0;
-                }
+                $this->info('ℹ️  Continuando con la prueba...');
             }
 
             // Ejecutar solo la migración específica

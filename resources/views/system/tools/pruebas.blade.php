@@ -75,6 +75,9 @@
                         <option value="diagnosticar_tablas_migracion" {{ $tipo === 'diagnosticar_tablas_migracion' ? 'selected' : '' }}>
                             🔍 Diagnosticar Tablas para Migración
                         </option>
+                        <option value="probar_migracion_simple" {{ $tipo === 'probar_migracion_simple' ? 'selected' : '' }}>
+                            🧪 Probar Migración Simple
+                        </option>
                         <option value="corregir_user_id" {{ $tipo === 'corregir_user_id' ? 'selected' : '' }}>
                             Corregir User ID de Encuesta
                         </option>
@@ -651,6 +654,11 @@ $(document).ready(function() {
                 $('#horas_group').hide();
             } else if (selectedValue === 'diagnosticar_tablas_migracion') {
                 $('#encuesta_id').attr('placeholder', 'No requiere ID - Diagnostica tablas necesarias');
+                $('#email_group').hide();
+                $('#cantidad_group').hide();
+                $('#horas_group').hide();
+            } else if (selectedValue === 'probar_migracion_simple') {
+                $('#encuesta_id').attr('placeholder', 'No requiere ID - Prueba migración simple');
                 $('#email_group').hide();
                 $('#cantidad_group').hide();
                 $('#horas_group').hide();

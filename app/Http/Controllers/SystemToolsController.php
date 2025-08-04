@@ -351,6 +351,9 @@ class SystemToolsController extends Controller
                     case 'diagnosticar_tablas_migracion':
                         $resultado = $this->ejecutarComando('diagnosticar:tablas-migracion');
                         break;
+                    case 'probar_migracion_simple':
+                        $resultado = $this->ejecutarComando('probar:migracion-simple');
+                        break;
                     case 'corregir_user_id':
                         $encuestaId = $request->get('encuesta_id');
                         $userId = $request->get('user_id');
