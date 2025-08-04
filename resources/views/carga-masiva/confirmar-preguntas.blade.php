@@ -51,12 +51,12 @@
                                             <strong>{{ $pregunta['texto'] }}</strong>
                                         </td>
                                         <td>
-                                            <span class="badge badge-{{ $this->getBadgeColorForType($pregunta['tipo']) }}">
-                                                {{ $this->getTypeName($pregunta['tipo']) }}
+                                            <span class="badge badge-{{ $controller->getBadgeColorForType($pregunta['tipo']) }}">
+                                                {{ $controller->getTypeName($pregunta['tipo']) }}
                                             </span>
                                         </td>
                                         <td class="text-center">
-                                            <i class="fas fa-{{ $this->getIconForType($pregunta['tipo']) }} fa-2x text-{{ $this->getColorForType($pregunta['tipo']) }}"></i>
+                                            <i class="fas fa-{{ $controller->getIconForType($pregunta['tipo']) }} fa-2x text-{{ $controller->getColorForType($pregunta['tipo']) }}"></i>
                                         </td>
                                         <td class="text-center">
                                             <span class="badge badge-success">
@@ -101,8 +101,8 @@
                                     @endphp
                                     @foreach($tiposCount as $tipo => $count)
                                         <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <span class="badge badge-{{ $this->getBadgeColorForType($tipo) }}">
-                                                {{ $this->getTypeName($tipo) }}
+                                            <span class="badge badge-{{ $controller->getBadgeColorForType($tipo) }}">
+                                                {{ $controller->getTypeName($tipo) }}
                                             </span>
                                             <span class="badge badge-secondary">{{ $count }}</span>
                                         </div>

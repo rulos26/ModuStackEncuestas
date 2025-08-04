@@ -113,8 +113,8 @@
                                                     <strong>{{ $pregunta->texto }}</strong>
                                                 </td>
                                                 <td>
-                                                    <span class="badge badge-{{ $this->getBadgeColorForType($pregunta->tipo) }}">
-                                                        {{ $this->getTypeName($pregunta->tipo) }}
+                                                                                    <span class="badge badge-{{ $controller->getBadgeColorForType($pregunta->tipo) }}">
+                                    {{ $controller->getTypeName($pregunta->tipo) }}
                                                     </span>
                                                 </td>
                                                 <td class="text-center">

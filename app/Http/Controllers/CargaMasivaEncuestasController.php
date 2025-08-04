@@ -106,13 +106,15 @@ class CargaMasivaEncuestasController extends Controller
 
         $preguntaActual = $preguntas[$preguntaIndex];
         $tiposDisponibles = $this->obtenerTiposDisponibles();
+        $controller = $this;
 
         return view('carga-masiva.wizard-preguntas', compact(
             'cacheKey',
             'preguntaActual',
             'preguntaIndex',
             'totalPreguntas',
-            'tiposDisponibles'
+            'tiposDisponibles',
+            'controller'
         ));
     }
 
@@ -168,8 +170,9 @@ class CargaMasivaEncuestasController extends Controller
 
         $encuesta = Encuesta::findOrFail($datos['encuesta_id']);
         $preguntas = $datos['preguntas'];
+        $controller = $this;
 
-        return view('carga-masiva.confirmar-preguntas', compact('cacheKey', 'encuesta', 'preguntas'));
+        return view('carga-masiva.confirmar-preguntas', compact('cacheKey', 'encuesta', 'preguntas', 'controller'));
     }
 
     /**
@@ -236,8 +239,9 @@ class CargaMasivaEncuestasController extends Controller
     {
         $encuesta = Encuesta::findOrFail($request->encuesta_id);
         $preguntas = $encuesta->preguntas()->orderBy('orden')->get();
+        $controller = $this;
 
-        return view('carga-masiva.cargar-respuestas', compact('encuesta', 'preguntas'));
+        return view('carga-masiva.cargar-respuestas', compact('encuesta', 'preguntas', 'controller'));
     }
 
     /**

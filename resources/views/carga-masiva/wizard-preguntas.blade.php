@@ -105,13 +105,13 @@
                             <div class="row">
                                 @foreach($tiposDisponibles as $valor => $nombre)
                                     <div class="col-md-6 mb-3">
-                                        <div class="card border-left-{{ $this->getColorForType($valor) }}">
+                                        <div class="card border-left-{{ $controller->getColorForType($valor) }}">
                                             <div class="card-body">
                                                 <h6 class="card-title">
-                                                    <i class="fas fa-{{ $this->getIconForType($valor) }} text-{{ $this->getColorForType($valor) }}"></i>
+                                                    <i class="fas fa-{{ $controller->getIconForType($valor) }} text-{{ $controller->getColorForType($valor) }}"></i>
                                                     {{ $nombre }}
                                                 </h6>
-                                                <p class="card-text small">{{ $this->getDescriptionForType($valor) }}</p>
+                                                <p class="card-text small">{{ $controller->getDescriptionForType($valor) }}</p>
                                             </div>
                                         </div>
                                     </div>
