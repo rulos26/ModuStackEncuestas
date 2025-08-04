@@ -530,28 +530,38 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Procesar cada análisis
-    @foreach($analisis as $analisisItem)
-        console.log('📊 Procesando gráfica para análisis ID: {{ $analisisItem->id }}');
+    // Array con los datos de análisis para procesar
+    const analisisData = [
+        @foreach($analisis as $analisisItem)
+        {
+            id: {{ $analisisItem->id }},
+            canvasId: 'chart-{{ $analisisItem->id }}',
+            pregunta: '{{ addslashes($analisisItem->pregunta->texto) }}'
+        },
+        @endforeach
+    ];
 
-        const currentCanvasId = 'chart-{{ $analisisItem->id }}';
-        const canvas = document.getElementById(currentCanvasId);
+    // Procesar cada análisis
+    analisisData.forEach(function(item) {
+        console.log('📊 Procesando gráfica para análisis ID:', item.id);
+
+        const canvas = document.getElementById(item.canvasId);
 
         if (!canvas) {
-            console.error('❌ No se encontró el canvas:', currentCanvasId);
+            console.error('❌ No se encontró el canvas:', item.canvasId);
         } else {
             // Verificar que el canvas esté visible
             const rect = canvas.getBoundingClientRect();
             if (rect.width === 0 || rect.height === 0) {
                 console.warn('⚠️ Canvas no visible, esperando...');
                 setTimeout(() => {
-                    renderChart(currentCanvasId, {{ $analisisItem->id }});
+                    renderChart(item.canvasId, item.id);
                 }, 1000);
             } else {
-                renderChart(currentCanvasId, {{ $analisisItem->id }});
+                renderChart(item.canvasId, item.id);
             }
         }
-    @endforeach
+    });
 
     console.log('🎉 Renderizado de gráficas completado');
 
