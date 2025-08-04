@@ -325,6 +325,7 @@ Route::middleware(['auth'])->prefix('configuracion-envio')->name('configuracion-
     Route::put('/update/{id}', [App\Http\Controllers\ConfiguracionEnvioController::class, 'update'])->name('update');
     Route::get('/configurar', [App\Http\Controllers\ConfiguracionEnvioController::class, 'configurar'])->name('configurar');
     Route::get('/resumen', [App\Http\Controllers\ConfiguracionEnvioController::class, 'resumen'])->name('resumen');
+    Route::post('/enviar-prueba', [App\Http\Controllers\ConfiguracionEnvioController::class, 'enviarPrueba'])->name('enviar-prueba');
 });
 
 

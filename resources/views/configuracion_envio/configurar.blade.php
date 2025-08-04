@@ -1,122 +1,116 @@
-@extends('adminlte::page')
+@extends('layouts.app')
 
-@section('title', 'Configurar Envío de Correos')
-
-@section('content_header')
-    <h1>
-        <i class="fas fa-cog"></i> Configurar Envío de Correos
-        <small>Paso 3: Configuración</small>
-    </h1>
-@endsection
+@section('title', 'Configurar Envío de Encuestas')
 
 @section('content')
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
-            <!-- Información de la empresa -->
-            <div class="card card-outline card-info">
+            <!-- Header -->
+            <div class="card card-outline card-primary">
                 <div class="card-header">
                     <h3 class="card-title">
-                        <i class="fas fa-building"></i> Empresa: {{ $empresa->nombre ?? 'Empresa' }}
+                        <i class="fas fa-cog"></i> Configurar Envío de Encuestas
                     </h3>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <strong>Encuestas seleccionadas:</strong> {{ $encuestas->count() }}
+                            <h5><i class="fas fa-building"></i> Empresa: {{ $empresa->nombre }}</h5>
                         </div>
                         <div class="col-md-6">
-                            <strong>Fecha de configuración:</strong> {{ now()->format('d/m/Y H:i') }}
+                            <h5><i class="fas fa-list"></i> Encuestas seleccionadas: {{ $encuestas->count() }}</h5>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Formulario de configuración -->
-            <form id="configuracion-form" method="POST" action="{{ route('configuracion-envio.store') }}">
+            <!-- Wizard Form -->
+            <form id="configuracionForm" method="POST" action="{{ route('configuracion-envio.store') }}">
                 @csrf
-                <input type="hidden" name="empresa_id" value="{{ $empresa->id ?? '' }}">
+                <input type="hidden" name="empresa_id" value="{{ $empresa->id }}">
 
                 @foreach($encuestas as $encuesta)
-                    <div class="card card-outline card-primary">
+                    <div class="card card-outline card-info mb-4">
                         <div class="card-header">
-                            <h3 class="card-title">
+                            <h4 class="card-title">
                                 <i class="fas fa-poll"></i> {{ $encuesta->titulo }}
-                            </h3>
-                            <div class="card-tools">
-                                <span class="badge badge-primary">{{ $encuesta->estado }}</span>
-                            </div>
+                            </h4>
                         </div>
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="nombre_remitente_{{ $encuesta->id }}">
-                                            <i class="fas fa-user"></i> Nombre del Remitente
-                                            <span class="text-danger">*</span>
-                                        </label>
-                                        <input type="text"
-                                               class="form-control"
-                                               id="nombre_remitente_{{ $encuesta->id }}"
-                                               name="encuestas[{{ $loop->index }}][nombre_remitente]"
-                                               value="{{ old('encuestas.' . $loop->index . '.nombre_remitente', $empresa->nombre ?? '') }}"
-                                               required>
-                                        <small class="form-text text-muted">
-                                            Nombre que aparecerá como remitente del correo
-                                        </small>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="correo_remitente_{{ $encuesta->id }}">
-                                            <i class="fas fa-envelope"></i> Correo del Remitente
-                                            <span class="text-danger">*</span>
-                                        </label>
-                                        <input type="email"
-                                               class="form-control"
-                                               id="correo_remitente_{{ $encuesta->id }}"
-                                               name="encuestas[{{ $loop->index }}][correo_remitente]"
-                                               value="{{ old('encuestas.' . $loop->index . '.correo_remitente', $empresa->correo_electronico ?? '') }}"
-                                               required>
-                                        <small class="form-text text-muted">
-                                            Correo electrónico del remitente
-                                        </small>
-                                    </div>
-                                </div>
-                            </div>
+                            <!-- Paso 1: Configuración Básica -->
+                            <div class="wizard-step" data-step="1">
+                                <h5><i class="fas fa-envelope"></i> Configuración de Correo</h5>
 
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="asunto_{{ $encuesta->id }}">
-                                            <i class="fas fa-tag"></i> Asunto del Mensaje
-                                            <span class="text-danger">*</span>
-                                        </label>
-                                        <input type="text"
-                                               class="form-control"
-                                               id="asunto_{{ $encuesta->id }}"
-                                               name="encuestas[{{ $loop->index }}][asunto]"
-                                               value="{{ old('encuestas.' . $loop->index . '.asunto', 'Invitación a participar en: ' . $encuesta->titulo) }}"
-                                               required>
-                                        <small class="form-text text-muted">
-                                            Asunto que aparecerá en el correo electrónico
-                                        </small>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="nombre_remitente_{{ $encuesta->id }}">
+                                                <i class="fas fa-user"></i> Nombre del Remitente
+                                                <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="text"
+                                                   class="form-control"
+                                                   id="nombre_remitente_{{ $encuesta->id }}"
+                                                   name="encuestas[{{ $loop->index }}][nombre_remitente]"
+                                                   value="{{ old('encuestas.' . $loop->index . '.nombre_remitente', $empresa->nombre) }}"
+                                                   required>
+                                            <small class="form-text text-muted">
+                                                Nombre que aparecerá como remitente del correo
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="correo_remitente_{{ $encuesta->id }}">
+                                                <i class="fas fa-envelope"></i> Correo del Remitente
+                                                <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="email"
+                                                   class="form-control"
+                                                   id="correo_remitente_{{ $encuesta->id }}"
+                                                   name="encuestas[{{ $loop->index }}][correo_remitente]"
+                                                   value="{{ old('encuestas.' . $loop->index . '.correo_remitente', $empresa->correo_electronico) }}"
+                                                   required>
+                                            <small class="form-text text-muted">
+                                                Correo electrónico del remitente
+                                            </small>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="cuerpo_mensaje_{{ $encuesta->id }}">
-                                            <i class="fas fa-file-alt"></i> Cuerpo del Mensaje
-                                            <span class="text-danger">*</span>
-                                        </label>
-                                        <textarea class="form-control"
-                                                  id="cuerpo_mensaje_{{ $encuesta->id }}"
-                                                  name="encuestas[{{ $loop->index }}][cuerpo_mensaje]"
-                                                  rows="6"
-                                                  required>{{ old('encuestas.' . $loop->index . '.cuerpo_mensaje', 'Estimado participante,
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="asunto_{{ $encuesta->id }}">
+                                                <i class="fas fa-tag"></i> Asunto del Mensaje
+                                                <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="text"
+                                                   class="form-control"
+                                                   id="asunto_{{ $encuesta->id }}"
+                                                   name="encuestas[{{ $loop->index }}][asunto]"
+                                                   value="{{ old('encuestas.' . $loop->index . '.asunto', 'Invitación a participar en: ' . $encuesta->titulo) }}"
+                                                   required>
+                                            <small class="form-text text-muted">
+                                                Asunto del correo electrónico
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="cuerpo_mensaje_{{ $encuesta->id }}">
+                                                <i class="fas fa-file-alt"></i> Cuerpo del Mensaje
+                                                <span class="text-danger">*</span>
+                                            </label>
+                                            <textarea class="form-control"
+                                                      id="cuerpo_mensaje_{{ $encuesta->id }}"
+                                                      name="encuestas[{{ $loop->index }}][cuerpo_mensaje]"
+                                                      rows="6"
+                                                      required>{{ old('encuestas.' . $loop->index . '.cuerpo_mensaje', 'Estimado participante,
 
 Le invitamos a participar en nuestra encuesta: ' . $encuesta->titulo . '
 
@@ -129,54 +123,191 @@ Gracias por su participación.
 
 Saludos cordiales,
 ' . $empresa->nombre) }}</textarea>
-                                        <small class="form-text text-muted">
-                                            Contenido del correo electrónico. Puede usar {{ $link_encuesta }} para el enlace de la encuesta.
-                                        </small>
+                                            <small class="form-text text-muted">
+                                                Contenido del correo electrónico. Puede usar {{ $link_encuesta }} para el enlace de la encuesta.
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="tipo_envio_{{ $encuesta->id }}">
+                                                <i class="fas fa-clock"></i> Tipo de Envío
+                                                <span class="text-danger">*</span>
+                                            </label>
+                                            <select class="form-control tipo-envio-select"
+                                                    id="tipo_envio_{{ $encuesta->id }}"
+                                                    name="encuestas[{{ $loop->index }}][tipo_envio]"
+                                                    data-encuesta-id="{{ $encuesta->id }}"
+                                                    required>
+                                                @foreach($tiposEnvio as $key => $value)
+                                                    <option value="{{ $key }}"
+                                                            {{ old('encuestas.' . $loop->index . '.tipo_envio', 'manual') == $key ? 'selected' : '' }}>
+                                                        {{ $value }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <small class="form-text text-muted">
+                                                Define cuándo se enviará el correo
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="plantilla_{{ $encuesta->id }}">
+                                                <i class="fas fa-palette"></i> Plantilla (Opcional)
+                                            </label>
+                                            <input type="text"
+                                                   class="form-control"
+                                                   id="plantilla_{{ $encuesta->id }}"
+                                                   name="encuestas[{{ $loop->index }}][plantilla]"
+                                                   value="{{ old('encuestas.' . $loop->index . '.plantilla') }}"
+                                                   placeholder="Nombre de la plantilla">
+                                            <small class="form-text text-muted">
+                                                Nombre de la plantilla de correo a usar
+                                            </small>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="tipo_envio_{{ $encuesta->id }}">
-                                            <i class="fas fa-clock"></i> Tipo de Envío
-                                            <span class="text-danger">*</span>
-                                        </label>
-                                        <select class="form-control"
-                                                id="tipo_envio_{{ $encuesta->id }}"
-                                                name="encuestas[{{ $loop->index }}][tipo_envio]"
-                                                required>
-                                            @foreach($tiposEnvio as $key => $value)
-                                                <option value="{{ $key }}"
-                                                        {{ old('encuestas.' . $loop->index . '.tipo_envio', 'automatico') == $key ? 'selected' : '' }}>
-                                                    {{ $value }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <small class="form-text text-muted">
-                                            Define cuándo se enviará el correo
-                                        </small>
+                            <!-- Paso 2: Configuración de Envío Programado (solo si se selecciona programado) -->
+                            <div class="wizard-step configuracion-programado" data-step="2" style="display: none;">
+                                <h5><i class="fas fa-calendar-alt"></i> Configuración de Envío Programado</h5>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="fecha_envio_{{ $encuesta->id }}">
+                                                <i class="fas fa-calendar"></i> Fecha de Envío
+                                                <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="date"
+                                                   class="form-control"
+                                                   id="fecha_envio_{{ $encuesta->id }}"
+                                                   name="encuestas[{{ $loop->index }}][fecha_envio]"
+                                                   value="{{ old('encuestas.' . $loop->index . '.fecha_envio', date('Y-m-d')) }}"
+                                                   min="{{ date('Y-m-d') }}">
+                                            <small class="form-text text-muted">
+                                                Fecha en la que se enviarán los correos
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="hora_envio_{{ $encuesta->id }}">
+                                                <i class="fas fa-clock"></i> Hora de Envío
+                                                <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="time"
+                                                   class="form-control"
+                                                   id="hora_envio_{{ $encuesta->id }}"
+                                                   name="encuestas[{{ $loop->index }}][hora_envio]"
+                                                   value="{{ old('encuestas.' . $loop->index . '.hora_envio', '09:00') }}">
+                                            <small class="form-text text-muted">
+                                                Hora exacta del envío
+                                            </small>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="plantilla_{{ $encuesta->id }}">
-                                            <i class="fas fa-palette"></i> Plantilla (Opcional)
-                                        </label>
-                                        <input type="text"
-                                               class="form-control"
-                                               id="plantilla_{{ $encuesta->id }}"
-                                               name="encuestas[{{ $loop->index }}][plantilla]"
-                                               value="{{ old('encuestas.' . $loop->index . '.plantilla') }}"
-                                               placeholder="Nombre de la plantilla">
-                                        <small class="form-text text-muted">
-                                            Nombre de la plantilla de correo a usar
-                                        </small>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="tipo_destinatario_{{ $encuesta->id }}">
+                                                <i class="fas fa-users"></i> Tipo de Destinatario
+                                                <span class="text-danger">*</span>
+                                            </label>
+                                            <select class="form-control tipo-destinatario-select"
+                                                    id="tipo_destinatario_{{ $encuesta->id }}"
+                                                    name="encuestas[{{ $loop->index }}][tipo_destinatario]"
+                                                    data-encuesta-id="{{ $encuesta->id }}">
+                                                <option value="">Seleccione un tipo</option>
+                                                @foreach($tiposDestinatario as $key => $value)
+                                                    <option value="{{ $key }}"
+                                                            data-cantidad="{{ $estadisticasDestinatarios[$key] ?? 0 }}">
+                                                        {{ $value }} ({{ $estadisticasDestinatarios[$key] ?? 0 }} disponibles)
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <small class="form-text text-muted">
+                                                Seleccione el tipo de destinatarios para el envío
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="numero_bloques_{{ $encuesta->id }}">
+                                                <i class="fas fa-layer-group"></i> Número de Bloques
+                                                <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="number"
+                                                   class="form-control"
+                                                   id="numero_bloques_{{ $encuesta->id }}"
+                                                   name="encuestas[{{ $loop->index }}][numero_bloques]"
+                                                   value="{{ old('encuestas.' . $loop->index . '.numero_bloques', 1) }}"
+                                                   min="1"
+                                                   max="10">
+                                            <small class="form-text text-muted">
+                                                Número de bloques en los que se dividirá el envío
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="correo_prueba_{{ $encuesta->id }}">
+                                                <i class="fas fa-vial"></i> Correo de Prueba
+                                            </label>
+                                            <input type="email"
+                                                   class="form-control"
+                                                   id="correo_prueba_{{ $encuesta->id }}"
+                                                   name="encuestas[{{ $loop->index }}][correo_prueba]"
+                                                   value="{{ old('encuestas.' . $loop->index . '.correo_prueba') }}"
+                                                   placeholder="correo@ejemplo.com">
+                                            <small class="form-text text-muted">
+                                                Correo para enviar prueba antes del envío masivo
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <div class="custom-control custom-switch">
+                                                <input type="checkbox"
+                                                       class="custom-control-input"
+                                                       id="modo_prueba_{{ $encuesta->id }}"
+                                                       name="encuestas[{{ $loop->index }}][modo_prueba]"
+                                                       value="1"
+                                                       {{ old('encuestas.' . $loop->index . '.modo_prueba') ? 'checked' : '' }}>
+                                                <label class="custom-control-label" for="modo_prueba_{{ $encuesta->id }}">
+                                                    <i class="fas fa-bug"></i> Modo Debug/Prueba
+                                                </label>
+                                            </div>
+                                            <small class="form-text text-muted">
+                                                Activar para enviar solo correo de prueba
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Botón para enviar correo de prueba -->
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <button type="button"
+                                                class="btn btn-warning btn-enviar-prueba"
+                                                data-encuesta-id="{{ $encuesta->id }}"
+                                                style="display: none;">
+                                            <i class="fas fa-paper-plane"></i> Enviar Correo de Prueba
+                                        </button>
                                     </div>
                                 </div>
                             </div>
 
+                            <!-- Configuración Activa -->
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
@@ -235,16 +366,14 @@ Saludos cordiales,
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i class="fas fa-eye"></i> Vista Previa del Correo
+                    <i class="fas fa-eye"></i> Vista Previa de Configuración
                 </h5>
                 <button type="button" class="close" data-dismiss="modal">
                     <span>&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
-                <div id="preview-content">
-                    <!-- El contenido de la vista previa se cargará aquí -->
-                </div>
+            <div class="modal-body" id="previewContent">
+                <!-- Contenido de vista previa -->
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
@@ -253,197 +382,109 @@ Saludos cordiales,
     </div>
 </div>
 
-<style>
-.custom-switch .custom-control-label::before {
-    width: 2rem;
-    height: 1rem;
-    border-radius: 1rem;
-}
+@endsection
 
-.custom-switch .custom-control-label::after {
-    width: calc(1rem - 4px);
-    height: calc(1rem - 4px);
-    border-radius: calc(1rem - 4px);
-}
-
-.custom-switch .custom-control-input:checked ~ .custom-control-label::after {
-    transform: translateX(1rem);
-}
-
-.form-group label {
-    font-weight: 600;
-    color: #495057;
-}
-
-.form-control:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-}
-
-.card-outline.card-primary {
-    border-top: 3px solid #007bff;
-}
-
-.card-outline.card-info {
-    border-top: 3px solid #17a2b8;
-}
-
-.card-outline.card-secondary {
-    border-top: 3px solid #6c757d;
-}
-</style>
-
+@push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('configuracion-form');
-    const btnPreview = document.getElementById('btn-preview');
-    const previewModal = document.getElementById('previewModal');
+$(document).ready(function() {
+    // Manejar cambio de tipo de envío
+    $('.tipo-envio-select').change(function() {
+        const encuestaId = $(this).data('encuesta-id');
+        const tipoEnvio = $(this).val();
+        const configProgramado = $(`.configuracion-programado[data-encuesta-id="${encuestaId}"]`);
 
-    // Validación del formulario
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        if (validateForm()) {
-            submitForm();
+        if (tipoEnvio === 'programado') {
+            configProgramado.show();
+            $(`.btn-enviar-prueba[data-encuesta-id="${encuestaId}"]`).show();
+        } else {
+            configProgramado.hide();
+            $(`.btn-enviar-prueba[data-encuesta-id="${encuestaId}"]`).hide();
         }
     });
 
-    // Vista previa
-    btnPreview.addEventListener('click', function() {
-        showPreview();
+    // Calcular bloques sugeridos cuando cambia el tipo de destinatario
+    $('.tipo-destinatario-select').change(function() {
+        const encuestaId = $(this).data('encuesta-id');
+        const selectedOption = $(this).find('option:selected');
+        const cantidad = selectedOption.data('cantidad') || 0;
+
+        if (cantidad > 0) {
+            const bloquesSugeridos = calcularBloquesSugeridos(cantidad);
+            $(`#numero_bloques_${encuestaId}`).val(bloquesSugeridos);
+        }
     });
 
-    function validateForm() {
-        let isValid = true;
-        const requiredFields = form.querySelectorAll('[required]');
+    // Función para calcular bloques sugeridos
+    function calcularBloquesSugeridos(cantidad) {
+        if (cantidad <= 50) return 1;
+        const bloques = Math.max(2, Math.ceil(cantidad / 100));
+        return Math.min(bloques, 10);
+    }
 
-        requiredFields.forEach(field => {
-            if (!field.value.trim()) {
-                field.classList.add('is-invalid');
-                isValid = false;
+    // Enviar correo de prueba
+    $('.btn-enviar-prueba').click(function() {
+        const encuestaId = $(this).data('encuesta-id');
+        const correoPrueba = $(`#correo_prueba_${encuestaId}`).val();
+
+        if (!correoPrueba) {
+            alert('Debe especificar un correo de prueba');
+            return;
+        }
+
+        if (!confirm('¿Está seguro de enviar un correo de prueba?')) {
+            return;
+        }
+
+        // Aquí se enviaría la petición AJAX para enviar el correo de prueba
+        $.post('{{ route("configuracion-envio.enviar-prueba") }}', {
+            configuracion_id: encuestaId,
+            correo_prueba: correoPrueba,
+            _token: '{{ csrf_token() }}'
+        })
+        .done(function(response) {
+            if (response.success) {
+                alert('Correo de prueba enviado correctamente');
             } else {
-                field.classList.remove('is-invalid');
+                alert('Error: ' + response.message);
             }
+        })
+        .fail(function() {
+            alert('Error al enviar correo de prueba');
         });
+    });
 
-        // Validar emails
-        const emailFields = form.querySelectorAll('input[type="email"]');
-        emailFields.forEach(field => {
-            const email = field.value.trim();
-            if (email && !isValidEmail(email)) {
-                field.classList.add('is-invalid');
-                isValid = false;
+    // Vista previa
+    $('#btn-preview').click(function() {
+        // Implementar lógica de vista previa
+        $('#previewModal').modal('show');
+    });
+
+    // Validación del formulario
+    $('#configuracionForm').submit(function(e) {
+        let isValid = true;
+
+        // Validar campos requeridos para envío programado
+        $('.tipo-envio-select').each(function() {
+            const encuestaId = $(this).data('encuesta-id');
+            const tipoEnvio = $(this).val();
+
+            if (tipoEnvio === 'programado') {
+                const fechaEnvio = $(`#fecha_envio_${encuestaId}`).val();
+                const horaEnvio = $(`#hora_envio_${encuestaId}`).val();
+                const tipoDestinatario = $(`#tipo_destinatario_${encuestaId}`).val();
+
+                if (!fechaEnvio || !horaEnvio || !tipoDestinatario) {
+                    alert('Para envío programado, debe completar fecha, hora y tipo de destinatario');
+                    isValid = false;
+                    return false;
+                }
             }
         });
 
         if (!isValid) {
-            showError('Por favor, complete todos los campos requeridos correctamente.');
+            e.preventDefault();
         }
-
-        return isValid;
-    }
-
-    function isValidEmail(email) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
-    }
-
-    function submitForm() {
-        const formData = new FormData(form);
-
-        // Mostrar loading
-        const submitBtn = form.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
-        submitBtn.disabled = true;
-
-        fetch(form.action, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showSuccess('Configuración guardada exitosamente');
-                setTimeout(() => {
-                    window.location.href = '{{ route("configuracion-envio.resumen") }}?empresa_id={{ $empresa->id }}';
-                }, 2000);
-            } else {
-                showError(data.message || 'Error al guardar la configuración');
-            }
-        })
-        .catch(error => {
-            showError('Error de conexión: ' + error.message);
-        })
-        .finally(() => {
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
-        });
-    }
-
-    function showPreview() {
-        const previewContent = document.getElementById('preview-content');
-        let previewHtml = '<div class="row">';
-
-        // Obtener datos del primer formulario como ejemplo
-        const firstEncuesta = document.querySelector('[id^="nombre_remitente_"]');
-        if (firstEncuesta) {
-            const encuestaId = firstEncuesta.id.split('_')[2];
-            const nombreRemitente = document.getElementById(`nombre_remitente_${encuestaId}`).value;
-            const correoRemitente = document.getElementById(`correo_remitente_${encuestaId}`).value;
-            const asunto = document.getElementById(`asunto_${encuestaId}`).value;
-            const cuerpoMensaje = document.getElementById(`cuerpo_mensaje_${encuestaId}`).value;
-
-            previewHtml += `
-                <div class="col-md-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h6><strong>De:</strong> ${nombreRemitente} &lt;${correoRemitente}&gt;</h6>
-                            <h6><strong>Asunto:</strong> ${asunto}</h6>
-                        </div>
-                        <div class="card-body">
-                            <pre style="white-space: pre-wrap; font-family: inherit;">${cuerpoMensaje}</pre>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        previewHtml += '</div>';
-        previewContent.innerHTML = previewHtml;
-
-        $(previewModal).modal('show');
-    }
-
-    function showSuccess(message) {
-        // Usar SweetAlert si está disponible, sino alert
-        if (typeof Swal !== 'undefined') {
-            Swal.fire({
-                icon: 'success',
-                title: '¡Éxito!',
-                text: message,
-                timer: 3000
-            });
-        } else {
-            alert('Éxito: ' + message);
-        }
-    }
-
-    function showError(message) {
-        // Usar SweetAlert si está disponible, sino alert
-        if (typeof Swal !== 'undefined') {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: message
-            });
-        } else {
-            alert('Error: ' + message);
-        }
-    }
+    });
 });
 </script>
-@endsection
+@endpush
