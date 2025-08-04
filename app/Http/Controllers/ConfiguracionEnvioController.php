@@ -114,14 +114,32 @@ class ConfiguracionEnvioController extends Controller
                 'encuestas.*.tipo_envio' => 'required|in:manual,programado',
                 'encuestas.*.plantilla' => 'nullable|string|max:255',
                 'encuestas.*.activo' => 'boolean',
-                // Validaciones para envío programado
-                'encuestas.*.fecha_envio' => 'required_if:encuestas.*.tipo_envio,programado|date|after_or_equal:today',
-                'encuestas.*.hora_envio' => 'required_if:encuestas.*.tipo_envio,programado|date_format:H:i',
-                'encuestas.*.tipo_destinatario' => 'required_if:encuestas.*.tipo_envio,programado|in:empleados,clientes,proveedores,personalizado',
-                'encuestas.*.numero_bloques' => 'required_if:encuestas.*.tipo_envio,programado|integer|min:1|max:10',
+                // Validaciones para envío programado (solo si se envía el campo)
+                'encuestas.*.fecha_envio' => 'nullable|date|after_or_equal:today',
+                'encuestas.*.hora_envio' => 'nullable|date_format:H:i',
+                'encuestas.*.tipo_destinatario' => 'nullable|in:empleados,clientes,proveedores,personalizado',
+                'encuestas.*.numero_bloques' => 'nullable|integer|min:1|max:10',
                 'encuestas.*.correo_prueba' => 'nullable|email',
                 'encuestas.*.modo_prueba' => 'boolean'
             ]);
+
+            // Validación personalizada para campos requeridos cuando es programado
+            foreach ($request->input('encuestas', []) as $index => $encuestaData) {
+                if ($encuestaData['tipo_envio'] === 'programado') {
+                    if (empty($encuestaData['fecha_envio'])) {
+                        $validator->errors()->add("encuestas.{$index}.fecha_envio", 'La fecha de envío es requerida para envío programado.');
+                    }
+                    if (empty($encuestaData['hora_envio'])) {
+                        $validator->errors()->add("encuestas.{$index}.hora_envio", 'La hora de envío es requerida para envío programado.');
+                    }
+                    if (empty($encuestaData['tipo_destinatario'])) {
+                        $validator->errors()->add("encuestas.{$index}.tipo_destinatario", 'El tipo de destinatario es requerido para envío programado.');
+                    }
+                    if (empty($encuestaData['numero_bloques'])) {
+                        $validator->errors()->add("encuestas.{$index}.numero_bloques", 'El número de bloques es requerido para envío programado.');
+                    }
+                }
+            }
 
             if ($validator->fails()) {
                 return response()->json([

@@ -399,6 +399,14 @@ $(document).ready(function() {
         } else {
             configProgramado.hide();
             $(`.btn-enviar-prueba[data-encuesta-id="${encuestaId}"]`).hide();
+
+            // Limpiar campos de programado cuando se selecciona manual
+            $(`#fecha_envio_${encuestaId}`).val('');
+            $(`#hora_envio_${encuestaId}`).val('');
+            $(`#tipo_destinatario_${encuestaId}`).val('');
+            $(`#numero_bloques_${encuestaId}`).val('1');
+            $(`#correo_prueba_${encuestaId}`).val('');
+            $(`#modo_prueba_${encuestaId}`).prop('checked', false);
         }
     });
 
@@ -462,6 +470,7 @@ $(document).ready(function() {
     // Validación del formulario
     $('#configuracionForm').submit(function(e) {
         let isValid = true;
+        let errorMessages = [];
 
         // Validar campos requeridos para envío programado
         $('.tipo-envio-select').each(function() {
@@ -472,14 +481,27 @@ $(document).ready(function() {
                 const fechaEnvio = $(`#fecha_envio_${encuestaId}`).val();
                 const horaEnvio = $(`#hora_envio_${encuestaId}`).val();
                 const tipoDestinatario = $(`#tipo_destinatario_${encuestaId}`).val();
+                const numeroBloques = $(`#numero_bloques_${encuestaId}`).val();
 
-                if (!fechaEnvio || !horaEnvio || !tipoDestinatario) {
-                    alert('Para envío programado, debe completar fecha, hora y tipo de destinatario');
-                    isValid = false;
-                    return false;
+                if (!fechaEnvio) {
+                    errorMessages.push(`Encuesta ${encuestaId}: Fecha de envío es requerida`);
+                }
+                if (!horaEnvio) {
+                    errorMessages.push(`Encuesta ${encuestaId}: Hora de envío es requerida`);
+                }
+                if (!tipoDestinatario) {
+                    errorMessages.push(`Encuesta ${encuestaId}: Tipo de destinatario es requerido`);
+                }
+                if (!numeroBloques || numeroBloques < 1) {
+                    errorMessages.push(`Encuesta ${encuestaId}: Número de bloques debe ser mayor a 0`);
                 }
             }
         });
+
+        if (errorMessages.length > 0) {
+            alert('Errores de validación:\n' + errorMessages.join('\n'));
+            isValid = false;
+        }
 
         if (!isValid) {
             e.preventDefault();
