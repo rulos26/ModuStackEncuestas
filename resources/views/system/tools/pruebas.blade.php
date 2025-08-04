@@ -72,6 +72,9 @@
                         <option value="migracion_configuracion_envio" {{ $tipo === 'migracion_configuracion_envio' ? 'selected' : '' }}>
                             🗄️ Probar Migración Configuración Envío
                         </option>
+                        <option value="diagnosticar_tablas_migracion" {{ $tipo === 'diagnosticar_tablas_migracion' ? 'selected' : '' }}>
+                            🔍 Diagnosticar Tablas para Migración
+                        </option>
                         <option value="corregir_user_id" {{ $tipo === 'corregir_user_id' ? 'selected' : '' }}>
                             Corregir User ID de Encuesta
                         </option>
@@ -643,6 +646,11 @@ $(document).ready(function() {
                 $('#encuesta_id').attr('placeholder', 'No requiere ID - Ejecuta migración');
             } else if (selectedValue === 'migracion_configuracion_envio') {
                 $('#encuesta_id').attr('placeholder', 'No requiere ID - Ejecuta migración de configuración de envío');
+                $('#email_group').hide();
+                $('#cantidad_group').hide();
+                $('#horas_group').hide();
+            } else if (selectedValue === 'diagnosticar_tablas_migracion') {
+                $('#encuesta_id').attr('placeholder', 'No requiere ID - Diagnostica tablas necesarias');
                 $('#email_group').hide();
                 $('#cantidad_group').hide();
                 $('#horas_group').hide();

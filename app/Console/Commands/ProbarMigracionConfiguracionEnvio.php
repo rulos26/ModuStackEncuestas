@@ -18,6 +18,11 @@ class ProbarMigracionConfiguracionEnvio extends Command
         $this->info('================================================');
 
         try {
+            // Primero ejecutar diagnóstico
+            $this->info('🔍 Ejecutando diagnóstico de tablas...');
+            Artisan::call('diagnosticar:tablas-migracion');
+            $this->info('');
+
             // Verificar si la tabla ya existe
             $tablaExiste = Schema::hasTable('configuracion_envios');
 
@@ -43,8 +48,9 @@ class ProbarMigracionConfiguracionEnvio extends Command
             // Ejecutar solo la migración específica
             $this->info('🔄 Ejecutando migración específica...');
 
+            // Intentar primero con la migración simple (sin foreign keys)
             $output = Artisan::call('migrate', [
-                '--path' => 'database/migrations/2025_07_31_150000_create_configuracion_envios_table.php',
+                '--path' => 'database/migrations/2025_07_31_160000_create_configuracion_envios_simple_table.php',
                 '--force' => true
             ]);
 
@@ -99,15 +105,23 @@ class ProbarMigracionConfiguracionEnvio extends Command
                         }
                         $this->table(['Constraint', 'Columna', 'Tabla Referenciada', 'Columna Referenciada'], $fkInfo);
                     } else {
-                        $this->warn('⚠️  No se encontraron foreign keys');
+                        $this->warn('⚠️  No se encontraron foreign keys (esto es normal con la migración simple)');
                     }
 
                     // Probar inserción de datos de prueba
                     $this->info('🧪 Probando inserción de datos...');
 
                     // Verificar si existen empresas y encuestas
-                    $empresas = DB::table('empresas')->count();
-                    $encuestas = DB::table('encuestas')->count();
+                    $empresas = 0;
+                    $encuestas = 0;
+
+                    if (Schema::hasTable('empresas')) {
+                        $empresas = DB::table('empresas')->count();
+                    }
+
+                    if (Schema::hasTable('encuestas')) {
+                        $encuestas = DB::table('encuestas')->count();
+                    }
 
                     $this->info("📊 Empresas disponibles: {$empresas}");
                     $this->info("📊 Encuestas disponibles: {$encuestas}");
@@ -153,6 +167,7 @@ class ProbarMigracionConfiguracionEnvio extends Command
                         }
                     } else {
                         $this->warn('⚠️  No hay suficientes datos para la prueba (empresas: {$empresas}, encuestas: {$encuestas})');
+                        $this->info('💡 La tabla se creó correctamente pero no hay datos de prueba disponibles');
                     }
 
                 } else {
