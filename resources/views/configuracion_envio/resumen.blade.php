@@ -711,12 +711,43 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 
+// Funciones de notificación (fuera del document.ready para acceso global)
+function showSuccess(message) {
+    Swal.fire({
+        icon: 'success',
+        title: '¡Éxito!',
+        text: message,
+        timer: 3000,
+        showConfirmButton: false
+    });
+}
+
+function showError(message) {
+    Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: message,
+        timer: 5000,
+        showConfirmButton: true
+    });
+}
+
+function showWarning(message) {
+    Swal.fire({
+        icon: 'warning',
+        title: 'Atención',
+        text: message,
+        timer: 4000,
+        showConfirmButton: false
+    });
+}
+
 // Función para configurar destinatarios (fuera del document.ready para acceso global)
 function configurarDestinatarios(configuracionId) {
     console.log('Configurando destinatarios para configuración:', configuracionId);
 
     // Cargar empleados de la empresa
-    $.get(`/configuracion-envio/obtener-empleados/${configuracionId}`, function(response) {
+    $.get(`{{ url('/configuracion-envio/obtener-empleados') }}/${configuracionId}`, function(response) {
         if (response.success) {
             mostrarModalDestinatarios(configuracionId, response.empleados, response.configuracion);
         } else {
@@ -845,7 +876,7 @@ function guardarDestinatarios() {
             _token: '{{ csrf_token() }}'
         };
 
-        $.post('/configuracion-envio/guardar-destinatarios', datos, function(response) {
+        $.post('{{ route("configuracion-envio.guardar-destinatarios") }}', datos, function(response) {
             if (response.success) {
                 showSuccess('Destinatarios configurados correctamente');
                 $('#destinatariosModal').modal('hide');
