@@ -418,7 +418,7 @@ class CargaMasivaEncuestasController extends Controller
     /**
      * Obtener tipos de preguntas disponibles
      */
-    private function obtenerTiposDisponibles()
+    public function obtenerTiposDisponibles()
     {
         return [
             'texto_corto' => 'Texto corto',
