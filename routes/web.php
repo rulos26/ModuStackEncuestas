@@ -329,6 +329,10 @@ Route::middleware(['auth'])->prefix('configuracion-envio')->name('configuracion-
     Route::get('/editar/{id}', [App\Http\Controllers\ConfiguracionEnvioController::class, 'editar'])->name('editar');
     Route::get('/resumen', [App\Http\Controllers\ConfiguracionEnvioController::class, 'resumen'])->name('resumen');
     Route::post('/enviar-prueba', [App\Http\Controllers\ConfiguracionEnvioController::class, 'enviarPrueba'])->name('enviar-prueba');
+
+    // Rutas para configuración de destinatarios
+    Route::get('/obtener-empleados/{id}', [App\Http\Controllers\ConfiguracionEnvioController::class, 'obtenerEmpleados'])->name('obtener-empleados');
+    Route::post('/guardar-destinatarios', [App\Http\Controllers\ConfiguracionEnvioController::class, 'guardarDestinatarios'])->name('guardar-destinatarios');
 });
 
 

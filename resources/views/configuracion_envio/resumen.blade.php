@@ -80,6 +80,52 @@
         background-color: #218838 !important;
         border-color: #1e7e34 !important;
     }
+
+    /* Estilos para el modal de destinatarios */
+    .modal-content {
+        background-color: #2d3748 !important;
+        color: #ffffff !important;
+        border-color: #495057 !important;
+    }
+
+    .modal-header {
+        background-color: #343a40 !important;
+        border-bottom-color: #495057 !important;
+    }
+
+    .modal-footer {
+        background-color: #343a40 !important;
+        border-top-color: #495057 !important;
+    }
+
+    .empleados-list {
+        background-color: #2d3748 !important;
+        border: 1px solid #495057 !important;
+        border-radius: 5px;
+        padding: 15px;
+    }
+
+    .custom-control-label {
+        color: #ffffff !important;
+    }
+
+    .custom-control-input:checked ~ .custom-control-label::before {
+        background-color: #007bff !important;
+        border-color: #007bff !important;
+    }
+
+    .form-control {
+        background-color: #495057 !important;
+        border-color: #6c757d !important;
+        color: #ffffff !important;
+    }
+
+    .form-control:focus {
+        background-color: #495057 !important;
+        border-color: #007bff !important;
+        color: #ffffff !important;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
+    }
 </style>
 @endpush
 
@@ -223,6 +269,13 @@
                                                             title="Editar">
                                                         <i class="fas fa-edit"></i>
                                                     </button>
+                                                    @if($configuracion->tipo_envio === 'programado')
+                                                    <button type="button" class="btn btn-sm btn-success"
+                                                            onclick="configurarDestinatarios({{ $configuracion->id }})"
+                                                            title="Configurar Destinatarios">
+                                                        <i class="fas fa-users"></i>
+                                                    </button>
+                                                    @endif
                                                     <button type="button" class="btn btn-sm btn-{{ $configuracion->activo ? 'danger' : 'success' }}"
                                                             onclick="toggleEstado({{ $configuracion->id }}, {{ $configuracion->activo ? 'false' : 'true' }})"
                                                             title="{{ $configuracion->activo ? 'Desactivar' : 'Activar' }}">
@@ -257,6 +310,31 @@
                     </div>
                 </div>
             @endif
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Destinatarios -->
+<div class="modal fade" id="destinatariosModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-users"></i> Configurar Destinatarios
+                </h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="destinatarios-content">
+                <!-- El contenido se cargará dinámicamente -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success" onclick="guardarDestinatarios()">
+                    <i class="fas fa-save"></i> Guardar Configuración
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -622,6 +700,156 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             alert('Info: ' + message);
         }
+    }
+
+    // Función para configurar destinatarios
+    function configurarDestinatarios(configuracionId) {
+        console.log('Configurando destinatarios para configuración:', configuracionId);
+
+        // Cargar empleados de la empresa
+        $.get(`/configuracion-envio/obtener-empleados/${configuracionId}`, function(response) {
+            if (response.success) {
+                mostrarModalDestinatarios(configuracionId, response.empleados, response.configuracion);
+            } else {
+                showError('Error al cargar empleados: ' + response.message);
+            }
+        }).fail(function() {
+            showError('Error al cargar empleados');
+        });
+    }
+
+    // Función para mostrar el modal de destinatarios
+    function mostrarModalDestinatarios(configuracionId, empleados, configuracion) {
+        let empleadosHtml = '';
+
+        empleados.forEach(function(empleado) {
+            const isSelected = configuracion.destinatarios_seleccionados &&
+                             configuracion.destinatarios_seleccionados.includes(empleado.id);
+
+            empleadosHtml += `
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input"
+                           id="empleado_${empleado.id}"
+                           value="${empleado.id}"
+                           ${isSelected ? 'checked' : ''}>
+                    <label class="custom-control-label" for="empleado_${empleado.id}">
+                        <strong>${empleado.nombre}</strong><br>
+                        <small class="text-muted">${empleado.cargo} - ${empleado.correo_electronico}</small>
+                    </label>
+                </div>
+            `;
+        });
+
+        const modalContent = `
+            <div class="row">
+                <div class="col-md-12">
+                    <h6><i class="fas fa-building"></i> Empresa: ${configuracion.empresa_nombre}</h6>
+                    <h6><i class="fas fa-poll"></i> Encuesta: ${configuracion.encuesta_titulo}</h6>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-12">
+                    <h6><i class="fas fa-users"></i> Seleccionar Destinatarios</h6>
+                    <p class="text-muted">Selecciona los empleados que recibirán el correo:</p>
+
+                    <div class="empleados-list" style="max-height: 300px; overflow-y: auto;">
+                        ${empleadosHtml}
+                    </div>
+
+                    <div class="mt-3">
+                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="seleccionarTodos()">
+                            <i class="fas fa-check-double"></i> Seleccionar Todos
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="deseleccionarTodos()">
+                            <i class="fas fa-times"></i> Deseleccionar Todos
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label><i class="fas fa-calendar"></i> Fecha de Envío</label>
+                        <input type="date" class="form-control" id="fecha_envio"
+                               value="${configuracion.fecha_envio || ''}"
+                               min="${new Date().toISOString().split('T')[0]}">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label><i class="fas fa-clock"></i> Hora de Envío</label>
+                        <input type="time" class="form-control" id="hora_envio"
+                               value="${configuracion.hora_envio || '09:00'}">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label><i class="fas fa-layer-group"></i> Número de Bloques</label>
+                        <input type="number" class="form-control" id="numero_bloques"
+                               value="${configuracion.numero_bloques || 1}" min="1" max="10">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label><i class="fas fa-vial"></i> Correo de Prueba</label>
+                        <input type="email" class="form-control" id="correo_prueba"
+                               value="${configuracion.correo_prueba || ''}"
+                               placeholder="correo@ejemplo.com">
+                    </div>
+                </div>
+            </div>
+        `;
+
+        $('#destinatarios-content').html(modalContent);
+        $('#destinatariosModal').modal('show');
+    }
+
+    // Funciones para seleccionar/deseleccionar todos
+    function seleccionarTodos() {
+        $('.empleados-list input[type="checkbox"]').prop('checked', true);
+    }
+
+    function deseleccionarTodos() {
+        $('.empleados-list input[type="checkbox"]').prop('checked', false);
+    }
+
+    // Función para guardar la configuración de destinatarios
+    function guardarDestinatarios() {
+        const configuracionId = $('#destinatariosModal').data('configuracion-id');
+        const empleadosSeleccionados = [];
+
+        $('.empleados-list input[type="checkbox"]:checked').each(function() {
+            empleadosSeleccionados.push($(this).val());
+        });
+
+        const datos = {
+            configuracion_id: configuracionId,
+            empleados: empleadosSeleccionados,
+            fecha_envio: $('#fecha_envio').val(),
+            hora_envio: $('#hora_envio').val(),
+            numero_bloques: $('#numero_bloques').val(),
+            correo_prueba: $('#correo_prueba').val(),
+            _token: '{{ csrf_token() }}'
+        };
+
+        $.post('/configuracion-envio/guardar-destinatarios', datos, function(response) {
+            if (response.success) {
+                showSuccess('Destinatarios configurados correctamente');
+                $('#destinatariosModal').modal('hide');
+                // Recargar la página para mostrar los cambios
+                setTimeout(function() {
+                    location.reload();
+                }, 1500);
+            } else {
+                showError('Error: ' + response.message);
+            }
+        }).fail(function() {
+            showError('Error al guardar destinatarios');
+        });
     }
 });
 </script>

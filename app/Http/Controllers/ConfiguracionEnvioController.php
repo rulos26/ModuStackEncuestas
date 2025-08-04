@@ -472,4 +472,101 @@ class ConfiguracionEnvioController extends Controller
             'estadisticasDestinatarios'
         ));
     }
+
+    /**
+     * Obtener empleados de la empresa para una configuración
+     */
+    public function obtenerEmpleados($configuracionId)
+    {
+        try {
+            $configuracion = ConfiguracionEnvio::with(['empresa', 'encuesta'])->findOrFail($configuracionId);
+
+            $empleados = Empleado::select('id', 'nombre', 'cargo', 'correo_electronico')
+                ->orderBy('nombre')
+                ->get();
+
+            // Preparar datos de la configuración
+            $datosConfiguracion = [
+                'empresa_nombre' => $configuracion->empresa->nombre,
+                'encuesta_titulo' => $configuracion->encuesta->titulo,
+                'fecha_envio' => $configuracion->fecha_envio ? $configuracion->fecha_envio->format('Y-m-d') : '',
+                'hora_envio' => $configuracion->hora_envio ? $configuracion->hora_envio->format('H:i') : '',
+                'numero_bloques' => $configuracion->numero_bloques,
+                'correo_prueba' => $configuracion->correo_prueba,
+                'destinatarios_seleccionados' => [] // Por ahora vacío, se puede implementar después
+            ];
+
+            return response()->json([
+                'success' => true,
+                'empleados' => $empleados,
+                'configuracion' => $datosConfiguracion
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error obteniendo empleados: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al obtener empleados'
+            ], 500);
+        }
+    }
+
+    /**
+     * Guardar configuración de destinatarios
+     */
+    public function guardarDestinatarios(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'configuracion_id' => 'required|exists:configuracion_envios,id',
+                'empleados' => 'required|array|min:1',
+                'empleados.*' => 'exists:empleados,id',
+                'fecha_envio' => 'required|date|after_or_equal:today',
+                'hora_envio' => 'required|date_format:H:i',
+                'numero_bloques' => 'required|integer|min:1|max:10',
+                'correo_prueba' => 'nullable|email'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Datos de validación incorrectos',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $configuracion = ConfiguracionEnvio::findOrFail($request->configuracion_id);
+
+            // Actualizar configuración
+            $configuracion->update([
+                'fecha_envio' => $request->fecha_envio,
+                'hora_envio' => $request->fecha_envio . ' ' . $request->hora_envio,
+                'numero_bloques' => $request->numero_bloques,
+                'correo_prueba' => $request->correo_prueba,
+                'tipo_destinatario' => 'empleados', // Por defecto empleados
+                'estado_programacion' => 'pendiente'
+            ]);
+
+            Log::info('Configuración de destinatarios guardada', [
+                'configuracion_id' => $configuracion->id,
+                'empleados_count' => count($request->empleados),
+                'fecha_envio' => $request->fecha_envio,
+                'hora_envio' => $request->hora_envio
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Destinatarios configurados correctamente'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error guardando destinatarios: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al guardar destinatarios'
+            ], 500);
+        }
+    }
 }
