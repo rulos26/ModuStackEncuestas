@@ -132,6 +132,9 @@
                         <option value="diagnosticar_configuracion_envio" {{ $tipo === 'diagnosticar_configuracion_envio' ? 'selected' : '' }}>
                             🔧 Diagnosticar Configuración de Envío
                         </option>
+                        <option value="corregir_configuraciones_envio" {{ $tipo === 'corregir_configuraciones_envio' ? 'selected' : '' }}>
+                            🔧 Corregir Configuraciones de Envío
+                        </option>
                         <option value="solucionar_csrf_hosting" {{ $tipo === 'solucionar_csrf_hosting' ? 'selected' : '' }}>
                             Solucionar Error CSRF en Hosting
                         </option>
@@ -198,6 +201,20 @@
                                        placeholder="Ej: 1" min="1">
                                 <small class="form-text text-muted">
                                     ID de empresa para diagnósticos específicos.
+                                </small>
+                            </div>
+                        </div>
+                        <div class="col-md-3" id="tipo_destinatario_group" style="display: none;">
+                            <div class="form-group">
+                                <label for="tipo_destinatario">Tipo de Destinatario:</label>
+                                <select class="form-control" id="tipo_destinatario" name="tipo_destinatario">
+                                    <option value="empleados">Empleados</option>
+                                    <option value="clientes">Clientes</option>
+                                    <option value="proveedores">Proveedores</option>
+                                    <option value="personalizado">Personalizado</option>
+                                </select>
+                                <small class="form-text text-muted">
+                                    Tipo de destinatario por defecto para correcciones.
                                 </small>
                             </div>
                         </div>
@@ -794,6 +811,7 @@ $(document).ready(function() {
                 $('#horas_group').hide();
                 $('#configuracion_id_group').hide();
                 $('#empresa_id_group').hide();
+                $('#tipo_destinatario_group').hide();
                 $('#cron_options_group').hide();
             } else if (selectedValue === 'probar_cron_job') {
                 $('#encuesta_id').attr('placeholder', 'No requiere ID - Prueba completa del cron job');
@@ -802,6 +820,7 @@ $(document).ready(function() {
                 $('#horas_group').hide();
                 $('#configuracion_id_group').hide();
                 $('#empresa_id_group').hide();
+                $('#tipo_destinatario_group').hide();
                 $('#cron_options_group').show();
             } else if (selectedValue === 'verificar_sistema_colas') {
                 $('#encuesta_id').attr('placeholder', 'No requiere ID - Verifica sistema de colas');
@@ -810,6 +829,7 @@ $(document).ready(function() {
                 $('#horas_group').hide();
                 $('#configuracion_id_group').hide();
                 $('#empresa_id_group').hide();
+                $('#tipo_destinatario_group').hide();
                 $('#cron_options_group').show();
             } else if (selectedValue === 'probar_envio_correos') {
                 $('#encuesta_id').attr('placeholder', 'ID de encuesta (opcional) - Prueba envío de correos');
@@ -818,6 +838,7 @@ $(document).ready(function() {
                 $('#horas_group').hide();
                 $('#configuracion_id_group').show();
                 $('#empresa_id_group').hide();
+                $('#tipo_destinatario_group').hide();
                 $('#cron_options_group').show();
             } else if (selectedValue === 'ejecutar_cron_job') {
                 $('#encuesta_id').attr('placeholder', 'No requiere ID - Ejecuta cron job manualmente');
@@ -826,6 +847,7 @@ $(document).ready(function() {
                 $('#horas_group').hide();
                 $('#configuracion_id_group').hide();
                 $('#empresa_id_group').hide();
+                $('#tipo_destinatario_group').hide();
                 $('#cron_options_group').show();
             } else if (selectedValue === 'diagnosticar_configuracion_envio') {
                 $('#encuesta_id').attr('placeholder', 'ID de encuesta (opcional) - Diagnostica configuración');
@@ -834,7 +856,17 @@ $(document).ready(function() {
                 $('#horas_group').hide();
                 $('#configuracion_id_group').hide();
                 $('#empresa_id_group').show();
+                $('#tipo_destinatario_group').hide();
                 $('#cron_options_group').hide();
+            } else if (selectedValue === 'corregir_configuraciones_envio') {
+                $('#encuesta_id').attr('placeholder', 'No requiere ID - Corrige todas las configuraciones');
+                $('#email_group').hide();
+                $('#cantidad_group').hide();
+                $('#horas_group').hide();
+                $('#configuracion_id_group').show();
+                $('#empresa_id_group').hide();
+                $('#tipo_destinatario_group').show();
+                $('#cron_options_group').show();
             } else if (selectedValue === 'fix_session_419') {
                 $('#encuesta_id').attr('placeholder', 'No requiere ID - Soluciona error 419 de sesiones');
                 $('#email_group').hide();
@@ -873,6 +905,7 @@ $(document).ready(function() {
                 $('#horas_group').hide();
                 $('#configuracion_id_group').hide();
                 $('#empresa_id_group').hide();
+                $('#tipo_destinatario_group').hide();
                 $('#cron_options_group').hide();
             }
 

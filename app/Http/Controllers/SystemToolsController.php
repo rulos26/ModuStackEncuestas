@@ -363,6 +363,22 @@ class SystemToolsController extends Controller
                         }
                         $resultado = $this->ejecutarComando('diagnosticar:configuracion-envio', $opciones);
                         break;
+                    case 'corregir_configuraciones_envio':
+                        $configuracionId = $request->get('configuracion_id');
+                        $tipoDestinatario = $request->get('tipo_destinatario', 'empleados');
+                        $dryRun = $request->get('dry_run', false);
+                        $opciones = [];
+                        if ($configuracionId) {
+                            $opciones['--configuracion-id'] = $configuracionId;
+                        }
+                        if ($tipoDestinatario) {
+                            $opciones['--tipo-destinatario'] = $tipoDestinatario;
+                        }
+                        if ($dryRun) {
+                            $opciones['--dry-run'] = true;
+                        }
+                        $resultado = $this->ejecutarComando('corregir:configuraciones-envio', $opciones);
+                        break;
                     case 'probar_dashboard':
                         $encuestaId = $request->get('encuesta_id');
                         $debug = $request->get('debug', false);

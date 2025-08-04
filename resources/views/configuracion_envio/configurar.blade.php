@@ -19,7 +19,7 @@
                             <h5><i class="fas fa-building"></i> Empresa: {{ $empresa->nombre }}</h5>
                         </div>
                         <div class="col-md-6">
-                            <h5><i class="fas fa-list"></i> Encuestas seleccionadas: {{ $encuestas->count() }}</h5>
+                            <h5><i class="fas fa-list"></i> Encuestas seleccionadas: {{ isset($encuestas) ? $encuestas->count() : 0 }}</h5>
                         </div>
                     </div>
                 </div>
@@ -56,7 +56,8 @@
                 @csrf
                 <input type="hidden" name="empresa_id" value="{{ $empresa->id }}">
 
-                @foreach($encuestas as $encuesta)
+                @if(isset($encuestas) && $encuestas->count() > 0)
+                    @foreach($encuestas as $encuesta)
                     <div class="card card-outline card-info mb-4">
                         <div class="card-header">
                             <h4 class="card-title">
@@ -360,6 +361,7 @@ Saludos cordiales,
                         </div>
                     </div>
                 @endforeach
+                @endif
 
                 <!-- Botones de acción -->
                 <div class="card card-outline card-secondary">
