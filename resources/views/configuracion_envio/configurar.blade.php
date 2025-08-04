@@ -204,7 +204,7 @@ Saludos cordiales,
                             </div>
 
                             <!-- Paso 2: Configuración de Envío Programado (solo si se selecciona programado) -->
-                            <div class="wizard-step configuracion-programado" data-step="2" style="display: none;">
+                            <div class="wizard-step configuracion-programado" data-step="2" data-encuesta-id="{{ $encuesta->id }}" style="display: none;">
                                 <h5><i class="fas fa-calendar-alt"></i> Configuración de Envío Programado</h5>
 
                                 <div class="row">
@@ -429,14 +429,28 @@ window.addEventListener('error', function(e) {
 // Verificar que jQuery esté disponible
 if (typeof $ !== 'undefined') {
 $(document).ready(function() {
+    console.log('Script de configuración cargado');
+
     // Si estamos editando y la configuración es programada, mostrar la sección
     @if(isset($configuracion) && $configuracion->tipo_envio === 'programado')
-        $('.tipo-envio-select').each(function() {
-            const encuestaId = $(this).data('encuesta-id');
-            const configProgramado = $(`.configuracion-programado[data-encuesta-id="${encuestaId}"]`);
-            configProgramado.show();
-            $(`.btn-enviar-prueba[data-encuesta-id="${encuestaId}"]`).show();
-        });
+        console.log('Editando configuración programada - mostrando campos');
+        // Mostrar todas las secciones de configuración programada
+        $('.configuracion-programado').show();
+        $('.btn-enviar-prueba').show();
+
+                // También activar el select de tipo de envío
+        $('.tipo-envio-select').val('programado').trigger('change');
+
+        // Verificar que los campos se mostraron correctamente
+        setTimeout(function() {
+            if ($('.configuracion-programado:visible').length === 0) {
+                console.log('Forzando mostrar campos de programación');
+                $('.configuracion-programado').show();
+                $('.btn-enviar-prueba').show();
+            }
+        }, 100);
+
+        console.log('Campos de programación mostrados');
     @endif
 
     // Manejar cambio de tipo de envío
