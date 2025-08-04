@@ -123,7 +123,7 @@ Le invitamos a participar en nuestra encuesta: ' . $encuesta->titulo . '
 Su opinión es muy importante para nosotros.
 
 Haga clic en el siguiente enlace para acceder a la encuesta:
-{{ $link_encuesta }}
+' . $link_encuesta . '
 
 Gracias por su participación.
 
