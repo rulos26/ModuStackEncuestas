@@ -311,6 +311,58 @@ class SystemToolsController extends Controller
                             $resultado = $this->ejecutarComando('diagnosticar:envio-correos', ['encuesta_id' => $encuestaId]);
                         }
                         break;
+                    case 'probar_cron_job':
+                        $debug = $request->get('debug', false);
+                        $opciones = [];
+                        if ($debug) {
+                            $opciones['--debug'] = true;
+                        }
+                        $resultado = $this->ejecutarComando('probar:cron-job', $opciones);
+                        break;
+                    case 'verificar_sistema_colas':
+                        $fix = $request->get('fix', false);
+                        $opciones = [];
+                        if ($fix) {
+                            $opciones['--fix'] = true;
+                        }
+                        $resultado = $this->ejecutarComando('verificar:sistema-colas', $opciones);
+                        break;
+                    case 'probar_envio_correos':
+                        $configuracionId = $request->get('configuracion_id');
+                        $test = $request->get('test', false);
+                        $force = $request->get('force', false);
+                        $opciones = [];
+                        if ($test) {
+                            $opciones['--test'] = true;
+                        }
+                        if ($force) {
+                            $opciones['--force'] = true;
+                        }
+                        if ($configuracionId) {
+                            $opciones['--configuracion-id'] = $configuracionId;
+                        }
+                        $resultado = $this->ejecutarComando('probar:envio-correos', $opciones);
+                        break;
+                    case 'ejecutar_cron_job':
+                        $force = $request->get('force', false);
+                        $opciones = [];
+                        if ($force) {
+                            $opciones['--force'] = true;
+                        }
+                        $resultado = $this->ejecutarComando('ejecutar:cron-job', $opciones);
+                        break;
+                    case 'diagnosticar_configuracion_envio':
+                        $empresaId = $request->get('empresa_id');
+                        $encuestaId = $request->get('encuesta_id');
+                        $opciones = [];
+                        if ($empresaId) {
+                            $opciones['--empresa-id'] = $empresaId;
+                        }
+                        if ($encuestaId) {
+                            $opciones['--encuesta-id'] = $encuestaId;
+                        }
+                        $resultado = $this->ejecutarComando('diagnosticar:configuracion-envio', $opciones);
+                        break;
                     case 'probar_dashboard':
                         $encuestaId = $request->get('encuesta_id');
                         $debug = $request->get('debug', false);

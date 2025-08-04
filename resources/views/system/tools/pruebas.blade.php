@@ -117,6 +117,20 @@
                         <option value="diagnosticar_envio_correos" {{ $tipo === 'diagnosticar_envio_correos' ? 'selected' : '' }}>
                             📧 Diagnosticar Envío de Correos
                         </option>
+                        <option value="probar_cron_job" {{ $tipo === 'probar_cron_job' ? 'selected' : '' }}>
+                            🔍 Probar Cron Job Completo
+                        </option>
+                        <option value="verificar_sistema_colas" {{ $tipo === 'verificar_sistema_colas' ? 'selected' : '' }}>
+                            📋 Verificar Sistema de Colas
+                        </option>
+                        <option value="probar_envio_correos" {{ $tipo === 'probar_envio_correos' ? 'selected' : '' }}>
+                            📧 Probar Envío de Correos
+                        </option>
+                        <option value="ejecutar_cron_job" {{ $tipo === 'ejecutar_cron_job' ? 'selected' : '' }}>
+                            ⚡ Ejecutar Cron Job Manualmente
+                        </option>
+                        <option value="diagnosticar_configuracion_envio" {{ $tipo === 'diagnosticar_configuracion_envio' ? 'selected' : '' }}>
+                            🔧 Diagnosticar Configuración de Envío
                         </option>
                         <option value="solucionar_csrf_hosting" {{ $tipo === 'solucionar_csrf_hosting' ? 'selected' : '' }}>
                             Solucionar Error CSRF en Hosting
@@ -167,6 +181,26 @@
                                 </small>
                             </div>
                         </div>
+                        <div class="col-md-3" id="configuracion_id_group" style="display: none;">
+                            <div class="form-group">
+                                <label for="configuracion_id">ID de Configuración:</label>
+                                <input type="number" class="form-control" id="configuracion_id" name="configuracion_id"
+                                       placeholder="Ej: 1" min="1">
+                                <small class="form-text text-muted">
+                                    ID de configuración específica para probar.
+                                </small>
+                            </div>
+                        </div>
+                        <div class="col-md-3" id="empresa_id_group" style="display: none;">
+                            <div class="form-group">
+                                <label for="empresa_id">ID de Empresa:</label>
+                                <input type="number" class="form-control" id="empresa_id" name="empresa_id"
+                                       placeholder="Ej: 1" min="1">
+                                <small class="form-text text-muted">
+                                    ID de empresa para diagnósticos específicos.
+                                </small>
+                            </div>
+                        </div>
                         <div class="col-md-3" id="email_group" style="display: none;">
                             <div class="form-group">
                                 <label for="email">Email de Prueba:</label>
@@ -208,6 +242,32 @@
                                 </div>
                                 <small class="form-text text-muted">
                                     Activa información adicional de debug.
+                                </small>
+                            </div>
+                        </div>
+                        <div class="col-md-3" id="cron_options_group" style="display: none;">
+                            <div class="form-group">
+                                <label>&nbsp;</label>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="test" name="test" value="1">
+                                    <label class="custom-control-label" for="test">
+                                        <i class="fas fa-paper-plane"></i> Modo Prueba
+                                    </label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="force" name="force" value="1">
+                                    <label class="custom-control-label" for="force">
+                                        <i class="fas fa-rocket"></i> Forzar Ejecución
+                                    </label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="fix" name="fix" value="1">
+                                    <label class="custom-control-label" for="fix">
+                                        <i class="fas fa-tools"></i> Arreglar Problemas
+                                    </label>
+                                </div>
+                                <small class="form-text text-muted">
+                                    Opciones específicas para comandos de cron job.
                                 </small>
                             </div>
                         </div>
@@ -732,7 +792,49 @@ $(document).ready(function() {
                 $('#email_group').hide();
                 $('#cantidad_group').hide();
                 $('#horas_group').hide();
+                $('#configuracion_id_group').hide();
+                $('#empresa_id_group').hide();
+                $('#cron_options_group').hide();
+            } else if (selectedValue === 'probar_cron_job') {
+                $('#encuesta_id').attr('placeholder', 'No requiere ID - Prueba completa del cron job');
+                $('#email_group').hide();
+                $('#cantidad_group').hide();
                 $('#horas_group').hide();
+                $('#configuracion_id_group').hide();
+                $('#empresa_id_group').hide();
+                $('#cron_options_group').show();
+            } else if (selectedValue === 'verificar_sistema_colas') {
+                $('#encuesta_id').attr('placeholder', 'No requiere ID - Verifica sistema de colas');
+                $('#email_group').hide();
+                $('#cantidad_group').hide();
+                $('#horas_group').hide();
+                $('#configuracion_id_group').hide();
+                $('#empresa_id_group').hide();
+                $('#cron_options_group').show();
+            } else if (selectedValue === 'probar_envio_correos') {
+                $('#encuesta_id').attr('placeholder', 'ID de encuesta (opcional) - Prueba envío de correos');
+                $('#email_group').hide();
+                $('#cantidad_group').hide();
+                $('#horas_group').hide();
+                $('#configuracion_id_group').show();
+                $('#empresa_id_group').hide();
+                $('#cron_options_group').show();
+            } else if (selectedValue === 'ejecutar_cron_job') {
+                $('#encuesta_id').attr('placeholder', 'No requiere ID - Ejecuta cron job manualmente');
+                $('#email_group').hide();
+                $('#cantidad_group').hide();
+                $('#horas_group').hide();
+                $('#configuracion_id_group').hide();
+                $('#empresa_id_group').hide();
+                $('#cron_options_group').show();
+            } else if (selectedValue === 'diagnosticar_configuracion_envio') {
+                $('#encuesta_id').attr('placeholder', 'ID de encuesta (opcional) - Diagnostica configuración');
+                $('#email_group').hide();
+                $('#cantidad_group').hide();
+                $('#horas_group').hide();
+                $('#configuracion_id_group').hide();
+                $('#empresa_id_group').show();
+                $('#cron_options_group').hide();
             } else if (selectedValue === 'fix_session_419') {
                 $('#encuesta_id').attr('placeholder', 'No requiere ID - Soluciona error 419 de sesiones');
                 $('#email_group').hide();
@@ -769,6 +871,9 @@ $(document).ready(function() {
                 $('#email_group').hide();
                 $('#cantidad_group').hide();
                 $('#horas_group').hide();
+                $('#configuracion_id_group').hide();
+                $('#empresa_id_group').hide();
+                $('#cron_options_group').hide();
             }
 
         // Mostrar/ocultar debug
