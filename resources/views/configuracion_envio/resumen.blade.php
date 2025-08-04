@@ -2,6 +2,87 @@
 
 @section('title', 'Resumen de Configuraciones de Envío')
 
+@push('css')
+<style>
+    /* Mejorar legibilidad de la tabla en tema oscuro */
+    .table {
+        color: #ffffff !important;
+    }
+
+    .table thead th {
+        background-color: #343a40 !important;
+        color: #ffffff !important;
+        border-color: #495057 !important;
+    }
+
+    .table tbody td {
+        background-color: #2d3748 !important;
+        color: #ffffff !important;
+        border-color: #495057 !important;
+    }
+
+    .table tbody tr:hover {
+        background-color: #3a4149 !important;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: #2d3748 !important;
+    }
+
+    .table-striped tbody tr:nth-of-type(even) {
+        background-color: #343a40 !important;
+    }
+
+    /* Mejorar legibilidad de badges */
+    .badge {
+        font-weight: 600;
+    }
+
+    /* Mejorar legibilidad de enlaces */
+    .text-info {
+        color: #17a2b8 !important;
+    }
+
+    .text-light {
+        color: #f8f9fa !important;
+    }
+
+    .text-white {
+        color: #ffffff !important;
+    }
+
+    /* Mejorar botones de acción */
+    .btn-group .btn {
+        margin-right: 2px;
+    }
+
+    .btn-group .btn:last-child {
+        margin-right: 0;
+    }
+
+    /* Mejorar hover de botones */
+    .btn-info:hover {
+        background-color: #138496 !important;
+        border-color: #117a8b !important;
+    }
+
+    .btn-warning:hover {
+        background-color: #e0a800 !important;
+        border-color: #d39e00 !important;
+    }
+
+    .btn-danger:hover {
+        background-color: #c82333 !important;
+        border-color: #bd2130 !important;
+    }
+
+    .btn-success:hover {
+        background-color: #218838 !important;
+        border-color: #1e7e34 !important;
+    }
+</style>
+@endpush
+
 @section('content_header')
     <h1>
         <i class="fas fa-list"></i> Resumen de Configuraciones de Envío
@@ -94,33 +175,33 @@
                                     @foreach($configuraciones as $configuracion)
                                         <tr>
                                             <td>
-                                                <strong>{{ $configuracion->encuesta->titulo }}</strong>
+                                                <strong class="text-white">{{ $configuracion->encuesta->titulo }}</strong>
                                                 <br>
-                                                <small class="text-muted">{{ $configuracion->encuesta->estado }}</small>
+                                                <small class="text-light">{{ $configuracion->encuesta->estado }}</small>
                                             </td>
-                                            <td>{{ $configuracion->nombre_remitente }}</td>
+                                            <td class="text-white">{{ $configuracion->nombre_remitente }}</td>
                                             <td>
-                                                <a href="mailto:{{ $configuracion->correo_remitente }}">
+                                                <a href="mailto:{{ $configuracion->correo_remitente }}" class="text-info">
                                                     {{ $configuracion->correo_remitente }}
                                                 </a>
                                             </td>
-                                            <td>
+                                            <td class="text-white">
                                                 <span title="{{ $configuracion->asunto }}">
                                                     {{ Str::limit($configuracion->asunto, 50) }}
                                                 </span>
                                             </td>
                                             <td>
-                                                <span class="badge badge-{{ $configuracion->tipo_envio === 'automatico' ? 'success' : ($configuracion->tipo_envio === 'manual' ? 'info' : 'warning') }}">
+                                                <span class="badge badge-{{ $configuracion->tipo_envio === 'automatico' ? 'success' : ($configuracion->tipo_envio === 'manual' ? 'info' : 'warning') }} text-white">
                                                     {{ ucfirst($configuracion->tipo_envio) }}
                                                 </span>
                                             </td>
                                             <td>
-                                                <span class="badge badge-{{ $configuracion->activo ? 'success' : 'danger' }}">
+                                                <span class="badge badge-{{ $configuracion->activo ? 'success' : 'danger' }} text-white">
                                                     {{ $configuracion->activo ? 'Activo' : 'Inactivo' }}
                                                 </span>
                                             </td>
                                             <td>
-                                                <small>{{ $configuracion->updated_at->format('d/m/Y H:i') }}</small>
+                                                <small class="text-light">{{ $configuracion->updated_at->format('d/m/Y H:i') }}</small>
                                             </td>
                                             <td>
                                                 <div class="btn-group">
