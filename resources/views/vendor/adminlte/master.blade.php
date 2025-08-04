@@ -68,6 +68,192 @@
     {{-- Custom Stylesheets (post AdminLTE) --}}
     @yield('adminlte_css')
 
+    {{-- CSS Global para Autofill en Formularios --}}
+    <style>
+        /* ====== CSS GLOBAL PARA AUTOFILL ====== */
+
+        /* Estilos base para inputs */
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="number"],
+        input[type="tel"],
+        input[type="url"],
+        input[type="search"],
+        input[type="date"],
+        input[type="time"],
+        input[type="datetime-local"],
+        input[type="month"],
+        input[type="week"],
+        textarea,
+        select {
+            color: #222 !important;
+            background-color: #f8f9fa !important;
+            border: 1px solid #ced4da !important;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out !important;
+        }
+
+        /* Estilos para modo oscuro */
+        body.dark-mode input[type="text"],
+        body.dark-mode input[type="email"],
+        body.dark-mode input[type="password"],
+        body.dark-mode input[type="number"],
+        body.dark-mode input[type="tel"],
+        body.dark-mode input[type="url"],
+        body.dark-mode input[type="search"],
+        body.dark-mode input[type="date"],
+        body.dark-mode input[type="time"],
+        body.dark-mode input[type="datetime-local"],
+        body.dark-mode input[type="month"],
+        body.dark-mode input[type="week"],
+        body.dark-mode textarea,
+        body.dark-mode select {
+            color: #fff !important;
+            background-color: #343a40 !important;
+            border-color: #495057 !important;
+        }
+
+        /* Estilos para focus */
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus,
+        input[type="number"]:focus,
+        input[type="tel"]:focus,
+        input[type="url"]:focus,
+        input[type="search"]:focus,
+        input[type="date"]:focus,
+        input[type="time"]:focus,
+        input[type="datetime-local"]:focus,
+        input[type="month"]:focus,
+        input[type="week"]:focus,
+        textarea:focus,
+        select:focus {
+            border-color: #007bff !important;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25) !important;
+            outline: 0 !important;
+        }
+
+        body.dark-mode input[type="text"]:focus,
+        body.dark-mode input[type="email"]:focus,
+        body.dark-mode input[type="password"]:focus,
+        body.dark-mode input[type="number"]:focus,
+        body.dark-mode input[type="tel"]:focus,
+        body.dark-mode input[type="url"]:focus,
+        body.dark-mode input[type="search"]:focus,
+        body.dark-mode input[type="date"]:focus,
+        body.dark-mode input[type="time"]:focus,
+        body.dark-mode input[type="datetime-local"]:focus,
+        body.dark-mode input[type="month"]:focus,
+        body.dark-mode input[type="week"]:focus,
+        body.dark-mode textarea:focus,
+        body.dark-mode select:focus {
+            color: #fff !important;
+            background-color: #343a40 !important;
+            border-color: #007bff !important;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25) !important;
+        }
+
+        /* ====== AUTOFILL - Forzar colores en autocompletado ====== */
+
+        /* Modo claro */
+        input:-webkit-autofill,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 100px #f8f9fa inset !important;
+            box-shadow: 0 0 0 100px #f8f9fa inset !important;
+            -webkit-text-fill-color: #222 !important;
+            color: #222 !important;
+            border-color: #ced4da !important;
+        }
+
+        /* Modo oscuro */
+        body.dark-mode input:-webkit-autofill,
+        body.dark-mode input:-webkit-autofill:focus,
+        body.dark-mode input:-webkit-autofill:hover,
+        body.dark-mode input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 100px #343a40 inset !important;
+            box-shadow: 0 0 0 100px #343a40 inset !important;
+            -webkit-text-fill-color: #fff !important;
+            color: #fff !important;
+            border-color: #007bff !important;
+        }
+
+        /* ====== PLACEHOLDER ====== */
+        ::placeholder {
+            color: #888 !important;
+            opacity: 1 !important;
+        }
+
+        body.dark-mode ::placeholder {
+            color: #ccc !important;
+        }
+
+        /* ====== SELECT ESPECÍFICO ====== */
+        select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e") !important;
+            background-position: right 0.5rem center !important;
+            background-repeat: no-repeat !important;
+            background-size: 1.5em 1.5em !important;
+            padding-right: 2.5rem !important;
+        }
+
+        body.dark-mode select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e") !important;
+        }
+
+        /* ====== TEXTAREA ====== */
+        textarea {
+            resize: vertical !important;
+            min-height: 100px !important;
+        }
+
+        /* ====== INPUT GROUPS ====== */
+        .input-group-text {
+            background-color: #e9ecef !important;
+            border-color: #ced4da !important;
+            color: #495057 !important;
+        }
+
+        body.dark-mode .input-group-text {
+            background-color: #495057 !important;
+            border-color: #6c757d !important;
+            color: #fff !important;
+        }
+
+        /* ====== FORM VALIDATION ====== */
+        .is-valid {
+            border-color: #28a745 !important;
+        }
+
+        .is-invalid {
+            border-color: #dc3545 !important;
+        }
+
+        body.dark-mode .is-valid {
+            border-color: #28a745 !important;
+        }
+
+        body.dark-mode .is-invalid {
+            border-color: #dc3545 !important;
+        }
+
+        /* ====== DISABLED INPUTS ====== */
+        input:disabled,
+        textarea:disabled,
+        select:disabled {
+            background-color: #e9ecef !important;
+            opacity: 0.65 !important;
+        }
+
+        body.dark-mode input:disabled,
+        body.dark-mode textarea:disabled,
+        body.dark-mode select:disabled {
+            background-color: #495057 !important;
+            opacity: 0.65 !important;
+        }
+    </style>
+
     {{--
         INTEGRACIÓN CON MÓDULO DE CONFIGURACIÓN DE IMÁGENES:
         Esta vista personalizada prioriza las imágenes de la base de datos sobre config/adminlte.php.
