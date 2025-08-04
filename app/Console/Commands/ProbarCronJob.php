@@ -153,8 +153,8 @@ class ProbarCronJob extends Command
             $this->info("   📈 Configuraciones pendientes encontradas: {$configuracionesPendientes->count()}");
 
             foreach ($configuracionesPendientes as $config) {
-                $fechaHoraEnvio = $config->fecha_envio . ' ' . $config->hora_envio;
-                $fechaEnvio = \Carbon\Carbon::parse($fechaHoraEnvio);
+                // hora_envio ya es un datetime, usar directamente
+                $fechaEnvio = $config->hora_envio;
 
                 $this->line("   📋 Configuración ID: {$config->id}");
                 $this->line("      Fecha/Hora programada: {$fechaEnvio->format('Y-m-d H:i:s')}");

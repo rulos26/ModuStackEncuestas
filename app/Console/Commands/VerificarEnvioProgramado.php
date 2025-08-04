@@ -33,8 +33,7 @@ class VerificarEnvioProgramado extends Command
         try {
             // Obtener configuraciones programadas que están listas para envío
             $configuraciones = ConfiguracionEnvio::programadasPendientes()
-                ->where('fecha_envio', '<=', now()->toDateString())
-                ->where('hora_envio', '<=', now()->toTimeString())
+                ->where('hora_envio', '<=', now())
                 ->get();
 
             if ($configuraciones->isEmpty()) {

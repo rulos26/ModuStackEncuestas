@@ -186,11 +186,12 @@ class ConfiguracionEnvio extends Model
      */
     public function getFechaHoraEnvioAttribute()
     {
-        if (!$this->fecha_envio || !$this->hora_envio) {
+        if (!$this->hora_envio) {
             return null;
         }
 
-        return $this->fecha_envio->setTimeFrom($this->hora_envio);
+        // hora_envio ya es un datetime completo
+        return $this->hora_envio;
     }
 
     /**
