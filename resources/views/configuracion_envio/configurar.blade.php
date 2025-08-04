@@ -52,8 +52,11 @@
             @endif
 
             <!-- Wizard Form -->
-            <form id="configuracionForm" method="POST" action="{{ route('configuracion-envio.store') }}">
+            <form id="configuracionForm" method="POST" action="{{ isset($configuracion) ? route('configuracion-envio.update', $configuracion->id) : route('configuracion-envio.store') }}">
                 @csrf
+                @if(isset($configuracion))
+                    @method('PUT')
+                @endif
                 <input type="hidden" name="empresa_id" value="{{ $empresa->id }}">
 
                 @if(isset($encuestas) && $encuestas->count() > 0)
@@ -80,7 +83,7 @@
                                                    class="form-control"
                                                    id="nombre_remitente_{{ $encuesta->id }}"
                                                    name="encuestas[{{ $loop->index }}][nombre_remitente]"
-                                                   value="{{ old('encuestas.' . $loop->index . '.nombre_remitente', $empresa->nombre) }}"
+                                                   value="{{ old('encuestas.' . $loop->index . '.nombre_remitente', isset($configuracion) ? $configuracion->nombre_remitente : $empresa->nombre) }}"
                                                    required>
                                             <small class="form-text text-muted">
                                                 Nombre que aparecerá como remitente del correo
@@ -97,7 +100,7 @@
                                                    class="form-control"
                                                    id="correo_remitente_{{ $encuesta->id }}"
                                                    name="encuestas[{{ $loop->index }}][correo_remitente]"
-                                                   value="{{ old('encuestas.' . $loop->index . '.correo_remitente', $empresa->correo_electronico) }}"
+                                                   value="{{ old('encuestas.' . $loop->index . '.correo_remitente', isset($configuracion) ? $configuracion->correo_remitente : $empresa->correo_electronico) }}"
                                                    required>
                                             <small class="form-text text-muted">
                                                 Correo electrónico del remitente
@@ -117,7 +120,7 @@
                                                    class="form-control"
                                                    id="asunto_{{ $encuesta->id }}"
                                                    name="encuestas[{{ $loop->index }}][asunto]"
-                                                   value="{{ old('encuestas.' . $loop->index . '.asunto', 'Invitación a participar en: ' . $encuesta->titulo) }}"
+                                                   value="{{ old('encuestas.' . $loop->index . '.asunto', isset($configuracion) ? $configuracion->asunto : 'Invitación a participar en: ' . $encuesta->titulo) }}"
                                                    required>
                                             <small class="form-text text-muted">
                                                 Asunto del correo electrónico
@@ -137,7 +140,7 @@
                                                       id="cuerpo_mensaje_{{ $encuesta->id }}"
                                                       name="encuestas[{{ $loop->index }}][cuerpo_mensaje]"
                                                       rows="6"
-                                                      required>{{ old('encuestas.' . $loop->index . '.cuerpo_mensaje', 'Estimado participante,
+                                                      required>{{ old('encuestas.' . $loop->index . '.cuerpo_mensaje', isset($configuracion) ? $configuracion->cuerpo_mensaje : 'Estimado participante,
 
 Le invitamos a participar en nuestra encuesta: ' . $encuesta->titulo . '
 
@@ -171,7 +174,7 @@ Saludos cordiales,
                                                     required>
                                                 @foreach($tiposEnvio as $key => $value)
                                                     <option value="{{ $key }}"
-                                                            {{ old('encuestas.' . $loop->index . '.tipo_envio', 'manual') == $key ? 'selected' : '' }}>
+                                                            {{ old('encuestas.' . $loop->index . '.tipo_envio', isset($configuracion) ? $configuracion->tipo_envio : 'manual') == $key ? 'selected' : '' }}>
                                                         {{ $value }}
                                                     </option>
                                                 @endforeach
@@ -215,7 +218,7 @@ Saludos cordiales,
                                                    class="form-control"
                                                    id="fecha_envio_{{ $encuesta->id }}"
                                                    name="encuestas[{{ $loop->index }}][fecha_envio]"
-                                                   value="{{ old('encuestas.' . $loop->index . '.fecha_envio', date('Y-m-d')) }}"
+                                                   value="{{ old('encuestas.' . $loop->index . '.fecha_envio', isset($configuracion) ? $configuracion->fecha_envio : date('Y-m-d')) }}"
                                                    min="{{ date('Y-m-d') }}">
                                             <small class="form-text text-muted">
                                                 Fecha en la que se enviarán los correos
@@ -232,7 +235,7 @@ Saludos cordiales,
                                                    class="form-control"
                                                    id="hora_envio_{{ $encuesta->id }}"
                                                    name="encuestas[{{ $loop->index }}][hora_envio]"
-                                                   value="{{ old('encuestas.' . $loop->index . '.hora_envio', '09:00') }}">
+                                                   value="{{ old('encuestas.' . $loop->index . '.hora_envio', isset($configuracion) ? $configuracion->hora_envio->format('H:i') : '09:00') }}">
                                             <small class="form-text text-muted">
                                                 Hora exacta del envío
                                             </small>
@@ -254,7 +257,8 @@ Saludos cordiales,
                                                 <option value="">Seleccione un tipo</option>
                                                 @foreach($tiposDestinatario as $key => $value)
                                                     <option value="{{ $key }}"
-                                                            data-cantidad="{{ $estadisticasDestinatarios[$key] ?? 0 }}">
+                                                            data-cantidad="{{ $estadisticasDestinatarios[$key] ?? 0 }}"
+                                                            {{ old('encuestas.' . $loop->index . '.tipo_destinatario', isset($configuracion) ? $configuracion->tipo_destinatario : '') == $key ? 'selected' : '' }}>
                                                         {{ $value }} ({{ $estadisticasDestinatarios[$key] ?? 0 }} disponibles)
                                                     </option>
                                                 @endforeach
@@ -274,7 +278,7 @@ Saludos cordiales,
                                                    class="form-control"
                                                    id="numero_bloques_{{ $encuesta->id }}"
                                                    name="encuestas[{{ $loop->index }}][numero_bloques]"
-                                                   value="{{ old('encuestas.' . $loop->index . '.numero_bloques', 1) }}"
+                                                   value="{{ old('encuestas.' . $loop->index . '.numero_bloques', isset($configuracion) ? $configuracion->numero_bloques : 1) }}"
                                                    min="1"
                                                    max="10">
                                             <small class="form-text text-muted">
@@ -294,7 +298,7 @@ Saludos cordiales,
                                                    class="form-control"
                                                    id="correo_prueba_{{ $encuesta->id }}"
                                                    name="encuestas[{{ $loop->index }}][correo_prueba]"
-                                                   value="{{ old('encuestas.' . $loop->index . '.correo_prueba') }}"
+                                                   value="{{ old('encuestas.' . $loop->index . '.correo_prueba', isset($configuracion) ? $configuracion->correo_prueba : '') }}"
                                                    placeholder="correo@ejemplo.com">
                                             <small class="form-text text-muted">
                                                 Correo para enviar prueba antes del envío masivo
@@ -425,6 +429,16 @@ window.addEventListener('error', function(e) {
 // Verificar que jQuery esté disponible
 if (typeof $ !== 'undefined') {
 $(document).ready(function() {
+    // Si estamos editando y la configuración es programada, mostrar la sección
+    @if(isset($configuracion) && $configuracion->tipo_envio === 'programado')
+        $('.tipo-envio-select').each(function() {
+            const encuestaId = $(this).data('encuesta-id');
+            const configProgramado = $(`.configuracion-programado[data-encuesta-id="${encuestaId}"]`);
+            configProgramado.show();
+            $(`.btn-enviar-prueba[data-encuesta-id="${encuestaId}"]`).show();
+        });
+    @endif
+
     // Manejar cambio de tipo de envío
     $('.tipo-envio-select').change(function() {
         const encuestaId = $(this).data('encuesta-id');

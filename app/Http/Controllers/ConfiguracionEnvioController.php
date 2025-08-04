@@ -450,6 +450,9 @@ class ConfiguracionEnvioController extends Controller
 
         $empresa = DB::table('empresas_clientes')->where('id', $configuracion->empresa_id)->first();
 
+        // Crear una colección con la encuesta para que la vista funcione
+        $encuestas = collect([$configuracion->encuesta]);
+
         $tiposEnvio = ConfiguracionEnvio::getTiposEnvio();
         $tiposDestinatario = ConfiguracionEnvio::getTiposDestinatario();
 
@@ -462,6 +465,7 @@ class ConfiguracionEnvioController extends Controller
         return view('configuracion_envio.configurar', compact(
             'configuracion',
             'empresa',
+            'encuestas',
             'tiposEnvio',
             'tiposDestinatario',
             'link_encuesta',
