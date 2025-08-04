@@ -256,47 +256,47 @@
                 /* ====== CARDS ARMÓNICAS ====== */
 
         /* Cards básicas - SOLO las que no tienen color específico */
-        .card:not(.bg-primary):not(.bg-success):not(.bg-info):not(.bg-warning):not(.bg-danger):not(.bg-secondary):not(.bg-dark):not(.bg-gradient-primary):not(.bg-gradient-success):not(.bg-gradient-info) {
+        .card:not(.bg-primary):not(.bg-success):not(.bg-info):not(.bg-warning):not(.bg-danger):not(.bg-secondary):not(.bg-dark):not(.bg-purple):not(.bg-teal):not(.bg-orange):not(.bg-indigo):not(.bg-maroon):not(.bg-pink):not(.bg-cyan):not(.bg-light):not(.bg-gradient-primary):not(.bg-gradient-success):not(.bg-gradient-info) {
             background-color: #f8f9fa !important;
             border: 1px solid #dee2e6 !important;
             box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
         }
 
         /* Modo oscuro para cards básicas */
-        body.dark-mode .card:not(.bg-primary):not(.bg-success):not(.bg-info):not(.bg-warning):not(.bg-danger):not(.bg-secondary):not(.bg-dark):not(.bg-gradient-primary):not(.bg-gradient-success):not(.bg-gradient-info) {
+        body.dark-mode .card:not(.bg-primary):not(.bg-success):not(.bg-info):not(.bg-warning):not(.bg-danger):not(.bg-secondary):not(.bg-dark):not(.bg-purple):not(.bg-teal):not(.bg-orange):not(.bg-indigo):not(.bg-maroon):not(.bg-pink):not(.bg-cyan):not(.bg-light):not(.bg-gradient-primary):not(.bg-gradient-success):not(.bg-gradient-info) {
             background-color: #343a40 !important;
             border-color: #495057 !important;
             color: #fff !important;
         }
 
         /* Card headers - SOLO para cards básicas */
-        .card:not(.bg-primary):not(.bg-success):not(.bg-info):not(.bg-warning):not(.bg-danger):not(.bg-secondary):not(.bg-dark):not(.bg-gradient-primary):not(.bg-gradient-success):not(.bg-gradient-info) .card-header {
+        .card:not(.bg-primary):not(.bg-success):not(.bg-info):not(.bg-warning):not(.bg-danger):not(.bg-secondary):not(.bg-dark):not(.bg-purple):not(.bg-teal):not(.bg-orange):not(.bg-indigo):not(.bg-maroon):not(.bg-pink):not(.bg-cyan):not(.bg-light):not(.bg-gradient-primary):not(.bg-gradient-success):not(.bg-gradient-info) .card-header {
             background-color: #e9ecef !important;
             border-bottom: 1px solid #dee2e6 !important;
             color: #495057 !important;
         }
 
-        body.dark-mode .card:not(.bg-primary):not(.bg-success):not(.bg-info):not(.bg-warning):not(.bg-danger):not(.bg-secondary):not(.bg-dark):not(.bg-gradient-primary):not(.bg-gradient-success):not(.bg-gradient-info) .card-header {
+        body.dark-mode .card:not(.bg-primary):not(.bg-success):not(.bg-info):not(.bg-warning):not(.bg-danger):not(.bg-secondary):not(.bg-dark):not(.bg-purple):not(.bg-teal):not(.bg-orange):not(.bg-indigo):not(.bg-maroon):not(.bg-pink):not(.bg-cyan):not(.bg-light):not(.bg-gradient-primary):not(.bg-gradient-success):not(.bg-gradient-info) .card-header {
             background-color: #495057 !important;
             border-bottom-color: #6c757d !important;
             color: #fff !important;
         }
 
         /* Card body - SOLO para cards básicas */
-        .card:not(.bg-primary):not(.bg-success):not(.bg-info):not(.bg-warning):not(.bg-danger):not(.bg-secondary):not(.bg-dark):not(.bg-gradient-primary):not(.bg-gradient-success):not(.bg-gradient-info) .card-body {
+        .card:not(.bg-primary):not(.bg-success):not(.bg-info):not(.bg-warning):not(.bg-danger):not(.bg-secondary):not(.bg-dark):not(.bg-purple):not(.bg-teal):not(.bg-orange):not(.bg-indigo):not(.bg-maroon):not(.bg-pink):not(.bg-cyan):not(.bg-light):not(.bg-gradient-primary):not(.bg-gradient-success):not(.bg-gradient-info) .card-body {
             color: #212529 !important;
         }
 
-        body.dark-mode .card:not(.bg-primary):not(.bg-success):not(.bg-info):not(.bg-warning):not(.bg-danger):not(.bg-secondary):not(.bg-dark):not(.bg-gradient-primary):not(.bg-gradient-success):not(.bg-gradient-info) .card-body {
+        body.dark-mode .card:not(.bg-primary):not(.bg-success):not(.bg-info):not(.bg-warning):not(.bg-danger):not(.bg-secondary):not(.bg-dark):not(.bg-purple):not(.bg-teal):not(.bg-orange):not(.bg-indigo):not(.bg-maroon):not(.bg-pink):not(.bg-cyan):not(.bg-light):not(.bg-gradient-primary):not(.bg-gradient-success):not(.bg-gradient-info) .card-body {
             color: #fff !important;
         }
 
         /* Card titles - SOLO para cards básicas */
-        .card:not(.bg-primary):not(.bg-success):not(.bg-info):not(.bg-warning):not(.bg-danger):not(.bg-secondary):not(.bg-dark):not(.bg-gradient-primary):not(.bg-gradient-success):not(.bg-gradient-info) .card-title {
+        .card:not(.bg-primary):not(.bg-success):not(.bg-info):not(.bg-warning):not(.bg-danger):not(.bg-secondary):not(.bg-dark):not(.bg-purple):not(.bg-teal):not(.bg-orange):not(.bg-indigo):not(.bg-maroon):not(.bg-pink):not(.bg-cyan):not(.bg-light):not(.bg-gradient-primary):not(.bg-gradient-success):not(.bg-gradient-info) .card-title {
             color: #495057 !important;
         }
 
-        body.dark-mode .card:not(.bg-primary):not(.bg-success):not(.bg-info):not(.bg-warning):not(.bg-danger):not(.bg-secondary):not(.bg-dark):not(.bg-gradient-primary):not(.bg-gradient-success):not(.bg-gradient-info) .card-title {
+        body.dark-mode .card:not(.bg-primary):not(.bg-success):not(.bg-info):not(.bg-warning):not(.bg-danger):not(.bg-secondary):not(.bg-dark):not(.bg-purple):not(.bg-teal):not(.bg-orange):not(.bg-indigo):not(.bg-maroon):not(.bg-pink):not(.bg-cyan):not(.bg-light):not(.bg-gradient-primary):not(.bg-gradient-success):not(.bg-gradient-info) .card-title {
             color: #fff !important;
         }
 
@@ -334,6 +334,63 @@
         .card.bg-dark {
             background-color: #343a40 !important;
             color: #fff !important;
+        }
+
+        /* Colores adicionales para cards */
+        .card.bg-purple {
+            background-color: #6f42c1 !important;
+            color: #fff !important;
+        }
+
+        .card.bg-teal {
+            background-color: #20c997 !important;
+            color: #fff !important;
+        }
+
+        .card.bg-orange {
+            background-color: #fd7e14 !important;
+            color: #fff !important;
+        }
+
+        .card.bg-indigo {
+            background-color: #6610f2 !important;
+            color: #fff !important;
+        }
+
+        .card.bg-maroon {
+            background-color: #d63384 !important;
+            color: #fff !important;
+        }
+
+        .card.bg-pink {
+            background-color: #e83e8c !important;
+            color: #fff !important;
+        }
+
+        .card.bg-cyan {
+            background-color: #0dcaf0 !important;
+            color: #fff !important;
+        }
+
+        .card.bg-light {
+            background-color: #f8f9fa !important;
+            color: #212529 !important;
+        }
+
+        .card.bg-light .card-body {
+            color: #212529 !important;
+        }
+
+        .card.bg-light .text-dark {
+            color: #212529 !important;
+        }
+
+        .card.bg-light ul li {
+            color: #212529 !important;
+        }
+
+        .card.bg-light strong {
+            color: #212529 !important;
         }
 
         /* Cards con gradientes */

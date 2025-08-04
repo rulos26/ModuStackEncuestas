@@ -99,20 +99,26 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <div class="analysis-info">
-                                                        <h5><i class="fas fa-brain"></i> Análisis de IA</h5>
-                                                        <div class="alert alert-info">
-                                                            <p>{{ $analisisItem->analisis_ia }}</p>
+                                                    <div class="card bg-light">
+                                                        <div class="card-header bg-primary text-white">
+                                                            <h5 class="card-title mb-0">
+                                                                <i class="fas fa-brain"></i> Análisis de IA
+                                                            </h5>
                                                         </div>
+                                                        <div class="card-body">
+                                                            <div class="alert alert-info">
+                                                                <p class="mb-0">{{ $analisisItem->analisis_ia }}</p>
+                                                            </div>
 
-                                                        <h6><i class="fas fa-info-circle"></i> Detalles</h6>
-                                                        <ul class="list-unstyled">
-                                                            <li><strong>Tipo de Gráfico:</strong> {{ ucfirst($analisisItem->tipo_grafico) }}</li>
-                                                            <li><strong>Fecha de Análisis:</strong> {{ $analisisItem->fecha_analisis->format('d/m/Y H:i') }}</li>
-                                                            <li><strong>Estado:</strong>
-                                                                <span class="badge badge-success">{{ ucfirst($analisisItem->estado) }}</span>
-                                                            </li>
-                                                        </ul>
+                                                            <h6 class="text-dark"><i class="fas fa-info-circle"></i> Detalles</h6>
+                                                            <ul class="list-unstyled text-dark">
+                                                                <li><strong>Tipo de Gráfico:</strong> {{ ucfirst($analisisItem->tipo_grafico) }}</li>
+                                                                <li><strong>Fecha de Análisis:</strong> {{ $analisisItem->fecha_analisis->format('d/m/Y H:i') }}</li>
+                                                                <li><strong>Estado:</strong>
+                                                                    <span class="badge badge-success">{{ ucfirst($analisisItem->estado) }}</span>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
