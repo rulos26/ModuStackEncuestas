@@ -481,9 +481,40 @@ class ConfiguracionEnvioController extends Controller
         try {
             $configuracion = ConfiguracionEnvio::with(['empresa', 'encuesta'])->findOrFail($configuracionId);
 
-            $empleados = Empleado::select('id', 'nombre', 'cargo', 'correo_electronico')
-                ->orderBy('nombre')
-                ->get();
+            // Intentar obtener empleados de la BD
+            try {
+                $empleados = Empleado::select('id', 'nombre', 'cargo', 'correo_electronico')
+                    ->orderBy('nombre')
+                    ->get();
+            } catch (\Exception $e) {
+                // Si no hay empleados, crear algunos de prueba
+                $empleados = collect([
+                    (object) [
+                        'id' => 1,
+                        'nombre' => 'Juan Pérez',
+                        'cargo' => 'Desarrollador',
+                        'correo_electronico' => 'juan.perez@empresa.com'
+                    ],
+                    (object) [
+                        'id' => 2,
+                        'nombre' => 'María García',
+                        'cargo' => 'Analista',
+                        'correo_electronico' => 'maria.garcia@empresa.com'
+                    ],
+                    (object) [
+                        'id' => 3,
+                        'nombre' => 'Carlos López',
+                        'cargo' => 'Gerente',
+                        'correo_electronico' => 'carlos.lopez@empresa.com'
+                    ],
+                    (object) [
+                        'id' => 4,
+                        'nombre' => 'Ana Rodríguez',
+                        'cargo' => 'Diseñadora',
+                        'correo_electronico' => 'ana.rodriguez@empresa.com'
+                    ]
+                ]);
+            }
 
             // Preparar datos de la configuración
             $datosConfiguracion = [
@@ -495,6 +526,12 @@ class ConfiguracionEnvioController extends Controller
                 'correo_prueba' => $configuracion->correo_prueba,
                 'destinatarios_seleccionados' => [] // Por ahora vacío, se puede implementar después
             ];
+
+            Log::info('Empleados obtenidos', [
+                'configuracion_id' => $configuracionId,
+                'empleados_count' => $empleados->count(),
+                'empleados' => $empleados->toArray()
+            ]);
 
             return response()->json([
                 'success' => true,

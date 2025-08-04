@@ -269,6 +269,7 @@
                                                             title="Editar">
                                                         <i class="fas fa-edit"></i>
                                                     </button>
+                                                    <!-- Debug: tipo_envio = {{ $configuracion->tipo_envio }} -->
                                                     @if($configuracion->tipo_envio === 'programado')
                                                     <button type="button" class="btn btn-sm btn-success"
                                                             onclick="configurarDestinatarios({{ $configuracion->id }})"
@@ -276,6 +277,12 @@
                                                         <i class="fas fa-users"></i>
                                                     </button>
                                                     @endif
+                                                    <!-- Botón de debug - siempre visible -->
+                                                    <button type="button" class="btn btn-sm btn-secondary"
+                                                            onclick="configurarDestinatarios({{ $configuracion->id }})"
+                                                            title="Configurar Destinatarios (Debug)">
+                                                        <i class="fas fa-cog"></i>
+                                                    </button>
                                                     <button type="button" class="btn btn-sm btn-{{ $configuracion->activo ? 'danger' : 'success' }}"
                                                             onclick="toggleEstado({{ $configuracion->id }}, {{ $configuracion->activo ? 'false' : 'true' }})"
                                                             title="{{ $configuracion->activo ? 'Desactivar' : 'Activar' }}">
