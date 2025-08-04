@@ -253,50 +253,50 @@
             opacity: 0.65 !important;
         }
 
-        /* ====== CARDS ARMÓNICAS ====== */
+                /* ====== CARDS ARMÓNICAS ====== */
 
-        /* Cards básicas - Fondo suave */
-        .card {
+        /* Cards básicas - SOLO las que no tienen color específico */
+        .card:not(.bg-primary):not(.bg-success):not(.bg-info):not(.bg-warning):not(.bg-danger):not(.bg-secondary):not(.bg-dark):not(.bg-gradient-primary):not(.bg-gradient-success):not(.bg-gradient-info) {
             background-color: #f8f9fa !important;
             border: 1px solid #dee2e6 !important;
             box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
         }
 
-        /* Modo oscuro para cards */
-        body.dark-mode .card {
+        /* Modo oscuro para cards básicas */
+        body.dark-mode .card:not(.bg-primary):not(.bg-success):not(.bg-info):not(.bg-warning):not(.bg-danger):not(.bg-secondary):not(.bg-dark):not(.bg-gradient-primary):not(.bg-gradient-success):not(.bg-gradient-info) {
             background-color: #343a40 !important;
             border-color: #495057 !important;
             color: #fff !important;
         }
 
-        /* Card headers */
-        .card-header {
+        /* Card headers - SOLO para cards básicas */
+        .card:not(.bg-primary):not(.bg-success):not(.bg-info):not(.bg-warning):not(.bg-danger):not(.bg-secondary):not(.bg-dark):not(.bg-gradient-primary):not(.bg-gradient-success):not(.bg-gradient-info) .card-header {
             background-color: #e9ecef !important;
             border-bottom: 1px solid #dee2e6 !important;
             color: #495057 !important;
         }
 
-        body.dark-mode .card-header {
+        body.dark-mode .card:not(.bg-primary):not(.bg-success):not(.bg-info):not(.bg-warning):not(.bg-danger):not(.bg-secondary):not(.bg-dark):not(.bg-gradient-primary):not(.bg-gradient-success):not(.bg-gradient-info) .card-header {
             background-color: #495057 !important;
             border-bottom-color: #6c757d !important;
             color: #fff !important;
         }
 
-        /* Card body */
-        .card-body {
+        /* Card body - SOLO para cards básicas */
+        .card:not(.bg-primary):not(.bg-success):not(.bg-info):not(.bg-warning):not(.bg-danger):not(.bg-secondary):not(.bg-dark):not(.bg-gradient-primary):not(.bg-gradient-success):not(.bg-gradient-info) .card-body {
             color: #212529 !important;
         }
 
-        body.dark-mode .card-body {
+        body.dark-mode .card:not(.bg-primary):not(.bg-success):not(.bg-info):not(.bg-warning):not(.bg-danger):not(.bg-secondary):not(.bg-dark):not(.bg-gradient-primary):not(.bg-gradient-success):not(.bg-gradient-info) .card-body {
             color: #fff !important;
         }
 
-        /* Card titles */
-        .card-title {
+        /* Card titles - SOLO para cards básicas */
+        .card:not(.bg-primary):not(.bg-success):not(.bg-info):not(.bg-warning):not(.bg-danger):not(.bg-secondary):not(.bg-dark):not(.bg-gradient-primary):not(.bg-gradient-success):not(.bg-gradient-info) .card-title {
             color: #495057 !important;
         }
 
-        body.dark-mode .card-title {
+        body.dark-mode .card:not(.bg-primary):not(.bg-success):not(.bg-info):not(.bg-warning):not(.bg-danger):not(.bg-secondary):not(.bg-dark):not(.bg-gradient-primary):not(.bg-gradient-success):not(.bg-gradient-info) .card-title {
             color: #fff !important;
         }
 
