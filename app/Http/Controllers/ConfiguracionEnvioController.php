@@ -288,7 +288,10 @@ class ConfiguracionEnvioController extends Controller
         $encuestas = Encuesta::whereIn('id', $encuestaIds)->get();
         $tiposEnvio = ConfiguracionEnvio::getTiposEnvio();
 
-        return view('configuracion_envio.configurar', compact('empresa', 'encuestas', 'tiposEnvio'));
+        // Generar el enlace base para las encuestas
+        $link_encuesta = route('encuesta.publica', ['token' => 'TOKEN_PLACEHOLDER']);
+
+        return view('configuracion_envio.configurar', compact('empresa', 'encuestas', 'tiposEnvio', 'link_encuesta'));
     }
 
     /**
