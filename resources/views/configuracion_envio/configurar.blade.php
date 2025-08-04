@@ -25,6 +25,32 @@
                 </div>
             </div>
 
+            <!-- Mensajes de Error -->
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <h5><i class="fas fa-exclamation-triangle"></i> Errores de Validación:</h5>
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <!-- Mensajes de Éxito -->
+            @if (session('success'))
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i> {{ session('success') }}
+                </div>
+            @endif
+
+            <!-- Mensajes de Error -->
+            @if (session('error'))
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle"></i> {{ session('error') }}
+                </div>
+            @endif
+
             <!-- Wizard Form -->
             <form id="configuracionForm" method="POST" action="{{ route('configuracion-envio.store') }}">
                 @csrf
@@ -501,11 +527,18 @@ $(document).ready(function() {
         if (errorMessages.length > 0) {
             alert('Errores de validación:\n' + errorMessages.join('\n'));
             isValid = false;
+            e.preventDefault();
+            return false;
         }
 
-        if (!isValid) {
-            e.preventDefault();
-        }
+        // Mostrar loading en el botón de guardar
+        const submitBtn = $(this).find('button[type="submit"]');
+        const originalText = submitBtn.html();
+        submitBtn.html('<i class="fas fa-spinner fa-spin"></i> Guardando...');
+        submitBtn.prop('disabled', true);
+
+        // Permitir que el formulario se envíe normalmente
+        return true;
     });
 });
 </script>

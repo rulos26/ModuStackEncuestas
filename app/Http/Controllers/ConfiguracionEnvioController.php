@@ -100,7 +100,7 @@ class ConfiguracionEnvioController extends Controller
     /**
      * Guardar configuración de envío
      */
-    public function store(Request $request): JsonResponse
+    public function store(Request $request)
     {
         try {
             $validator = Validator::make($request->all(), [
@@ -142,11 +142,9 @@ class ConfiguracionEnvioController extends Controller
             }
 
             if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Datos de validación incorrectos',
-                    'errors' => $validator->errors()
-                ], 422);
+                return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput();
             }
 
             DB::beginTransaction();
@@ -201,21 +199,27 @@ class ConfiguracionEnvioController extends Controller
 
             DB::commit();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Configuración guardada exitosamente',
-                'data' => $configuracionesGuardadas
-            ]);
+            // Redirigir según el tipo de envío
+            $tieneProgramado = collect($encuestas)->contains('tipo_envio', 'programado');
+
+            if ($tieneProgramado) {
+                // Si hay envíos programados, ir al resumen
+                return redirect()->route('configuracion-envio.resumen', ['empresa_id' => $empresaId])
+                    ->with('success', 'Configuración guardada exitosamente. Los envíos programados se ejecutarán en la fecha y hora especificadas.');
+            } else {
+                // Si solo hay envíos manuales, ir al listado de encuestas
+                return redirect()->route('encuestas.index')
+                    ->with('success', 'Configuración guardada exitosamente. Los envíos manuales están listos para ejecutar.');
+            }
 
         } catch (\Exception $e) {
             DB::rollBack();
 
             Log::error('Error guardando configuración de envío: ' . $e->getMessage());
 
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al guardar la configuración'
-            ], 500);
+            return redirect()->back()
+                ->with('error', 'Error al guardar la configuración: ' . $e->getMessage())
+                ->withInput();
         }
     }
 
