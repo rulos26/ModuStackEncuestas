@@ -316,27 +316,123 @@
     max-width: 800px;
 }
 
+/* Estilos para modal en tema oscuro */
+.modal-content {
+    background-color: #2d3748 !important;
+    color: #ffffff !important;
+    border-color: #495057 !important;
+}
+
+.modal-header {
+    background-color: #343a40 !important;
+    border-bottom-color: #495057 !important;
+}
+
+.modal-header .modal-title {
+    color: #ffffff !important;
+}
+
+.modal-header .close {
+    color: #ffffff !important;
+}
+
+.modal-body {
+    background-color: #2d3748 !important;
+    color: #ffffff !important;
+}
+
+.modal-footer {
+    background-color: #343a40 !important;
+    border-top-color: #495057 !important;
+}
+
 .detalles-item {
     margin-bottom: 15px;
-    padding: 10px;
-    background-color: #f8f9fa;
+    padding: 15px;
+    background-color: #3a4149 !important;
     border-radius: 5px;
+    border: 1px solid #495057 !important;
 }
 
 .detalles-item strong {
-    color: #495057;
+    color: #ffffff !important;
+    font-weight: 600;
+}
+
+.detalles-item {
+    color: #f8f9fa !important;
+}
+
+.detalles-item a {
+    color: #17a2b8 !important;
+    text-decoration: none;
+}
+
+.detalles-item a:hover {
+    color: #138496 !important;
+    text-decoration: underline;
 }
 
 .cuerpo-mensaje {
-    background-color: #f8f9fa;
-    border: 1px solid #dee2e6;
+    background-color: #3a4149 !important;
+    border: 1px solid #495057 !important;
     border-radius: 5px;
     padding: 15px;
     white-space: pre-wrap;
     font-family: inherit;
     max-height: 200px;
     overflow-y: auto;
+    color: #f8f9fa !important;
 }
+
+/* Mejorar badges en modal */
+.modal .badge {
+    font-weight: 600;
+}
+
+.modal .badge.text-white {
+    color: #ffffff !important;
+}
+
+/* Mejorar botones en modal */
+.modal .btn-secondary {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+    color: #ffffff !important;
+}
+
+    .modal .btn-secondary:hover {
+        background-color: #5a6268 !important;
+        border-color: #545b62 !important;
+    }
+
+    /* Mejorar scrollbar en modal */
+    .modal .cuerpo-mensaje::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .modal .cuerpo-mensaje::-webkit-scrollbar-track {
+        background: #3a4149;
+    }
+
+    .modal .cuerpo-mensaje::-webkit-scrollbar-thumb {
+        background: #6c757d;
+        border-radius: 4px;
+    }
+
+    .modal .cuerpo-mensaje::-webkit-scrollbar-thumb:hover {
+        background: #5a6268;
+    }
+
+    /* Mejorar hover de elementos en modal */
+    .modal .detalles-item:hover {
+        background-color: #4a5159 !important;
+    }
+
+    /* Mejorar legibilidad de fechas */
+    .modal .detalles-item small {
+        color: #adb5bd !important;
+    }
 </style>
 
 <script>
@@ -394,7 +490,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="col-md-6">
                     <div class="detalles-item">
                         <strong>Estado:</strong><br>
-                        <span class="badge badge-${configuracion.activo ? 'success' : 'danger'}">
+                        <span class="badge badge-${configuracion.activo ? 'success' : 'danger'} text-white">
                             ${configuracion.activo ? 'Activo' : 'Inactivo'}
                         </span>
                     </div>
@@ -426,7 +522,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="col-md-6">
                     <div class="detalles-item">
                         <strong>Tipo de Envío:</strong><br>
-                        <span class="badge badge-${configuracion.tipo_envio === 'automatico' ? 'success' : (configuracion.tipo_envio === 'manual' ? 'info' : 'warning')}">
+                        <span class="badge badge-${configuracion.tipo_envio === 'automatico' ? 'success' : (configuracion.tipo_envio === 'manual' ? 'info' : 'warning')} text-white">
                             ${configuracion.tipo_envio.charAt(0).toUpperCase() + configuracion.tipo_envio.slice(1)}
                         </span>
                     </div>
