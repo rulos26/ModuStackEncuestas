@@ -345,6 +345,9 @@ class SystemToolsController extends Controller
                         }
                         $resultado = $this->ejecutarComando('migracion:sent-mails', $params);
                         break;
+                    case 'migracion_configuracion_envio':
+                        $resultado = $this->ejecutarComando('probar:migracion-configuracion-envio');
+                        break;
                     case 'corregir_user_id':
                         $encuestaId = $request->get('encuesta_id');
                         $userId = $request->get('user_id');

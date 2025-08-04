@@ -69,6 +69,9 @@
                         <option value="migracion_sent_mails" {{ $tipo === 'migracion_sent_mails' ? 'selected' : '' }}>
                             Migración Sent Mails (Status)
                         </option>
+                        <option value="migracion_configuracion_envio" {{ $tipo === 'migracion_configuracion_envio' ? 'selected' : '' }}>
+                            🗄️ Probar Migración Configuración Envío
+                        </option>
                         <option value="corregir_user_id" {{ $tipo === 'corregir_user_id' ? 'selected' : '' }}>
                             Corregir User ID de Encuesta
                         </option>
@@ -638,6 +641,11 @@ $(document).ready(function() {
                 $('#encuesta_id').attr('placeholder', 'ID de la encuesta para diagnosticar dashboard');
             } else if (selectedValue === 'migracion_sent_mails') {
                 $('#encuesta_id').attr('placeholder', 'No requiere ID - Ejecuta migración');
+            } else if (selectedValue === 'migracion_configuracion_envio') {
+                $('#encuesta_id').attr('placeholder', 'No requiere ID - Ejecuta migración de configuración de envío');
+                $('#email_group').hide();
+                $('#cantidad_group').hide();
+                $('#horas_group').hide();
             } else if (selectedValue === 'tester_flujo_completo') {
                 $('#encuesta_id').attr('placeholder', 'No requiere ID - Crea encuesta automáticamente');
                 $('#email_group').show();
