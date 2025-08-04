@@ -124,7 +124,7 @@ class ConfiguracionEnvioController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'empresa_id' => 'required|exists:empresas,id',
+                'empresa_id' => 'required|exists:empresas_clientes,id',
                 'encuestas' => 'required|array|min:1',
                 'encuestas.*.encuesta_id' => 'required|exists:encuestas,id',
                 'encuestas.*.nombre_remitente' => 'required|string|max:255',
@@ -284,7 +284,7 @@ class ConfiguracionEnvioController extends Controller
                 ->with('error', 'Debe seleccionar una empresa y al menos una encuesta');
         }
 
-        $empresa = Empresa::find($empresaId);
+        $empresa = DB::table('empresas_clientes')->where('id', $empresaId)->first();
         $encuestas = Encuesta::whereIn('id', $encuestaIds)->get();
         $tiposEnvio = ConfiguracionEnvio::getTiposEnvio();
 
@@ -297,7 +297,7 @@ class ConfiguracionEnvioController extends Controller
     public function resumen(Request $request)
     {
         $empresaId = $request->input('empresa_id');
-        $empresa = Empresa::find($empresaId);
+        $empresa = DB::table('empresas_clientes')->where('id', $empresaId)->first();
 
         if (!$empresa) {
             return redirect()->route('configuracion-envio.index')

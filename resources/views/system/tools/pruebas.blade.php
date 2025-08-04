@@ -81,6 +81,9 @@
                         <option value="verificar_tabla_empresas" {{ $tipo === 'verificar_tabla_empresas' ? 'selected' : '' }}>
                             🔍 Verificar Tabla Empresas
                         </option>
+                        <option value="diagnosticar_paso3_configuracion" {{ $tipo === 'diagnosticar_paso3_configuracion' ? 'selected' : '' }}>
+                            🔧 Diagnosticar Paso 3 Configuración
+                        </option>
                         <option value="corregir_user_id" {{ $tipo === 'corregir_user_id' ? 'selected' : '' }}>
                             Corregir User ID de Encuesta
                         </option>
@@ -752,6 +755,11 @@ $(document).ready(function() {
                 $('#horas_group').hide();
             } else if (selectedValue === 'probar_envio') {
                 $('#encuesta_id').attr('placeholder', 'ID de la encuesta para probar envío');
+            } else if (selectedValue === 'diagnosticar_paso3_configuracion') {
+                $('#encuesta_id').attr('placeholder', 'No requiere ID - Diagnostica el Paso 3 de Configuración');
+                $('#email_group').hide();
+                $('#cantidad_group').hide();
+                $('#horas_group').hide();
             } else {
                 $('#encuesta_id').attr('placeholder', 'ID de la encuesta para pruebas');
             }

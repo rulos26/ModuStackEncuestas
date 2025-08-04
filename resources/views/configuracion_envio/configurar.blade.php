@@ -17,7 +17,7 @@
             <div class="card card-outline card-info">
                 <div class="card-header">
                     <h3 class="card-title">
-                        <i class="fas fa-building"></i> Empresa: {{ $empresa->nombre }}
+                        <i class="fas fa-building"></i> Empresa: {{ $empresa->nombre ?? 'Empresa' }}
                     </h3>
                 </div>
                 <div class="card-body">
@@ -35,7 +35,7 @@
             <!-- Formulario de configuración -->
             <form id="configuracion-form" method="POST" action="{{ route('configuracion-envio.store') }}">
                 @csrf
-                <input type="hidden" name="empresa_id" value="{{ $empresa->id }}">
+                <input type="hidden" name="empresa_id" value="{{ $empresa->id ?? '' }}">
 
                 @foreach($encuestas as $encuesta)
                     <div class="card card-outline card-primary">
@@ -59,7 +59,7 @@
                                                class="form-control"
                                                id="nombre_remitente_{{ $encuesta->id }}"
                                                name="encuestas[{{ $loop->index }}][nombre_remitente]"
-                                               value="{{ old('encuestas.' . $loop->index . '.nombre_remitente', $empresa->nombre) }}"
+                                               value="{{ old('encuestas.' . $loop->index . '.nombre_remitente', $empresa->nombre ?? '') }}"
                                                required>
                                         <small class="form-text text-muted">
                                             Nombre que aparecerá como remitente del correo
@@ -76,7 +76,7 @@
                                                class="form-control"
                                                id="correo_remitente_{{ $encuesta->id }}"
                                                name="encuestas[{{ $loop->index }}][correo_remitente]"
-                                               value="{{ old('encuestas.' . $loop->index . '.correo_remitente', $empresa->email ?? '') }}"
+                                               value="{{ old('encuestas.' . $loop->index . '.correo_remitente', $empresa->correo_electronico ?? '') }}"
                                                required>
                                         <small class="form-text text-muted">
                                             Correo electrónico del remitente

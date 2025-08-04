@@ -530,8 +530,34 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function loadConfiguracion() {
-        // Esta función se implementará en el siguiente paso
-        btnNextStep3.disabled = false;
+        if (selectedEmpresa && selectedEncuestas.length > 0) {
+            // Crear formulario para redirigir al Paso 3
+            const form = document.createElement('form');
+            form.method = 'GET';
+            form.action = '{{ route("configuracion-envio.configurar") }}';
+
+            // Agregar empresa_id
+            const empresaInput = document.createElement('input');
+            empresaInput.type = 'hidden';
+            empresaInput.name = 'empresa_id';
+            empresaInput.value = selectedEmpresa;
+            form.appendChild(empresaInput);
+
+            // Agregar encuesta_ids
+            selectedEncuestas.forEach(encuestaId => {
+                const encuestaInput = document.createElement('input');
+                encuestaInput.type = 'hidden';
+                encuestaInput.name = 'encuesta_ids[]';
+                encuestaInput.value = encuestaId;
+                form.appendChild(encuestaInput);
+            });
+
+            // Enviar formulario
+            document.body.appendChild(form);
+            form.submit();
+        } else {
+            showError('Debe seleccionar una empresa y al menos una encuesta');
+        }
     }
 
     function loadResumen() {

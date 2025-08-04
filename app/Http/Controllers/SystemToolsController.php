@@ -357,6 +357,18 @@ class SystemToolsController extends Controller
                     case 'verificar_tabla_empresas':
                         $resultado = $this->ejecutarComando('verificar:tabla-empresas');
                         break;
+                    case 'diagnosticar_paso3_configuracion':
+                        $empresaId = $request->get('empresa_id');
+                        $encuestaIds = $request->get('encuesta_ids');
+                        if ($empresaId && $encuestaIds) {
+                            $resultado = $this->ejecutarComando('diagnosticar:paso3-configuracion', [
+                                'empresa_id' => $empresaId,
+                                'encuesta_ids' => $encuestaIds
+                            ]);
+                        } else {
+                            $resultado = $this->ejecutarComando('diagnosticar:paso3-configuracion');
+                        }
+                        break;
                     case 'corregir_user_id':
                         $encuestaId = $request->get('encuesta_id');
                         $userId = $request->get('user_id');
