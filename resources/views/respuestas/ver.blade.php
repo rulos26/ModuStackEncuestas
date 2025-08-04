@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('adminlte::page')
 
 @section('title', 'Análisis de Respuestas - ' . $encuesta->titulo)
 
@@ -350,7 +350,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Función para mostrar estado de carga
     function showLoading(canvasId) {
         const container = document.getElementById(canvasId).parentElement;
-        container.innerHTML = '<div class="chart-loading"></div>';
+        container.innerHTML = '<div class="chart-loading">Cargando gráfica...</div>';
     }
 
     // Función para mostrar error
@@ -362,9 +362,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Función para mostrar estado vacío
     function showEmpty(canvasId) {
         const container = document.getElementById(canvasId).parentElement;
-        container.innerHTML = '<div class="chart-empty"></div>';
+        container.innerHTML = '<div class="chart-empty">No hay datos para mostrar</div>';
     }
 
+    // Procesar cada análisis
     @foreach($analisis as $analisisItem)
         console.log('📊 Procesando gráfica para análisis ID: {{ $analisisItem->id }}');
 
@@ -373,20 +374,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (!canvas) {
             console.error('❌ No se encontró el canvas:', canvasId);
-            continue;
-        }
-
-        // Verificar que el canvas esté visible
-        const rect = canvas.getBoundingClientRect();
-        if (rect.width === 0 || rect.height === 0) {
-            console.warn('⚠️ Canvas no visible, esperando...');
-            setTimeout(() => {
+        } else {
+            // Verificar que el canvas esté visible
+            const rect = canvas.getBoundingClientRect();
+            if (rect.width === 0 || rect.height === 0) {
+                console.warn('⚠️ Canvas no visible, esperando...');
+                setTimeout(() => {
+                    renderChart(canvasId, {{ $analisisItem->id }});
+                }, 1000);
+            } else {
                 renderChart(canvasId, {{ $analisisItem->id }});
-            }, 1000);
-            continue;
+            }
         }
-
-        renderChart(canvasId, {{ $analisisItem->id }});
     @endforeach
 
     function renderChart(canvasId, analisisId) {
