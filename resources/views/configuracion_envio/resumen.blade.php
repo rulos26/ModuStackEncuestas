@@ -709,24 +709,26 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Función para configurar destinatarios
-    function configurarDestinatarios(configuracionId) {
-        console.log('Configurando destinatarios para configuración:', configuracionId);
+});
 
-        // Cargar empleados de la empresa
-        $.get(`/configuracion-envio/obtener-empleados/${configuracionId}`, function(response) {
-            if (response.success) {
-                mostrarModalDestinatarios(configuracionId, response.empleados, response.configuracion);
-            } else {
-                showError('Error al cargar empleados: ' + response.message);
-            }
-        }).fail(function() {
-            showError('Error al cargar empleados');
-        });
-    }
+// Función para configurar destinatarios (fuera del document.ready para acceso global)
+function configurarDestinatarios(configuracionId) {
+    console.log('Configurando destinatarios para configuración:', configuracionId);
 
-    // Función para mostrar el modal de destinatarios
-    function mostrarModalDestinatarios(configuracionId, empleados, configuracion) {
+    // Cargar empleados de la empresa
+    $.get(`/configuracion-envio/obtener-empleados/${configuracionId}`, function(response) {
+        if (response.success) {
+            mostrarModalDestinatarios(configuracionId, response.empleados, response.configuracion);
+        } else {
+            showError('Error al cargar empleados: ' + response.message);
+        }
+    }).fail(function() {
+        showError('Error al cargar empleados');
+    });
+}
+
+// Función para mostrar el modal de destinatarios (fuera del document.ready para acceso global)
+function mostrarModalDestinatarios(configuracionId, empleados, configuracion) {
         let empleadosHtml = '';
 
         empleados.forEach(function(empleado) {
@@ -815,17 +817,17 @@ document.addEventListener('DOMContentLoaded', function() {
         $('#destinatariosModal').modal('show');
     }
 
-    // Funciones para seleccionar/deseleccionar todos
-    function seleccionarTodos() {
-        $('.empleados-list input[type="checkbox"]').prop('checked', true);
-    }
+// Funciones para seleccionar/deseleccionar todos (fuera del document.ready para acceso global)
+function seleccionarTodos() {
+    $('.empleados-list input[type="checkbox"]').prop('checked', true);
+}
 
-    function deseleccionarTodos() {
-        $('.empleados-list input[type="checkbox"]').prop('checked', false);
-    }
+function deseleccionarTodos() {
+    $('.empleados-list input[type="checkbox"]').prop('checked', false);
+}
 
-    // Función para guardar la configuración de destinatarios
-    function guardarDestinatarios() {
+// Función para guardar la configuración de destinatarios (fuera del document.ready para acceso global)
+function guardarDestinatarios() {
         const configuracionId = $('#destinatariosModal').data('configuracion-id');
         const empleadosSeleccionados = [];
 
@@ -858,6 +860,5 @@ document.addEventListener('DOMContentLoaded', function() {
             showError('Error al guardar destinatarios');
         });
     }
-});
 </script>
 @endsection
