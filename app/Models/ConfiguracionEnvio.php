@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\EmpresasCliente;
 
 class ConfiguracionEnvio extends Model
 {
@@ -62,7 +63,7 @@ class ConfiguracionEnvio extends Model
      */
     public function empresa(): BelongsTo
     {
-        return $this->belongsTo(Empresa::class, 'empresa_id');
+        return $this->belongsTo(EmpresasCliente::class, 'empresa_id');
     }
 
     /**

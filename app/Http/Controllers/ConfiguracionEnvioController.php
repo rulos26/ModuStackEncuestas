@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ConfiguracionEnvio;
-use App\Models\Empresa;
+use App\Models\EmpresasCliente;
 use App\Models\Encuesta;
 use App\Models\Empleado;
 use Illuminate\Http\Request;
@@ -481,36 +481,40 @@ class ConfiguracionEnvioController extends Controller
         try {
             $configuracion = ConfiguracionEnvio::with(['empresa', 'encuesta'])->findOrFail($configuracionId);
 
-            // Intentar obtener empleados de la BD
-            try {
-                $empleados = Empleado::select('id', 'nombre', 'cargo', 'correo_electronico')
-                    ->orderBy('nombre')
-                    ->get();
-            } catch (\Exception $e) {
-                // Si no hay empleados, crear algunos de prueba
+            // Obtener empleados de la empresa específica
+            $empleados = collect();
+            if ($configuracion->empresa) {
+                try {
+                    $empleados = Empleado::where('empresa_id', $configuracion->empresa->id)
+                        ->select('id', 'nombre', 'correo_electronico')
+                        ->orderBy('nombre')
+                        ->get();
+                } catch (\Exception $e) {
+                    Log::warning('No se pudieron obtener empleados de la BD: ' . $e->getMessage());
+                }
+            }
+
+            // Si no hay empleados, crear algunos de prueba
+            if ($empleados->isEmpty()) {
                 $empleados = collect([
                     (object) [
                         'id' => 1,
                         'nombre' => 'Juan Pérez',
-                        'cargo' => 'Desarrollador',
                         'correo_electronico' => 'juan.perez@empresa.com'
                     ],
                     (object) [
                         'id' => 2,
                         'nombre' => 'María García',
-                        'cargo' => 'Analista',
                         'correo_electronico' => 'maria.garcia@empresa.com'
                     ],
                     (object) [
                         'id' => 3,
                         'nombre' => 'Carlos López',
-                        'cargo' => 'Gerente',
                         'correo_electronico' => 'carlos.lopez@empresa.com'
                     ],
                     (object) [
                         'id' => 4,
                         'nombre' => 'Ana Rodríguez',
-                        'cargo' => 'Diseñadora',
                         'correo_electronico' => 'ana.rodriguez@empresa.com'
                     ]
                 ]);
@@ -518,8 +522,8 @@ class ConfiguracionEnvioController extends Controller
 
             // Preparar datos de la configuración
             $datosConfiguracion = [
-                'empresa_nombre' => $configuracion->empresa->nombre,
-                'encuesta_titulo' => $configuracion->encuesta->titulo,
+                'empresa_nombre' => $configuracion->empresa ? $configuracion->empresa->nombre : 'Empresa no asignada',
+                'encuesta_titulo' => $configuracion->encuesta ? $configuracion->encuesta->titulo : 'Encuesta no asignada',
                 'fecha_envio' => $configuracion->fecha_envio ? $configuracion->fecha_envio->format('Y-m-d') : '',
                 'hora_envio' => $configuracion->hora_envio ? $configuracion->hora_envio->format('H:i') : '',
                 'numero_bloques' => $configuracion->numero_bloques,
@@ -529,6 +533,8 @@ class ConfiguracionEnvioController extends Controller
 
             Log::info('Empleados obtenidos', [
                 'configuracion_id' => $configuracionId,
+                'empresa_id' => $configuracion->empresa_id,
+                'empresa_nombre' => $configuracion->empresa ? $configuracion->empresa->nombre : 'null',
                 'empleados_count' => $empleados->count(),
                 'empleados' => $empleados->toArray()
             ]);

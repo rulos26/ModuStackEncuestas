@@ -746,20 +746,39 @@ function showWarning(message) {
 function configurarDestinatarios(configuracionId) {
     console.log('Configurando destinatarios para configuración:', configuracionId);
 
+    // Mostrar loading
+    Swal.fire({
+        title: 'Cargando empleados...',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
     // Cargar empleados de la empresa
     $.get(`{{ url('/configuracion-envio/obtener-empleados') }}/${configuracionId}`, function(response) {
+        console.log('Respuesta del servidor:', response);
+
+        Swal.close();
+
         if (response.success) {
+            console.log('Empresa:', response.configuracion.empresa_nombre);
+            console.log('Empleados encontrados:', response.empleados.length);
             mostrarModalDestinatarios(configuracionId, response.empleados, response.configuracion);
         } else {
             showError('Error al cargar empleados: ' + response.message);
         }
-    }).fail(function() {
-        showError('Error al cargar empleados');
+    }).fail(function(xhr, status, error) {
+        console.error('Error en la petición:', error);
+        Swal.close();
+        showError('Error al cargar empleados: ' + error);
     });
 }
 
 // Función para mostrar el modal de destinatarios (fuera del document.ready para acceso global)
 function mostrarModalDestinatarios(configuracionId, empleados, configuracion) {
+        console.log('Mostrando modal con:', {configuracionId, empleados, configuracion});
+
         let empleadosHtml = '';
 
         empleados.forEach(function(empleado) {
@@ -767,14 +786,14 @@ function mostrarModalDestinatarios(configuracionId, empleados, configuracion) {
                              configuracion.destinatarios_seleccionados.includes(empleado.id);
 
             empleadosHtml += `
-                <div class="custom-control custom-checkbox">
+                <div class="custom-control custom-checkbox mb-2">
                     <input type="checkbox" class="custom-control-input"
                            id="empleado_${empleado.id}"
                            value="${empleado.id}"
                            ${isSelected ? 'checked' : ''}>
                     <label class="custom-control-label" for="empleado_${empleado.id}">
                         <strong>${empleado.nombre}</strong><br>
-                        <small class="text-muted">${empleado.cargo} - ${empleado.correo_electronico}</small>
+                        <small class="text-muted">${empleado.correo_electronico}</small>
                     </label>
                 </div>
             `;
@@ -783,15 +802,17 @@ function mostrarModalDestinatarios(configuracionId, empleados, configuracion) {
         const modalContent = `
             <div class="row">
                 <div class="col-md-12">
-                    <h6><i class="fas fa-building"></i> Empresa: ${configuracion.empresa_nombre}</h6>
-                    <h6><i class="fas fa-poll"></i> Encuesta: ${configuracion.encuesta_titulo}</h6>
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-building"></i> <strong>Empresa Cliente:</strong> ${configuracion.empresa_nombre}</h6>
+                        <h6><i class="fas fa-poll"></i> <strong>Encuesta:</strong> ${configuracion.encuesta_titulo}</h6>
+                    </div>
                 </div>
             </div>
             <hr>
             <div class="row">
                 <div class="col-md-12">
                     <h6><i class="fas fa-users"></i> Seleccionar Destinatarios</h6>
-                    <p class="text-muted">Selecciona los empleados que recibirán el correo:</p>
+                    <p class="text-muted">Selecciona los empleados de <strong>${configuracion.empresa_nombre}</strong> que recibirán el correo:</p>
 
                     <div class="empleados-list" style="max-height: 300px; overflow-y: auto;">
                         ${empleadosHtml}
