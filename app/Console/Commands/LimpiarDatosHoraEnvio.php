@@ -32,6 +32,9 @@ class LimpiarDatosHoraEnvio extends Command
         $dryRun = $this->option('dry-run');
 
         try {
+            // Verificar conexión primero
+            DB::connection()->getPdo();
+
             // Obtener configuraciones con hora_envio mal formateada
             $configuraciones = ConfiguracionEnvio::where('tipo_envio', 'programado')
                 ->whereNotNull('hora_envio')
