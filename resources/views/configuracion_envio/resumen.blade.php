@@ -797,7 +797,7 @@ function configurarDestinatarios(configuracionId) {
     });
 }
 
-// Función para mostrar el modal de destinatarios (fuera del document.ready para acceso global)
+// Función para mostrar el modal de destinatarios
 function mostrarModalDestinatarios(configuracionId, empleados, configuracion) {
         console.log('Mostrando modal con:', {configuracionId, empleados, configuracion});
 
@@ -808,14 +808,14 @@ function mostrarModalDestinatarios(configuracionId, empleados, configuracion) {
                              configuracion.destinatarios_seleccionados.includes(empleado.id);
 
             empleadosHtml += `
-                <div class="custom-control custom-checkbox mb-2">
+                <div class="custom-control custom-checkbox">
                     <input type="checkbox" class="custom-control-input"
                            id="empleado_${empleado.id}"
                            value="${empleado.id}"
                            ${isSelected ? 'checked' : ''}>
                     <label class="custom-control-label" for="empleado_${empleado.id}">
                         <strong>${empleado.nombre}</strong><br>
-                        <small class="text-muted">${empleado.correo_electronico}</small>
+                        <small class="text-muted">${empleado.cargo ? empleado.cargo + ' - ' : ''}${empleado.correo_electronico}</small>
                     </label>
                 </div>
             `;
@@ -824,17 +824,15 @@ function mostrarModalDestinatarios(configuracionId, empleados, configuracion) {
         const modalContent = `
             <div class="row">
                 <div class="col-md-12">
-                    <div class="alert alert-info">
-                        <h6><i class="fas fa-building"></i> <strong>Empresa Cliente:</strong> ${configuracion.empresa_nombre}</h6>
-                        <h6><i class="fas fa-poll"></i> <strong>Encuesta:</strong> ${configuracion.encuesta_titulo}</h6>
-                    </div>
+                    <h6><i class="fas fa-building"></i> Empresa: ${configuracion.empresa_nombre}</h6>
+                    <h6><i class="fas fa-poll"></i> Encuesta: ${configuracion.encuesta_titulo}</h6>
                 </div>
             </div>
             <hr>
             <div class="row">
                 <div class="col-md-12">
                     <h6><i class="fas fa-users"></i> Seleccionar Destinatarios</h6>
-                    <p class="text-muted">Selecciona los empleados de <strong>${configuracion.empresa_nombre}</strong> que recibirán el correo:</p>
+                    <p class="text-muted">Selecciona los empleados que recibirán el correo:</p>
 
                     <div class="empleados-list" style="max-height: 300px; overflow-y: auto;">
                         ${empleadosHtml}
@@ -888,6 +886,8 @@ function mostrarModalDestinatarios(configuracionId, empleados, configuracion) {
         `;
 
         $('#destinatarios-content').html(modalContent);
+        // Guardar el ID de configuración en el modal para usarlo al guardar
+        $('#destinatariosModal').data('configuracion-id', configuracionId);
         $('#destinatariosModal').modal('show');
     }
 
@@ -900,8 +900,9 @@ function deseleccionarTodos() {
     $('.empleados-list input[type="checkbox"]').prop('checked', false);
 }
 
-// Función para guardar la configuración de destinatarios (fuera del document.ready para acceso global)
+// Función para guardar la configuración de destinatarios
 function guardarDestinatarios() {
+        // Recuperar el ID de configuración guardado en el modal
         const configuracionId = $('#destinatariosModal').data('configuracion-id');
         const empleadosSeleccionados = [];
 
@@ -919,11 +920,7 @@ function guardarDestinatarios() {
             _token: '{{ csrf_token() }}'
         };
 
-        console.log('Enviando datos:', datos);
-
-        $.post('{{ route("configuracion-envio.guardar-destinatarios") }}', datos, function(response) {
-            console.log('Respuesta del servidor:', response);
-
+        $.post('/configuracion-envio/guardar-destinatarios', datos, function(response) {
             if (response.success) {
                 showSuccess('Destinatarios configurados correctamente');
                 $('#destinatariosModal').modal('hide');
@@ -932,32 +929,10 @@ function guardarDestinatarios() {
                     location.reload();
                 }, 1500);
             } else {
-                let errorMessage = 'Error: ' + response.message;
-                if (response.errors) {
-                    errorMessage += '\n\nDetalles:';
-                    Object.keys(response.errors).forEach(function(key) {
-                        errorMessage += '\n- ' + key + ': ' + response.errors[key].join(', ');
-                    });
-                }
-                showError(errorMessage);
+                showError('Error: ' + response.message);
             }
-        }).fail(function(xhr, status, error) {
-            console.error('Error en la petición:', {xhr, status, error});
-
-            let errorMessage = 'Error al guardar destinatarios';
-            if (xhr.responseJSON) {
-                errorMessage += '\n\nDetalles:';
-                if (xhr.responseJSON.message) {
-                    errorMessage += '\n- ' + xhr.responseJSON.message;
-                }
-                if (xhr.responseJSON.errors) {
-                    Object.keys(xhr.responseJSON.errors).forEach(function(key) {
-                        errorMessage += '\n- ' + key + ': ' + xhr.responseJSON.errors[key].join(', ');
-                    });
-                }
-            }
-
-            showError(errorMessage);
+        }).fail(function() {
+            showError('Error al guardar destinatarios');
         });
     }
 </script>
