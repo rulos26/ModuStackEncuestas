@@ -326,7 +326,7 @@ class ConfiguracionEnvioController extends Controller
      */
     private function obtenerEstadisticasDestinatarios($empresaId): array
     {
-        $empleados = Empleado::where('empresa_id', $empresaId)->count();
+        $empleados = Empleado::count(); // Sin filtrar por empresa ya que la tabla no tiene empresa_id
 
         return [
             'empleados' => $empleados,
@@ -418,14 +418,13 @@ class ConfiguracionEnvioController extends Controller
         ];
 
         if ($configuracion->tipo_destinatario === 'empleados') {
-            $empleados = Empleado::where('empresa_id', $empresaId)
-                ->select('id', 'nombre', 'apellido', 'correo_electronico')
+            $empleados = Empleado::select('id', 'nombre', 'cargo', 'correo_electronico')
                 ->get();
 
             $info['total'] = $empleados->count();
             $info['detalle'] = $empleados->take(5)->map(function ($empleado) {
                 return [
-                    'nombre' => $empleado->nombre . ' ' . $empleado->apellido,
+                    'nombre' => $empleado->nombre . ($empleado->cargo ? ' (' . $empleado->cargo . ')' : ''),
                     'email' => $empleado->correo_electronico
                 ];
             })->toArray();
@@ -481,17 +480,14 @@ class ConfiguracionEnvioController extends Controller
         try {
             $configuracion = ConfiguracionEnvio::with(['empresa', 'encuesta'])->findOrFail($configuracionId);
 
-            // Obtener empleados de la empresa específica
+            // Obtener empleados (sin filtrar por empresa ya que la tabla no tiene empresa_id)
             $empleados = collect();
-            if ($configuracion->empresa) {
-                try {
-                    $empleados = Empleado::where('empresa_id', $configuracion->empresa->id)
-                        ->select('id', 'nombre', 'correo_electronico')
-                        ->orderBy('nombre')
-                        ->get();
-                } catch (\Exception $e) {
-                    Log::warning('No se pudieron obtener empleados de la BD: ' . $e->getMessage());
-                }
+            try {
+                $empleados = Empleado::select('id', 'nombre', 'cargo', 'correo_electronico')
+                    ->orderBy('nombre')
+                    ->get();
+            } catch (\Exception $e) {
+                Log::warning('No se pudieron obtener empleados de la BD: ' . $e->getMessage());
             }
 
             // Si no hay empleados, crear algunos de prueba
