@@ -190,9 +190,9 @@
                             <div class="form-group">
                                 <label for="encuesta_id">ID de Encuesta:</label>
                                 <input type="number" class="form-control" id="encuesta_id" name="encuesta_id"
-                                       placeholder="Opcional para pruebas específicas">
+                                       placeholder="ID de encuesta (ej: 1, 2, 3...)" value="{{ request('encuesta_id') }}">
                                 <small class="form-text text-muted">
-                                    Solo necesario para pruebas de preguntas específicas.
+                                    ID de la encuesta para pruebas específicas.
                                 </small>
                             </div>
                         </div>
@@ -914,7 +914,6 @@ $(document).ready(function() {
                 $('#cron_options_group').show();
             } else if (selectedValue === 'generar_enlace_encuesta') {
                 $('#encuesta_id').attr('placeholder', 'ID de la encuesta (requerido) - Ej: 1, 2, 3...');
-                $('#encuesta_id').closest('.form-group').show();
                 $('#encuesta_id').prop('required', true);
                 $('#email_group').hide();
                 $('#cantidad_group').hide();
@@ -954,7 +953,6 @@ $(document).ready(function() {
                 $('#encuesta_id').attr('placeholder', 'ID de la encuesta para pruebas');
             }
                     } else {
-                $('#encuesta_id').closest('.form-group').hide();
                 $('#encuesta_id').prop('required', false);
                 $('#email_group').hide();
                 $('#cantidad_group').hide();
