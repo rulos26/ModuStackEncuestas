@@ -124,7 +124,7 @@ class ProbarCronJob extends Command
                 $empleados = Empleado::take(3)->get();
                 $this->info('   📋 Ejemplos de empleados:');
                 foreach ($empleados as $empleado) {
-                    $this->line("      • {$empleado->nombre} {$empleado->apellido} ({$empleado->correo_electronico})");
+                    $this->line("      • {$empleado->nombre} ({$empleado->correo_electronico})");
                 }
             } else {
                 $this->warn('   ⚠️ No hay empleados registrados');
@@ -153,15 +153,23 @@ class ProbarCronJob extends Command
             $this->info("   📈 Configuraciones pendientes encontradas: {$configuracionesPendientes->count()}");
 
             foreach ($configuracionesPendientes as $config) {
-                // hora_envio ya es un datetime, usar directamente
-                $fechaEnvio = $config->hora_envio;
+                $fechaHoraEnvio = $config->fecha_hora_envio;
 
                 $this->line("   📋 Configuración ID: {$config->id}");
-                $this->line("      Fecha/Hora programada: {$fechaEnvio->format('Y-m-d H:i:s')}");
-                $this->line("      ¿Lista para envío?: " . ($fechaEnvio <= $ahora ? '✅ SÍ' : '⏳ NO'));
+                $this->line("      Fecha: {$config->fecha_envio}");
+                $this->line("      Hora: {$config->hora_envio}");
+                $this->line("      Fecha/Hora combinada: {$fechaHoraEnvio}");
 
-                if ($fechaEnvio <= $ahora) {
-                    $this->info("      🚀 Esta configuración debería enviarse ahora");
+                if ($fechaHoraEnvio) {
+                    $fechaEnvioCarbon = \Carbon\Carbon::parse($fechaHoraEnvio);
+                    $estaLista = $fechaEnvioCarbon <= $ahora;
+                    $this->line("      ¿Lista para envío?: " . ($estaLista ? '✅ SÍ' : '⏳ NO'));
+
+                    if ($estaLista) {
+                        $this->info("      🚀 Esta configuración debería enviarse ahora");
+                    }
+                } else {
+                    $this->warn("      ⚠️ No se puede determinar la fecha/hora de envío");
                 }
             }
 

@@ -33,8 +33,10 @@ class VerificarEnvioProgramado extends Command
         try {
             // Obtener configuraciones programadas que están listas para envío
             $configuraciones = ConfiguracionEnvio::programadasPendientes()
-                ->where('hora_envio', '<=', now())
-                ->get();
+                ->get()
+                ->filter(function ($configuracion) {
+                    return $configuracion->estaListoParaEnvio();
+                });
 
             if ($configuraciones->isEmpty()) {
                 $this->info('✅ No hay envíos programados pendientes para ejecutar.');

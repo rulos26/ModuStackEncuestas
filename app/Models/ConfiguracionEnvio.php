@@ -37,7 +37,7 @@ class ConfiguracionEnvio extends Model
         'activo' => 'boolean',
         'modo_prueba' => 'boolean',
         'fecha_envio' => 'date',
-        'hora_envio' => 'datetime',
+        'hora_envio' => 'time',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -187,12 +187,12 @@ class ConfiguracionEnvio extends Model
      */
     public function getFechaHoraEnvioAttribute()
     {
-        if (!$this->hora_envio) {
+        if (!$this->fecha_envio || !$this->hora_envio) {
             return null;
         }
 
-        // hora_envio ya es un datetime completo
-        return $this->hora_envio;
+        // Combinar fecha y hora para crear un datetime completo
+        return $this->fecha_envio->format('Y-m-d') . ' ' . $this->hora_envio->format('H:i:s');
     }
 
     /**
@@ -209,7 +209,8 @@ class ConfiguracionEnvio extends Model
             return false;
         }
 
-        return now()->gte($fechaHoraEnvio);
+        // Convertir el string a Carbon para comparación
+        return now()->gte(\Carbon\Carbon::parse($fechaHoraEnvio));
     }
 
     /**
