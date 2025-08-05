@@ -2,6 +2,10 @@
 
 @section('title', 'Resumen de Configuraciones de Envío')
 
+@push('js')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@endpush
+
 @push('css')
 <style>
     /* Mejorar legibilidad de la tabla en tema oscuro */
@@ -713,33 +717,45 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Funciones de notificación (fuera del document.ready para acceso global)
 function showSuccess(message) {
-    Swal.fire({
-        icon: 'success',
-        title: '¡Éxito!',
-        text: message,
-        timer: 3000,
-        showConfirmButton: false
-    });
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            icon: 'success',
+            title: '¡Éxito!',
+            text: message,
+            timer: 3000,
+            showConfirmButton: false
+        });
+    } else {
+        alert('Éxito: ' + message);
+    }
 }
 
 function showError(message) {
-    Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: message,
-        timer: 5000,
-        showConfirmButton: true
-    });
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: message,
+            timer: 5000,
+            showConfirmButton: true
+        });
+    } else {
+        alert('Error: ' + message);
+    }
 }
 
 function showWarning(message) {
-    Swal.fire({
-        icon: 'warning',
-        title: 'Atención',
-        text: message,
-        timer: 4000,
-        showConfirmButton: false
-    });
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Atención',
+            text: message,
+            timer: 4000,
+            showConfirmButton: false
+        });
+    } else {
+        alert('Atención: ' + message);
+    }
 }
 
 // Función para configurar destinatarios (fuera del document.ready para acceso global)
@@ -747,19 +763,23 @@ function configurarDestinatarios(configuracionId) {
     console.log('Configurando destinatarios para configuración:', configuracionId);
 
     // Mostrar loading
-    Swal.fire({
-        title: 'Cargando empleados...',
-        allowOutsideClick: false,
-        didOpen: () => {
-            Swal.showLoading();
-        }
-    });
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: 'Cargando empleados...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+    }
 
     // Cargar empleados de la empresa
     $.get(`{{ url('/configuracion-envio/obtener-empleados') }}/${configuracionId}`, function(response) {
         console.log('Respuesta del servidor:', response);
 
-        Swal.close();
+        if (typeof Swal !== 'undefined') {
+            Swal.close();
+        }
 
         if (response.success) {
             console.log('Empresa:', response.configuracion.empresa_nombre);
@@ -770,7 +790,9 @@ function configurarDestinatarios(configuracionId) {
         }
     }).fail(function(xhr, status, error) {
         console.error('Error en la petición:', error);
-        Swal.close();
+        if (typeof Swal !== 'undefined') {
+            Swal.close();
+        }
         showError('Error al cargar empleados: ' + error);
     });
 }
