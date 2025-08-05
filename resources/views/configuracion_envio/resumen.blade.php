@@ -773,8 +773,8 @@ function configurarDestinatarios(configuracionId) {
         });
     }
 
-    // Cargar empleados de la empresa
-    $.get(`{{ url('/configuracion-envio/obtener-empleados') }}/${configuracionId}`, function(response) {
+            // Cargar empleados de la empresa
+        $.get(`{{ route('configuracion-envio.obtener-empleados', ['id' => ':id']) }}`.replace(':id', configuracionId), function(response) {
         console.log('Respuesta del servidor:', response);
 
         if (typeof Swal !== 'undefined') {
@@ -920,7 +920,7 @@ function guardarDestinatarios() {
             _token: '{{ csrf_token() }}'
         };
 
-        $.post('/configuracion-envio/guardar-destinatarios', datos, function(response) {
+        $.post('{{ route("configuracion-envio.guardar-destinatarios") }}', datos, function(response) {
             if (response.success) {
                 showSuccess('Destinatarios configurados correctamente');
                 $('#destinatariosModal').modal('hide');
