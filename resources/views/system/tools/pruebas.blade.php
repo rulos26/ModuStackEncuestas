@@ -914,6 +914,8 @@ $(document).ready(function() {
                 $('#cron_options_group').show();
             } else if (selectedValue === 'generar_enlace_encuesta') {
                 $('#encuesta_id').attr('placeholder', 'ID de la encuesta (requerido) - Ej: 1, 2, 3...');
+                $('#encuesta_id').closest('.form-group').show();
+                $('#encuesta_id').prop('required', true);
                 $('#email_group').hide();
                 $('#cantidad_group').hide();
                 $('#horas_group').hide();
