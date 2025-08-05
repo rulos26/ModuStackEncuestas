@@ -66,6 +66,13 @@ class TestRunnerController extends Controller
                 if (in_array('--force', $options)) {
                     $fullCommand .= ' --force';
                 }
+            } else if ($command === 'generar_enlace_encuesta') {
+                $fullCommand = 'encuesta:generar-enlace';
+                if ($configuracionId) {
+                    $fullCommand .= ' ' . $configuracionId;
+                } else {
+                    $fullCommand .= ' 1'; // ID por defecto
+                }
             }
 
             // Agregar filtro de archivo para comandos de test

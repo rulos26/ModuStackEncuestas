@@ -144,6 +144,9 @@
                         <option value="crear_empresa_prueba" {{ $tipo === 'crear_empresa_prueba' ? 'selected' : '' }}>
                             🏢 Crear Empresa de Prueba
                         </option>
+                        <option value="generar_enlace_encuesta" {{ $tipo === 'generar_enlace_encuesta' ? 'selected' : '' }}>
+                            🔗 Generar Enlace de Encuesta
+                        </option>
                         <option value="solucionar_csrf_hosting" {{ $tipo === 'solucionar_csrf_hosting' ? 'selected' : '' }}>
                             Solucionar Error CSRF en Hosting
                         </option>
@@ -909,6 +912,15 @@ $(document).ready(function() {
                 $('#empresa_id_group').hide();
                 $('#tipo_destinatario_group').hide();
                 $('#cron_options_group').show();
+            } else if (selectedValue === 'generar_enlace_encuesta') {
+                $('#encuesta_id').attr('placeholder', 'ID de la encuesta (requerido) - Ej: 1, 2, 3...');
+                $('#email_group').hide();
+                $('#cantidad_group').hide();
+                $('#horas_group').hide();
+                $('#configuracion_id_group').hide();
+                $('#empresa_id_group').hide();
+                $('#tipo_destinatario_group').hide();
+                $('#cron_options_group').hide();
             } else if (selectedValue === 'fix_session_419') {
                 $('#encuesta_id').attr('placeholder', 'No requiere ID - Soluciona error 419 de sesiones');
                 $('#email_group').hide();
