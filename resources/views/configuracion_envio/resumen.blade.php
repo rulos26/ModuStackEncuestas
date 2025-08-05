@@ -919,7 +919,11 @@ function guardarDestinatarios() {
             _token: '{{ csrf_token() }}'
         };
 
+        console.log('Enviando datos:', datos);
+
         $.post('{{ route("configuracion-envio.guardar-destinatarios") }}', datos, function(response) {
+            console.log('Respuesta del servidor:', response);
+
             if (response.success) {
                 showSuccess('Destinatarios configurados correctamente');
                 $('#destinatariosModal').modal('hide');
@@ -928,10 +932,32 @@ function guardarDestinatarios() {
                     location.reload();
                 }, 1500);
             } else {
-                showError('Error: ' + response.message);
+                let errorMessage = 'Error: ' + response.message;
+                if (response.errors) {
+                    errorMessage += '\n\nDetalles:';
+                    Object.keys(response.errors).forEach(function(key) {
+                        errorMessage += '\n- ' + key + ': ' + response.errors[key].join(', ');
+                    });
+                }
+                showError(errorMessage);
             }
-        }).fail(function() {
-            showError('Error al guardar destinatarios');
+        }).fail(function(xhr, status, error) {
+            console.error('Error en la petición:', {xhr, status, error});
+
+            let errorMessage = 'Error al guardar destinatarios';
+            if (xhr.responseJSON) {
+                errorMessage += '\n\nDetalles:';
+                if (xhr.responseJSON.message) {
+                    errorMessage += '\n- ' + xhr.responseJSON.message;
+                }
+                if (xhr.responseJSON.errors) {
+                    Object.keys(xhr.responseJSON.errors).forEach(function(key) {
+                        errorMessage += '\n- ' + key + ': ' + xhr.responseJSON.errors[key].join(', ');
+                    });
+                }
+            }
+
+            showError(errorMessage);
         });
     }
 </script>

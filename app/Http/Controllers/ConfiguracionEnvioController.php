@@ -564,7 +564,6 @@ class ConfiguracionEnvioController extends Controller
             $validator = Validator::make($request->all(), [
                 'configuracion_id' => 'required|exists:configuracion_envios,id',
                 'empleados' => 'required|array|min:1',
-                'empleados.*' => 'exists:empleados,id',
                 'fecha_envio' => 'required|date|after_or_equal:today',
                 'hora_envio' => 'required|date_format:H:i',
                 'numero_bloques' => 'required|integer|min:1|max:10',
@@ -576,6 +575,18 @@ class ConfiguracionEnvioController extends Controller
                     'success' => false,
                     'message' => 'Datos de validación incorrectos',
                     'errors' => $validator->errors()
+                ], 422);
+            }
+
+            // Verificar que los empleados existen (sin usar exists:empleados,id que es muy estricto)
+            $empleadosExistentes = \App\Models\Empleado::whereIn('id', $request->empleados)->pluck('id')->toArray();
+            $empleadosNoExistentes = array_diff($request->empleados, $empleadosExistentes);
+
+            if (!empty($empleadosNoExistentes)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Algunos empleados no existen: ' . implode(', ', $empleadosNoExistentes),
+                    'errors' => ['empleados' => ['Algunos empleados no existen']]
                 ], 422);
             }
 
