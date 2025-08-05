@@ -39,6 +39,35 @@ class TestRunnerController extends Controller
                 $fullCommand .= ' --configuracion-id=' . $configuracionId;
             }
 
+            // Manejar comandos específicos
+            if ($command === 'limpiar_hora_envio') {
+                $fullCommand = 'limpiar:hora-envio';
+                if (in_array('--dry-run', $options)) {
+                    $fullCommand .= ' --dry-run';
+                }
+            } else if ($command === 'corregir_configuraciones_envio') {
+                $fullCommand = 'corregir:configuraciones-envio';
+                if ($configuracionId) {
+                    $fullCommand .= ' --configuracion-id=' . $configuracionId;
+                }
+                if (in_array('--force', $options)) {
+                    $fullCommand .= ' --force';
+                }
+            } else if ($command === 'verificar_empresas') {
+                $fullCommand = 'verificar:empresas';
+                if ($configuracionId) {
+                    $fullCommand .= ' --empresa-id=' . $configuracionId;
+                }
+            } else if ($command === 'crear_empresa_prueba') {
+                $fullCommand = 'crear:empresa-prueba';
+                if ($configuracionId) {
+                    $fullCommand .= ' --nombre=' . $configuracionId;
+                }
+                if (in_array('--force', $options)) {
+                    $fullCommand .= ' --force';
+                }
+            }
+
             // Agregar filtro de archivo para comandos de test
             if ($file && $command === 'test') {
                 $fullCommand .= ' --filter=' . escapeshellarg($file);

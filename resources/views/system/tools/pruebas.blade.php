@@ -135,6 +135,15 @@
                         <option value="corregir_configuraciones_envio" {{ $tipo === 'corregir_configuraciones_envio' ? 'selected' : '' }}>
                             🔧 Corregir Configuraciones de Envío
                         </option>
+                        <option value="limpiar_hora_envio" {{ $tipo === 'limpiar_hora_envio' ? 'selected' : '' }}>
+                            🧹 Limpiar Datos de Hora de Envío
+                        </option>
+                        <option value="verificar_empresas" {{ $tipo === 'verificar_empresas' ? 'selected' : '' }}>
+                            🏢 Verificar Empresas Disponibles
+                        </option>
+                        <option value="crear_empresa_prueba" {{ $tipo === 'crear_empresa_prueba' ? 'selected' : '' }}>
+                            🏢 Crear Empresa de Prueba
+                        </option>
                         <option value="solucionar_csrf_hosting" {{ $tipo === 'solucionar_csrf_hosting' ? 'selected' : '' }}>
                             Solucionar Error CSRF en Hosting
                         </option>
@@ -281,6 +290,12 @@
                                     <input type="checkbox" class="custom-control-input" id="fix" name="fix" value="1">
                                     <label class="custom-control-label" for="fix">
                                         <i class="fas fa-tools"></i> Arreglar Problemas
+                                    </label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="dry_run" name="options[]" value="--dry-run">
+                                    <label class="custom-control-label" for="dry_run">
+                                        <i class="fas fa-eye"></i> Solo Simular (Dry Run)
                                     </label>
                                 </div>
                                 <small class="form-text text-muted">
@@ -866,6 +881,33 @@ $(document).ready(function() {
                 $('#configuracion_id_group').show();
                 $('#empresa_id_group').hide();
                 $('#tipo_destinatario_group').show();
+                $('#cron_options_group').show();
+            } else if (selectedValue === 'limpiar_hora_envio') {
+                $('#encuesta_id').attr('placeholder', 'No requiere ID - Limpia datos mal formateados de hora_envio');
+                $('#email_group').hide();
+                $('#cantidad_group').hide();
+                $('#horas_group').hide();
+                $('#configuracion_id_group').hide();
+                $('#empresa_id_group').hide();
+                $('#tipo_destinatario_group').hide();
+                $('#cron_options_group').show();
+            } else if (selectedValue === 'verificar_empresas') {
+                $('#encuesta_id').attr('placeholder', 'ID de empresa específica (opcional) - Verifica todas si no se especifica');
+                $('#email_group').hide();
+                $('#cantidad_group').hide();
+                $('#horas_group').hide();
+                $('#configuracion_id_group').hide();
+                $('#empresa_id_group').show();
+                $('#tipo_destinatario_group').hide();
+                $('#cron_options_group').hide();
+            } else if (selectedValue === 'crear_empresa_prueba') {
+                $('#encuesta_id').attr('placeholder', 'Nombre de empresa (opcional) - Usa nombre por defecto si no se especifica');
+                $('#email_group').hide();
+                $('#cantidad_group').hide();
+                $('#horas_group').hide();
+                $('#configuracion_id_group').hide();
+                $('#empresa_id_group').hide();
+                $('#tipo_destinatario_group').hide();
                 $('#cron_options_group').show();
             } else if (selectedValue === 'fix_session_419') {
                 $('#encuesta_id').attr('placeholder', 'No requiere ID - Soluciona error 419 de sesiones');
