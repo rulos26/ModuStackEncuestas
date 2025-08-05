@@ -13,6 +13,12 @@ class TestRunnerController extends Controller
         //$this->middleware(['auth', 'role:admin|superadmin']);
     }
 
+    protected function info($message)
+    {
+        // Método helper para debug
+        \Illuminate\Support\Facades\Log::info($message);
+    }
+
     public function index()
     {
         return view('testing.index');
@@ -24,6 +30,7 @@ class TestRunnerController extends Controller
             $command = $request->input('command', 'test');
             $options = $request->input('options', []);
             $configuracionId = $request->input('configuracion_id');
+            $encuestaId = $request->input('encuesta_id');
             $file = $request->input('file');
 
             // Construir el comando completo
@@ -68,8 +75,8 @@ class TestRunnerController extends Controller
                 }
             } else if ($command === 'generar_enlace_encuesta') {
                 $fullCommand = 'encuesta:generar-enlace';
-                if ($configuracionId) {
-                    $fullCommand .= ' ' . $configuracionId;
+                if ($encuestaId) {
+                    $fullCommand .= ' ' . $encuestaId;
                 } else {
                     $fullCommand .= ' 1'; // ID por defecto
                 }
@@ -81,17 +88,26 @@ class TestRunnerController extends Controller
             }
 
             // Ejecutar el comando y capturar la salida
+            $this->info("Ejecutando comando: {$fullCommand}");
             Artisan::call($fullCommand);
             $output = Artisan::output();
+
+            // Debug: mostrar información adicional
+            $debugInfo = "Comando: {$fullCommand}\n";
+            $debugInfo .= "Encuesta ID: " . ($encuestaId ?? 'No especificado') . "\n";
+            $debugInfo .= "Configuración ID: " . ($configuracionId ?? 'No especificado') . "\n";
+            $debugInfo .= "Opciones: " . implode(', ', $options) . "\n\n";
+            $debugInfo .= "Salida del comando:\n{$output}";
 
             // Determinar si fue exitoso
             $isSuccess = !empty($output) && !str_contains($output, 'Error') && !str_contains($output, 'Exception');
 
             return view('testing.index', [
-                'output' => $output,
+                'output' => $debugInfo,
                 'command' => $fullCommand,
                 'isSuccess' => $isSuccess,
                 'configuracion_id' => $configuracionId,
+                'encuesta_id' => $encuestaId,
                 'file' => $file,
             ])->with($isSuccess ? 'success' : 'error',
                 $isSuccess ? 'Comando ejecutado correctamente' : 'Error al ejecutar el comando');
