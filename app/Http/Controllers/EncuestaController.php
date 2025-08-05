@@ -146,6 +146,33 @@ class EncuestaController extends Controller
                 ->with('success', 'Encuesta creada correctamente. Ahora agrega las preguntas.');
         } catch (Exception $e) {
             DB::rollBack();
+
+            // Verificar si es error de empresa no encontrada
+            if (str_contains($e->getMessage(), 'empresa_id_foreign') || str_contains($e->getMessage(), 'Integrity constraint violation')) {
+                // Obtener empresas disponibles para mostrar en el error
+                $empresasDisponibles = EmpresasCliente::orderBy('nombre')->get(['id', 'nombre']);
+
+                Log::error('Error creando encuesta - Empresa no encontrada', [
+                    'user_id' => Auth::id(),
+                    'empresa_id_solicitada' => $request->input('empresa_id'),
+                    'empresas_disponibles' => $empresasDisponibles->pluck('id', 'nombre')->toArray(),
+                    'error' => $e->getMessage()
+                ]);
+
+                $mensajeError = '❌ Error: La empresa seleccionada no existe en la base de datos.<br><br>';
+                $mensajeError .= '🏢 <strong>Empresas disponibles:</strong><br>';
+
+                foreach ($empresasDisponibles as $empresa) {
+                    $mensajeError .= "   • ID {$empresa->id}: {$empresa->nombre}<br>";
+                }
+
+                $mensajeError .= '<br>💡 <strong>Solución:</strong> Selecciona una empresa de la lista anterior.';
+
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', $mensajeError);
+            }
+
             Log::error('Error creando encuesta', [
                 'user_id' => Auth::id(),
                 'data' => $request->all(),

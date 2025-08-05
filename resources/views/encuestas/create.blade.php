@@ -19,7 +19,7 @@
 
 @if(session('error'))
     <div class="alert alert-danger">
-        {{ session('error') }}
+        {!! session('error') !!}
     </div>
 @endif
 
@@ -43,7 +43,7 @@
                     <option value="">Seleccione una empresa</option>
                     @foreach($empresas as $empresa)
                         <option value="{{ $empresa->id }}" {{ old('empresa_id') == $empresa->id ? 'selected' : '' }}>
-                            {{ $empresa->nombre }}
+                            ID {{ $empresa->id }}: {{ $empresa->nombre }}
                         </option>
                     @endforeach
                 </select>
