@@ -37,7 +37,7 @@ class ConfiguracionEnvio extends Model
         'activo' => 'boolean',
         'modo_prueba' => 'boolean',
         'fecha_envio' => 'date',
-        'hora_envio' => 'time',
+        'hora_envio' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -182,6 +182,41 @@ class ConfiguracionEnvio extends Model
         return $tipos[$this->tipo_destinatario] ?? 'No definido';
     }
 
+        /**
+     * Obtener hora_envio como string de tiempo
+     */
+    public function getHoraEnvioAttribute($value)
+    {
+        if (!$value) {
+            return null;
+        }
+
+        // Si es un Carbon object, formatear como tiempo
+        if ($value instanceof \Carbon\Carbon) {
+            return $value->format('H:i:s');
+        }
+
+        return $value;
+    }
+
+    /**
+     * Establecer hora_envio
+     */
+    public function setHoraEnvioAttribute($value)
+    {
+        if (!$value) {
+            $this->attributes['hora_envio'] = null;
+            return;
+        }
+
+        // Si es solo hora (HH:mm o HH:mm:ss), convertir a datetime completo
+        if (preg_match('/^\d{1,2}:\d{2}(:\d{2})?$/', $value)) {
+            $this->attributes['hora_envio'] = '2000-01-01 ' . $value;
+        } else {
+            $this->attributes['hora_envio'] = $value;
+        }
+    }
+
     /**
      * Calcular fecha y hora completa de envío
      */
@@ -192,7 +227,12 @@ class ConfiguracionEnvio extends Model
         }
 
         // Combinar fecha y hora para crear un datetime completo
-        return $this->fecha_envio->format('Y-m-d') . ' ' . $this->hora_envio->format('H:i:s');
+        $fecha = $this->fecha_envio->format('Y-m-d');
+        $hora = $this->hora_envio instanceof \Carbon\Carbon ?
+                $this->hora_envio->format('H:i:s') :
+                $this->hora_envio;
+
+        return $fecha . ' ' . $hora;
     }
 
     /**
@@ -204,13 +244,14 @@ class ConfiguracionEnvio extends Model
             return false;
         }
 
-        $fechaHoraEnvio = $this->fecha_hora_envio;
-        if (!$fechaHoraEnvio) {
+        if (!$this->fecha_envio || !$this->hora_envio) {
             return false;
         }
 
-        // Convertir el string a Carbon para comparación
-        return now()->gte(\Carbon\Carbon::parse($fechaHoraEnvio));
+        // Crear datetime combinando fecha y hora
+        $fechaHoraEnvio = \Carbon\Carbon::parse($this->fecha_envio->format('Y-m-d') . ' ' . $this->hora_envio);
+
+        return now()->gte($fechaHoraEnvio);
     }
 
     /**
