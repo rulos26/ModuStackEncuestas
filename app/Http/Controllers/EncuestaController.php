@@ -73,7 +73,7 @@ class EncuestaController extends Controller
             }
 
             $empresas = EmpresasCliente::orderBy('nombre')->get();
-
+            dd($empresas);
             if ($empresas->isEmpty()) {
                 return redirect()->back()->with('warning', 'Debes crear una empresa cliente antes de crear encuestas.');
             }
