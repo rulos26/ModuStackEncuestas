@@ -211,6 +211,10 @@ class ConfiguracionEnvio extends Model
 
         // Si es solo hora (HH:mm o HH:mm:ss), convertir a datetime completo
         if (preg_match('/^\d{1,2}:\d{2}(:\d{2})?$/', $value)) {
+            // Asegurar que la hora tenga segundos
+            if (substr_count($value, ':') === 1) {
+                $value .= ':00';
+            }
             $this->attributes['hora_envio'] = '2000-01-01 ' . $value;
         } else {
             $this->attributes['hora_envio'] = $value;
