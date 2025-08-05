@@ -418,13 +418,13 @@ class ConfiguracionEnvioController extends Controller
         ];
 
         if ($configuracion->tipo_destinatario === 'empleados') {
-            $empleados = Empleado::select('id', 'nombre', 'cargo', 'correo_electronico')
+            $empleados = Empleado::select('id', 'nombre', 'correo_electronico')
                 ->get();
 
             $info['total'] = $empleados->count();
             $info['detalle'] = $empleados->take(5)->map(function ($empleado) {
                 return [
-                    'nombre' => $empleado->nombre . ($empleado->cargo ? ' (' . $empleado->cargo . ')' : ''),
+                    'nombre' => $empleado->nombre,
                     'email' => $empleado->correo_electronico
                 ];
             })->toArray();
@@ -482,10 +482,10 @@ class ConfiguracionEnvioController extends Controller
 
             // Obtener empleados (sin filtrar por empresa ya que la tabla no tiene empresa_id)
             $empleados = collect();
-            try {
-                $empleados = Empleado::select('id', 'nombre', 'cargo', 'correo_electronico')
-                    ->orderBy('nombre')
-                    ->get();
+                            try {
+                    $empleados = Empleado::select('id', 'nombre', 'correo_electronico')
+                        ->orderBy('nombre')
+                        ->get();
             } catch (\Exception $e) {
                 Log::warning('No se pudieron obtener empleados de la BD: ' . $e->getMessage());
             }

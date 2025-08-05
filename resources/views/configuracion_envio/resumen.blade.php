@@ -815,7 +815,7 @@ function mostrarModalDestinatarios(configuracionId, empleados, configuracion) {
                            ${isSelected ? 'checked' : ''}>
                     <label class="custom-control-label" for="empleado_${empleado.id}">
                         <strong>${empleado.nombre}</strong><br>
-                        <small class="text-muted">${empleado.cargo ? empleado.cargo + ' - ' : ''}${empleado.correo_electronico}</small>
+                        <small class="text-muted">${empleado.correo_electronico}</small>
                     </label>
                 </div>
             `;
