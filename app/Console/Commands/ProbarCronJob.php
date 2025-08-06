@@ -228,12 +228,12 @@ class ProbarCronJob extends Command
 
         if ($configuracion->tipo_destinatario === 'empleados') {
             $empleados = Empleado::where('empresa_id', $configuracion->empresa_id)
-                ->select('nombre', 'apellido', 'correo_electronico')
+                ->select('nombre', 'correo_electronico')
                 ->get();
 
             foreach ($empleados as $empleado) {
                 $destinatarios[] = [
-                    'nombre' => $empleado->nombre . ' ' . $empleado->apellido,
+                    'nombre' => $empleado->nombre,
                     'email' => $empleado->correo_electronico
                 ];
             }
