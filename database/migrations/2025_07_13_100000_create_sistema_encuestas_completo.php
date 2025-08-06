@@ -51,7 +51,7 @@ return new class extends Migration
             $table->timestamps();
 
             // Índices para optimización
-            $table->foreign('empresa_id')->references('id')->on('empresa')->onDelete('cascade');
+            $table->foreign('empresa_id')->references('id')->on('empresas_clientes')->onDelete('cascade');
             $table->index(['estado', 'habilitada']);
             $table->index(['fecha_inicio', 'fecha_fin']);
             $table->index('slug');

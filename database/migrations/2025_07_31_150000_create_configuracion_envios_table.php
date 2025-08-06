@@ -24,7 +24,7 @@ return new class extends Migration
             $table->boolean('activo')->default(true);
             $table->timestamps();
 
-            $table->foreign('empresa_id')->references('id')->on('empresas')->onDelete('cascade');
+            $table->foreign('empresa_id')->references('id')->on('empresas_clientes')->onDelete('cascade');
             $table->foreign('encuesta_id')->references('id')->on('encuestas')->onDelete('cascade');
 
             // Índice único para evitar duplicados
