@@ -333,6 +333,15 @@ Route::middleware(['auth'])->prefix('configuracion-envio')->name('configuracion-
     // Rutas para configuración de destinatarios
     Route::get('/obtener-empleados/{id}', [App\Http\Controllers\ConfiguracionEnvioController::class, 'obtenerEmpleados'])->name('obtener-empleados');
     Route::post('/guardar-destinatarios', [App\Http\Controllers\ConfiguracionEnvioController::class, 'guardarDestinatarios'])->name('guardar-destinatarios');
-});
+    });
 
+// Rutas para Envío Masivo de Encuestas
+Route::middleware(['auth'])->prefix('envio-masivo')->name('envio-masivo.')->group(function () {
+    Route::get('/', [App\Http\Controllers\EnvioMasivoEncuestasController::class, 'index'])->name('index');
+    Route::post('/enviar', [App\Http\Controllers\EnvioMasivoEncuestasController::class, 'enviar'])->name('enviar');
+    Route::get('/estadisticas', [App\Http\Controllers\EnvioMasivoEncuestasController::class, 'estadisticas'])->name('estadisticas');
+    Route::get('/vista-previa', [App\Http\Controllers\EnvioMasivoEncuestasController::class, 'vistaPrevia'])->name('vista-previa');
+    Route::post('/obtener-empleados', [App\Http\Controllers\EnvioMasivoEncuestasController::class, 'obtenerEmpleados'])->name('obtener-empleados');
+    Route::get('/validar-configuracion', [App\Http\Controllers\EnvioMasivoEncuestasController::class, 'validarConfiguracion'])->name('validar-configuracion');
+});
 

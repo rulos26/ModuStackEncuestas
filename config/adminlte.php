@@ -581,6 +581,11 @@ return [
                     'icon' => 'fas fa-envelope-open-text',
                 ],
                 [
+                    'text' => 'Envío Masivo',
+                    'route' => 'envio-masivo.index',
+                    'icon' => 'fas fa-paper-plane',
+                ],
+                [
                     'text' => 'Vista Previa',
                     'url'  => '#', // Cambia por la ruta real si tienes una vista previa general
                     'icon' => 'fas fa-eye',
