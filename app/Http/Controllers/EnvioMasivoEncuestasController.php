@@ -38,7 +38,7 @@ class EnvioMasivoEncuestasController extends Controller
             ]);
 
             $encuesta = Encuesta::findOrFail($request->encuesta_id);
-            
+
             // Verificar que la encuesta esté publicada
             if ($encuesta->estado !== 'publicada' && $encuesta->estado !== 'enviada') {
                 return back()->withErrors(['encuesta_id' => 'La encuesta debe estar publicada para poder enviarla.']);
@@ -95,7 +95,7 @@ class EnvioMasivoEncuestasController extends Controller
 
         // Construir URL pública
         $url = URL::to('/encuesta-publica/' . $encuesta->token_acceso);
-        
+
         return $url;
     }
 
@@ -162,7 +162,7 @@ class EnvioMasivoEncuestasController extends Controller
     private function enviarCorreoIndividual($empleado, $encuesta, $linkEncuesta)
     {
         $asunto = "Invitación a participar en: {$encuesta->titulo}";
-        
+
         $cuerpo = $this->generarCuerpoCorreo($empleado, $encuesta, $linkEncuesta);
 
         // Enviar usando la configuración SMTP existente
@@ -224,7 +224,7 @@ class EnvioMasivoEncuestasController extends Controller
 
         $encuesta = Encuesta::findOrFail($request->encuesta_id);
         $empresa = $encuesta->empresa;
-        
+
         if (!$empresa) {
             return back()->withErrors(['error' => 'La encuesta no está asociada a una empresa.']);
         }
@@ -236,7 +236,7 @@ class EnvioMasivoEncuestasController extends Controller
 
         $linkEncuesta = $this->generarLinkPublico($encuesta);
         $empleadoEjemplo = $empleados->first();
-        
+
         if ($empleadoEjemplo) {
             $cuerpoCorreo = $this->generarcuerpoCorreo($empleadoEjemplo, $encuesta, $linkEncuesta);
         } else {
@@ -244,10 +244,10 @@ class EnvioMasivoEncuestasController extends Controller
         }
 
         return view('envio-masivo.vista-previa', compact(
-            'encuesta', 
-            'empresa', 
-            'empleados', 
-            'cuerpoCorreo', 
+            'encuesta',
+            'empresa',
+            'empleados',
+            'cuerpoCorreo',
             'linkEncuesta'
         ));
     }
@@ -263,7 +263,7 @@ class EnvioMasivoEncuestasController extends Controller
 
         $encuesta = Encuesta::with('empresa')->findOrFail($request->encuesta_id);
         $empresa = $encuesta->empresa;
-        
+
         if (!$empresa) {
             return response()->json([
                 'error' => 'La encuesta no está asociada a una empresa'
@@ -338,4 +338,4 @@ class EnvioMasivoEncuestasController extends Controller
             'valido' => empty($errores)
         ]);
     }
-} 
+}
