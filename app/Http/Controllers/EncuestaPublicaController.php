@@ -144,23 +144,23 @@ class EncuestaPublicaController extends Controller
 
 
         // 🔍 DEBUG: Información de entrada
-        Log::info('🔍 ENCUESTA PÚBLICA POR ID - Iniciando método mostrarPorId', [
+        /* Log::info('🔍 ENCUESTA PÚBLICA POR ID - Iniciando método mostrarPorId', [
             'encuesta_id' => $id,
             'request_url' => request()->fullUrl(),
             'user_agent' => request()->userAgent(),
             'ip' => request()->ip(),
             'timestamp' => now()->toDateTimeString()
         ]);
-
+ */
         try {
             // 🔍 DEBUG: Antes de buscar la encuesta por ID
-            Log::info('🔍 ENCUESTA PÚBLICA POR ID - Buscando encuesta en BD', [
+           /*  Log::info('🔍 ENCUESTA PÚBLICA POR ID - Buscando encuesta en BD', [
                 'encuesta_id' => $id,
                 'filtros' => [
                     'habilitada' => true,
                     'estado' => 'publicada'
                 ]
-            ]);
+            ]); */
 
             $encuesta = Encuesta::with(['preguntas.respuestas', 'empresa'])
                 ->where('id', $id)
