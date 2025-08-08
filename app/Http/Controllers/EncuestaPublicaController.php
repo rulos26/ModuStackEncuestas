@@ -164,9 +164,7 @@ class EncuestaPublicaController extends Controller
 
             $encuesta = Encuesta::with(['preguntas.respuestas', 'empresa'])
                 ->where('id', $id)
-                ->where('habilitada', true)
-                ->where('estado', 'publicada')
-                ->firstOrFail();
+                ->first();
                 dd($id,$encuesta);
             // 🔍 DEBUG: Encuesta encontrada
             Log::info('✅ ENCUESTA PÚBLICA POR ID - Encuesta encontrada', [
