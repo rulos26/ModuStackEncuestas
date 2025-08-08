@@ -18,7 +18,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-
+                    
                     <!-- Información de la Encuesta -->
                     <div class="row mb-4">
                         <div class="col-md-6">
@@ -70,7 +70,7 @@
                                             <input type="number" class="form-control" id="encuesta_id" name="encuesta_id" value="13" min="1">
                                             <small class="form-text text-muted">ID de la encuesta a probar</small>
                                         </div>
-
+                                        
                                         <div class="form-group">
                                             <label for="slug_encuesta">Slug de Encuesta:</label>
                                             <input type="text" class="form-control" id="slug_encuesta" name="slug_encuesta" value="encuesta-de-prueba-tester-automatico-2025-07-30-194743">
@@ -118,30 +118,30 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="btn-group-vertical w-100">
-                                        <a href="/publica/encuesta-de-prueba-tester-automatico-2025-07-30-194743"
-                                           target="_blank"
+                                        <a href="/publica/encuesta-de-prueba-tester-automatico-2025-07-30-194743" 
+                                           target="_blank" 
                                            class="btn btn-success mb-2">
                                             <i class="fas fa-eye"></i>
                                             Ver Encuesta Pública
                                         </a>
-
-                                        <a href="/publica/encuesta-de-prueba-tester-automatico-2025-07-30-194743/fin"
-                                           target="_blank"
+                                        
+                                        <a href="/publica/encuesta-de-prueba-tester-automatico-2025-07-30-194743/fin" 
+                                           target="_blank" 
                                            class="btn btn-info mb-2">
                                             <i class="fas fa-check-circle"></i>
                                             Página de Fin
                                         </a>
-
-                                        <button type="button"
+                                        
+                                        <button type="button" 
                                                 class="btn btn-warning mb-2"
-                                                onclick="probarDebug()">
+                                                onclick="if(typeof probarDebug === 'function') { probarDebug(); } else { alert('Función probarDebug no disponible'); }">
                                             <i class="fas fa-bug"></i>
                                             Debug Completo
                                         </button>
-
-                                        <button type="button"
+                                        
+                                        <button type="button" 
                                                 class="btn btn-secondary mb-2"
-                                                onclick="verLogs()">
+                                                onclick="if(typeof verLogs === 'function') { verLogs(); } else { alert('Función verLogs no disponible'); }">
                                             <i class="fas fa-file-alt"></i>
                                             Ver Logs
                                         </button>
@@ -161,7 +161,7 @@
                                         Resultados de la Prueba
                                     </h3>
                                     <div class="card-tools">
-                                        <button type="button" class="btn btn-tool" onclick="limpiarResultados()">
+                                        <button type="button" class="btn btn-tool" onclick="if(typeof limpiarResultados === 'function') { limpiarResultados(); } else { alert('Función limpiarResultados no disponible'); }">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </div>
@@ -205,139 +205,148 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary" onclick="actualizarLogs()">Actualizar</button>
+                <button type="button" class="btn btn-primary" onclick="if(typeof actualizarLogs === 'function') { actualizarLogs(); } else { alert('Función actualizarLogs no disponible'); }">Actualizar</button>
             </div>
         </div>
     </div>
 </div>
 @endsection
 
-@push('scripts')
+@push('js')
 <script>
-$(document).ready(function() {
+// Definir funciones globales inmediatamente
+window.ejecutarPrueba = function() {
+    const datos = {
+        encuesta_id: $('#encuesta_id').val(),
+        slug_encuesta: $('#slug_encuesta').val(),
+        tipo_prueba: $('#tipo_prueba').val(),
+        user_agent: $('#user_agent').val(),
+        ip_address: $('#ip_address').val(),
+        _token: '{{ csrf_token() }}'
+    };
 
+    $('#resultados').html(`
+        <div class="text-center">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+            <p>Ejecutando prueba...</p>
+        </div>
+    `);
+
+    $.ajax({
+        url: '{{ route("testing.encuesta-publica") }}',
+        method: 'POST',
+        data: datos,
+        success: function(response) {
+            window.mostrarResultados(response);
+        },
+        error: function(xhr) {
+            window.mostrarError('Error en la petición: ' + xhr.responseText);
+        }
+    });
+};
+
+window.mostrarResultados = function(data) {
+    let html = `
+        <div class="alert alert-success">
+            <h5><i class="fas fa-check-circle"></i> Prueba Completada</h5>
+            <hr>
+            <div class="row">
+                <div class="col-md-6">
+                    <strong>Encuesta ID:</strong> ${data.encuesta_id}<br>
+                    <strong>Slug:</strong> ${data.slug}<br>
+                    <strong>Tipo:</strong> ${data.tipo_prueba}<br>
+                    <strong>Estado:</strong> <span class="badge badge-success">${data.estado}</span>
+                </div>
+                <div class="col-md-6">
+                    <strong>Tiempo:</strong> ${data.tiempo}ms<br>
+                    <strong>URL:</strong> <a href="${data.url}" target="_blank">${data.url}</a><br>
+                    <strong>Logs:</strong> ${data.logs_count} entradas
+                </div>
+            </div>
+            <hr>
+            <pre class="bg-dark text-light p-3 rounded">${data.detalles}</pre>
+        </div>
+    `;
+    $('#resultados').html(html);
+};
+
+window.mostrarError = function(mensaje) {
+    $('#resultados').html(`
+        <div class="alert alert-danger">
+            <h5><i class="fas fa-exclamation-triangle"></i> Error</h5>
+            <p>${mensaje}</p>
+        </div>
+    `);
+};
+
+window.limpiarResultados = function() {
+    $('#resultados').html(`
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            Ejecuta una prueba para ver los resultados aquí...
+        </div>
+    `);
+};
+
+window.probarDebug = function() {
+    $('#tipo_prueba').val('debug');
+    $('#pruebaForm').submit();
+};
+
+window.verLogs = function() {
+    $('#logsModal').modal('show');
+    window.actualizarLogs();
+};
+
+window.actualizarLogs = function() {
+    $('#logsContent').html(`
+        <div class="text-center">
+            <i class="fas fa-spinner fa-spin"></i>
+            Cargando logs...
+        </div>
+    `);
+
+    $.ajax({
+        url: '{{ route("testing.encuesta-publica-logs") }}',
+        method: 'GET',
+        success: function(response) {
+            $('#logsContent').html(`
+                <pre class="bg-dark text-light p-3 rounded" style="font-size: 12px;">${response.logs}</pre>
+            `);
+        },
+        error: function() {
+            $('#logsContent').html(`
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Error al cargar los logs
+                </div>
+            `);
+        }
+    });
+};
+
+// Inicializar cuando el documento esté listo
+$(document).ready(function() {
+    console.log('🔧 Inicializando pruebas de encuesta pública...');
+    
+    // Verificar que las funciones estén disponibles
+    console.log('✅ Funciones disponibles:');
+    console.log('- ejecutarPrueba:', typeof window.ejecutarPrueba);
+    console.log('- mostrarResultados:', typeof window.mostrarResultados);
+    console.log('- mostrarError:', typeof window.mostrarError);
+    console.log('- limpiarResultados:', typeof window.limpiarResultados);
+    console.log('- probarDebug:', typeof window.probarDebug);
+    console.log('- verLogs:', typeof window.verLogs);
+    console.log('- actualizarLogs:', typeof window.actualizarLogs);
+    
     // Manejar envío del formulario
     $('#pruebaForm').on('submit', function(e) {
         e.preventDefault();
-        ejecutarPrueba();
+        console.log('📝 Ejecutando prueba...');
+        window.ejecutarPrueba();
     });
 
-    // Función para ejecutar prueba
-    function ejecutarPrueba() {
-        const datos = {
-            encuesta_id: $('#encuesta_id').val(),
-            slug_encuesta: $('#slug_encuesta').val(),
-            tipo_prueba: $('#tipo_prueba').val(),
-            user_agent: $('#user_agent').val(),
-            ip_address: $('#ip_address').val(),
-            _token: '{{ csrf_token() }}'
-        };
-
-        $('#resultados').html(`
-            <div class="text-center">
-                <i class="fas fa-spinner fa-spin fa-2x"></i>
-                <p>Ejecutando prueba...</p>
-            </div>
-        `);
-
-        $.ajax({
-            url: '{{ route("testing.encuesta-publica") }}',
-            method: 'POST',
-            data: datos,
-            success: function(response) {
-                mostrarResultados(response);
-            },
-            error: function(xhr) {
-                mostrarError('Error en la petición: ' + xhr.responseText);
-            }
-        });
-    }
-
-    // Función para mostrar resultados
-    function mostrarResultados(data) {
-        let html = `
-            <div class="alert alert-success">
-                <h5><i class="fas fa-check-circle"></i> Prueba Completada</h5>
-                <hr>
-                <div class="row">
-                    <div class="col-md-6">
-                        <strong>Encuesta ID:</strong> ${data.encuesta_id}<br>
-                        <strong>Slug:</strong> ${data.slug}<br>
-                        <strong>Tipo:</strong> ${data.tipo_prueba}<br>
-                        <strong>Estado:</strong> <span class="badge badge-success">${data.estado}</span>
-                    </div>
-                    <div class="col-md-6">
-                        <strong>Tiempo:</strong> ${data.tiempo}ms<br>
-                        <strong>URL:</strong> <a href="${data.url}" target="_blank">${data.url}</a><br>
-                        <strong>Logs:</strong> ${data.logs_count} entradas
-                    </div>
-                </div>
-                <hr>
-                <pre class="bg-dark text-light p-3 rounded">${data.detalles}</pre>
-            </div>
-        `;
-        $('#resultados').html(html);
-    }
-
-    // Función para mostrar error
-    function mostrarError(mensaje) {
-        $('#resultados').html(`
-            <div class="alert alert-danger">
-                <h5><i class="fas fa-exclamation-triangle"></i> Error</h5>
-                <p>${mensaje}</p>
-            </div>
-        `);
-    }
-
-    // Función para limpiar resultados
-    window.limpiarResultados = function() {
-        $('#resultados').html(`
-            <div class="alert alert-info">
-                <i class="fas fa-info-circle"></i>
-                Ejecuta una prueba para ver los resultados aquí...
-            </div>
-        `);
-    }
-
-    // Función para probar debug
-    window.probarDebug = function() {
-        $('#tipo_prueba').val('debug');
-        $('#pruebaForm').submit();
-    }
-
-    // Función para ver logs
-    window.verLogs = function() {
-        $('#logsModal').modal('show');
-        actualizarLogs();
-    }
-
-    // Función para actualizar logs
-    window.actualizarLogs = function() {
-        $('#logsContent').html(`
-            <div class="text-center">
-                <i class="fas fa-spinner fa-spin"></i>
-                Cargando logs...
-            </div>
-        `);
-
-        $.ajax({
-            url: '{{ route("testing.encuesta-publica-logs") }}',
-            method: 'GET',
-            success: function(response) {
-                $('#logsContent').html(`
-                    <pre class="bg-dark text-light p-3 rounded" style="font-size: 12px;">${response.logs}</pre>
-                `);
-            },
-            error: function() {
-                $('#logsContent').html(`
-                    <div class="alert alert-danger">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        Error al cargar los logs
-                    </div>
-                `);
-            }
-        });
-    }
+    console.log('✅ Funciones de prueba inicializadas correctamente');
 });
 </script>
 @endpush
