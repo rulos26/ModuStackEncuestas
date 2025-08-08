@@ -38,7 +38,7 @@
                         @endif
                     </div>
 
-                    @switch($pregunta->tipo)
+                    {{--  @switch($pregunta->tipo)
                         @case('respuesta_corta')
                             <input type="text"
                                    name="respuestas[{{ $pregunta->id }}]"
@@ -149,7 +149,7 @@
                                 <i class="fas fa-exclamation-triangle"></i>
                                 Tipo de pregunta no soportado: {{ $pregunta->tipo }}
                             </div>
-                    @endswitch
+                    @endswitch  --}}
                 </div>
             @endforeach
 
