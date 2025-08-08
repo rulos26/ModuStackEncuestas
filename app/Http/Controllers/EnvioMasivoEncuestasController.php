@@ -60,10 +60,10 @@ class EnvioMasivoEncuestasController extends Controller
             }
 
             // Generar link público de la encuesta
-            $linkEncuesta = $this->generarLinkPublico($encuesta);
+            $enlacesEncuesta = $this->generarLinkPublico($encuesta);
 
             // Enviar correos
-            $resultado = $this->enviarCorreosMasivos($encuesta, $empleados, $linkEncuesta);
+            $resultado = $this->enviarCorreosMasivos($encuesta, $empleados, $enlacesEncuesta);
 
             // Actualizar estado de la encuesta
             $encuesta->update(['estado' => 'enviada']);
@@ -85,25 +85,27 @@ class EnvioMasivoEncuestasController extends Controller
      */
     public function generarLinkPublico($encuesta)
     {
-        // Construir URL usando la vista de pruebas que creamos
-        // Formato: https://rulossoluciones.com/modustackencuestas/testing/encuesta-publica/vista/{id}
-        $url = URL::to('/testing/encuesta-publica/vista/' . $encuesta->id);
+        // Generar dos enlaces diferentes
+        $enlaces = [
+            'vista_pruebas' => URL::to('/testing/encuesta-publica/vista/' . $encuesta->id),
+            'publica_por_id' => URL::to('/publica/id/' . $encuesta->id)
+        ];
 
-        Log::info('🔗 Envío Masivo - Generando enlace público', [
+        Log::info('🔗 Envío Masivo - Generando enlaces públicos', [
             'encuesta_id' => $encuesta->id,
             'encuesta_titulo' => $encuesta->titulo,
             'slug' => $encuesta->slug,
-            'url_generada' => $url,
-            'tipo' => 'vista_pruebas_con_id'
+            'enlaces_generados' => $enlaces,
+            'tipo' => 'enlaces_duplicados'
         ]);
 
-        return $url;
+        return $enlaces;
     }
 
     /**
      * Enviar correos masivos a los empleados
      */
-    private function enviarCorreosMasivos($encuesta, $empleados, $linkEncuesta)
+    private function enviarCorreosMasivos($encuesta, $empleados, $enlacesEncuesta)
     {
         $resultado = [
             'enviados' => [],
@@ -126,8 +128,8 @@ class EnvioMasivoEncuestasController extends Controller
                     continue;
                 }
 
-                // Enviar correo
-                $this->enviarCorreoIndividual($empleado, $encuesta, $linkEncuesta);
+                // Enviar correo con ambos enlaces
+                $this->enviarCorreoIndividual($empleado, $encuesta, $enlacesEncuesta);
 
                 $resultado['enviados'][] = [
                     'email' => $empleado->correo_electronico,
@@ -160,11 +162,11 @@ class EnvioMasivoEncuestasController extends Controller
     /**
      * Enviar correo individual a un empleado
      */
-    private function enviarCorreoIndividual($empleado, $encuesta, $linkEncuesta)
+    private function enviarCorreoIndividual($empleado, $encuesta, $enlacesEncuesta)
     {
         $asunto = "Invitación a participar en: {$encuesta->titulo}";
 
-        $cuerpo = $this->generarCuerpoCorreo($empleado, $encuesta, $linkEncuesta);
+        $cuerpo = $this->generarCuerpoCorreo($empleado, $encuesta, $enlacesEncuesta);
 
         // Enviar usando la configuración SMTP existente
         Mail::raw($cuerpo, function ($message) use ($empleado, $asunto) {
@@ -177,15 +179,19 @@ class EnvioMasivoEncuestasController extends Controller
     /**
      * Generar cuerpo del correo
      */
-    public function generarcuerpoCorreo($empleado, $encuesta, $linkEncuesta)
+    public function generarcuerpoCorreo($empleado, $encuesta, $enlacesEncuesta)
     {
         $cuerpo = "Hola {$empleado->nombre},\n\n";
         $cuerpo .= "Has sido invitado a participar en la siguiente encuesta:\n\n";
         $cuerpo .= "📋 Encuesta: {$encuesta->titulo}\n";
         $cuerpo .= "📅 Fecha límite: " . ($encuesta->fecha_fin ? $encuesta->fecha_fin->format('d/m/Y') : 'Sin fecha límite') . "\n\n";
-        $cuerpo .= "🔗 Para acceder a la encuesta, haz clic en el siguiente enlace:\n";
-        $cuerpo .= "{$linkEncuesta}\n\n";
-        $cuerpo .= "Este enlace te llevará directamente a la encuesta sin necesidad de autenticación.\n\n";
+        $cuerpo .= "🔗 Para acceder a la encuesta, puedes usar cualquiera de estos enlaces:\n\n";
+        $cuerpo .= "📱 Enlace Principal (Vista de Pruebas):\n";
+        $cuerpo .= "{$enlacesEncuesta['vista_pruebas']}\n\n";
+        $cuerpo .= "🌐 Enlace Alternativo (Página Pública):\n";
+        $cuerpo .= "{$enlacesEncuesta['publica_por_id']}\n\n";
+        $cuerpo .= "Ambos enlaces te llevarán directamente a la encuesta sin necesidad de autenticación.\n";
+        $cuerpo .= "Si uno no funciona, prueba con el otro.\n\n";
         $cuerpo .= "Si tienes problemas para acceder a la encuesta, contacta al administrador del sistema.\n\n";
         $cuerpo .= "Saludos,\n";
         $cuerpo .= "Equipo de Encuestas\n";
@@ -235,11 +241,11 @@ class EnvioMasivoEncuestasController extends Controller
             ->where('correo_electronico', '!=', '')
             ->get();
 
-        $linkEncuesta = $this->generarLinkPublico($encuesta);
+        $enlacesEncuesta = $this->generarLinkPublico($encuesta);
         $empleadoEjemplo = $empleados->first();
 
         if ($empleadoEjemplo) {
-            $cuerpoCorreo = $this->generarcuerpoCorreo($empleadoEjemplo, $encuesta, $linkEncuesta);
+            $cuerpoCorreo = $this->generarcuerpoCorreo($empleadoEjemplo, $encuesta, $enlacesEncuesta);
         } else {
             $cuerpoCorreo = "No hay empleados disponibles para mostrar vista previa.";
         }
@@ -249,7 +255,7 @@ class EnvioMasivoEncuestasController extends Controller
             'empresa',
             'empleados',
             'cuerpoCorreo',
-            'linkEncuesta'
+            'enlacesEncuesta'
         ));
     }
 
@@ -280,7 +286,7 @@ class EnvioMasivoEncuestasController extends Controller
             return filter_var($empleado->correo_electronico, FILTER_VALIDATE_EMAIL);
         });
 
-        $linkEncuesta = $this->generarLinkPublico($encuesta);
+        $enlacesEncuesta = $this->generarLinkPublico($encuesta);
 
         return response()->json([
             'empresa' => $empresa->nombre,
@@ -293,7 +299,7 @@ class EnvioMasivoEncuestasController extends Controller
             'empleados_con_email' => $empleadosConEmail->count(),
             'destinatarios' => $empleadosConEmail->count(),
             'asunto' => "Invitación a participar en: {$encuesta->titulo}",
-            'link' => $linkEncuesta
+            'link' => $enlacesEncuesta
         ]);
     }
 

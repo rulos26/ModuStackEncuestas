@@ -75,9 +75,14 @@
                         <strong>Título:</strong> {{ $encuesta->titulo }}<br>
                         <strong>Empresa:</strong> {{ $encuesta->empresa ? $encuesta->empresa->nombre : 'Sin empresa' }}<br>
                         <strong>Estado:</strong> {{ ucfirst($encuesta->estado) }}<br>
-                        <strong>Link público:</strong>
+                        <strong>Links públicos:</strong><br>
+                        <strong>📱 Vista de Pruebas:</strong>
                         <a href="{{ url('/testing/encuesta-publica/vista/' . $encuesta->id) }}" target="_blank">
                             {{ url('/testing/encuesta-publica/vista/' . $encuesta->id) }}
+                        </a><br>
+                        <strong>🌐 Página Pública:</strong>
+                        <a href="{{ url('/publica/id/' . $encuesta->id) }}" target="_blank">
+                            {{ url('/publica/id/' . $encuesta->id) }}
                         </a>
                     </div>
 
