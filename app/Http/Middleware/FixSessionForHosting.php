@@ -49,5 +49,29 @@ class FixSessionForHosting
             header('Cache-Control: no-cache, must-revalidate');
             header('Pragma: no-cache');
         }
+
+        // Inicializar sesión de manera segura
+        $this->initializeSessionSafely();
+    }
+
+    /**
+     * Inicializar sesión de manera segura
+     */
+    private function initializeSessionSafely(): void
+    {
+        // Solo inicializar sesión si no está ya iniciada
+        if (function_exists('session_status') && session_status() === PHP_SESSION_NONE) {
+            if (function_exists('session_start')) {
+                session_start();
+            }
+        }
+
+        // Configurar cookies de sesión de manera segura
+        if (function_exists('setcookie') && session_id()) {
+            $sessionId = session_id();
+            if ($sessionId && !empty($sessionId)) {
+                setcookie('laravel_session', $sessionId, time() + 7200, '/', '', false, true);
+            }
+        }
     }
 }

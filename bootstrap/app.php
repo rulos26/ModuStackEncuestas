@@ -15,11 +15,12 @@ return Application::configure(basePath: dirname(__DIR__))
         'verificar.token.encuesta' => \App\Http\Middleware\VerificarTokenEncuesta::class,
         'validar.flujo.encuesta' => \App\Http\Middleware\ValidarFlujoEncuesta::class,
         'fix.session.hosting' => \App\Http\Middleware\FixSessionForHosting::class,
+        'safe.session' => \App\Http\Middleware\SafeSessionMiddleware::class,
         'validar.fechas' => \App\Http\Middleware\ValidarFechas::class,
     ]);
 
-    // Aplicar middleware de sesiones para hosting globalmente
-    $middleware->prepend(\App\Http\Middleware\FixSessionForHosting::class);
+    // Aplicar middleware seguro de sesiones globalmente
+    $middleware->prepend(\App\Http\Middleware\SafeSessionMiddleware::class);
 })
     ->withExceptions(function (Exceptions $exceptions) {
         //
