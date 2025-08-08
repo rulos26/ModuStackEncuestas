@@ -18,7 +18,7 @@ class EncuestaPublicaController extends Controller
         // 🔍 DEBUG: Información de entrada
         Log::info('🔍 ENCUESTA PÚBLICA - Iniciando método mostrar', [
             'slug' => $slug,
-            'request_url' => request()->fullUrl(),  
+            'request_url' => request()->fullUrl(),
             'user_agent' => request()->userAgent(),
             'ip' => request()->ip(),
             'timestamp' => now()->toDateTimeString()
@@ -88,6 +88,35 @@ class EncuestaPublicaController extends Controller
                 'stack_trace' => $e->getTraceAsString()
             ]);
 
+            return view('encuestas.publica', [
+                'encuesta' => null,
+                'error' => 'Encuesta no encontrada o no disponible.'
+            ]);
+        }
+    }
+
+    /**
+     * Mostrar encuesta pública por slug sin verificación de token
+     */
+    public function mostrarSinToken($slug)
+    {
+        try {
+            $encuesta = Encuesta::with(['preguntas.respuestas', 'empresa'])
+                ->where('slug', $slug)
+                ->where('habilitada', true)
+                ->where('estado', 'publicada')
+                ->firstOrFail();
+
+            // Verificar si la encuesta está disponible
+            if (!$encuesta->estaDisponible()) {
+                return view('encuestas.publica', [
+                    'encuesta' => null,
+                    'error' => 'Esta encuesta no está disponible en este momento.'
+                ]);
+            }
+
+            return view('encuestas.publica', compact('encuesta'));
+        } catch (Exception $e) {
             return view('encuestas.publica', [
                 'encuesta' => null,
                 'error' => 'Encuesta no encontrada o no disponible.'

@@ -85,12 +85,17 @@ class EnvioMasivoEncuestasController extends Controller
      */
     public function generarLinkPublico($encuesta)
     {
-        // Generar un token de acceso para la encuesta (token general)
-        // Este token será usado para acceso público sin email específico
-        $token = $encuesta->generarTokenAcceso();
+        // Construir URL pública sencilla usando el slug de la encuesta
+        // Sin token, sin autenticación - enlace directo como en el módulo anterior
+        $url = URL::to('/publica/' . $encuesta->slug . '/sin-token');
 
-        // Construir URL pública usando el slug de la encuesta
-        $url = URL::to('/publica/' . $encuesta->slug . '?token=' . $token);
+        Log::info('🔗 Envío Masivo - Generando enlace público', [
+            'encuesta_id' => $encuesta->id,
+            'encuesta_titulo' => $encuesta->titulo,
+            'slug' => $encuesta->slug,
+            'url_generada' => $url,
+            'tipo' => 'enlace_sencillo_sin_token'
+        ]);
 
         return $url;
     }
@@ -180,7 +185,7 @@ class EnvioMasivoEncuestasController extends Controller
         $cuerpo .= "📅 Fecha límite: " . ($encuesta->fecha_fin ? $encuesta->fecha_fin->format('d/m/Y') : 'Sin fecha límite') . "\n\n";
         $cuerpo .= "🔗 Para acceder a la encuesta, haz clic en el siguiente enlace:\n";
         $cuerpo .= "{$linkEncuesta}\n\n";
-        $cuerpo .= "Este enlace es personalizado y válido por 30 días.\n\n";
+        $cuerpo .= "Este enlace es público y no requiere autenticación.\n\n";
         $cuerpo .= "Si tienes problemas para acceder a la encuesta, contacta al administrador del sistema.\n\n";
         $cuerpo .= "Saludos,\n";
         $cuerpo .= "Equipo de Encuestas\n";

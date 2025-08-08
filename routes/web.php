@@ -210,6 +210,9 @@ Route::prefix('publica')
     Route::get('{slug}', [EncuestaPublicaController::class, 'mostrar'])
         ->name('publica')
         ->middleware(['public.page', 'verificar.token.encuesta']);
+    Route::get('{slug}/sin-token', [EncuestaPublicaController::class, 'mostrarSinToken'])
+        ->name('publica.sin-token')
+        ->middleware(['public.page']);
     Route::post('{id}', [EncuestaPublicaController::class, 'responder'])
         ->name('responder')
         ->middleware('public.page');
