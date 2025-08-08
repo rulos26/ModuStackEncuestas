@@ -182,7 +182,7 @@
             <div class="text-center mt-4">
                 <button type="submit" class="btn btn-enviar">
                     <i class="fas fa-paper-plane"></i>
-                    Enviar respuestas
+                    Enviar respuestasss
                 </button>
             </div>
         </form>
