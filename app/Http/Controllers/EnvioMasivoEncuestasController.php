@@ -85,16 +85,12 @@ class EnvioMasivoEncuestasController extends Controller
      */
     public function generarLinkPublico($encuesta)
     {
-        // Generar token único para la encuesta si no existe
-        if (!$encuesta->token_acceso) {
-            $encuesta->update([
-                'token_acceso' => Str::random(32),
-                'token_expiracion' => now()->addDays(30) // 30 días de validez
-            ]);
-        }
+        // Generar un token de acceso para la encuesta (token general)
+        // Este token será usado para acceso público sin email específico
+        $token = $encuesta->generarTokenAcceso();
 
-        // Construir URL pública
-        $url = URL::to('/encuesta-publica/' . $encuesta->token_acceso);
+        // Construir URL pública usando el slug de la encuesta
+        $url = URL::to('/publica/' . $encuesta->slug . '?token=' . $token);
 
         return $url;
     }

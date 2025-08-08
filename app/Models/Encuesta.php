@@ -210,7 +210,15 @@ class Encuesta extends Model
      */
     public function generarTokenAcceso(): string
     {
-        return Str::random(32);
+        // Crear un token general para la encuesta (sin email específico)
+        $token = TokenEncuesta::create([
+            'encuesta_id' => $this->id,
+            'email_destinatario' => 'general@encuesta.com', // Email genérico
+            'token_acceso' => Str::random(64),
+            'fecha_expiracion' => now()->addDays(30) // 30 días de validez
+        ]);
+
+        return $token->token_acceso;
     }
 
     /**

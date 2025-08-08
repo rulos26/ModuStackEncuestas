@@ -76,8 +76,8 @@
                         <strong>Empresa:</strong> {{ $encuesta->empresa ? $encuesta->empresa->nombre : 'Sin empresa' }}<br>
                         <strong>Estado:</strong> {{ ucfirst($encuesta->estado) }}<br>
                         <strong>Link público:</strong>
-                        <a href="{{ url('/encuesta-publica/' . $encuesta->token_acceso) }}" target="_blank">
-                            {{ url('/encuesta-publica/' . $encuesta->token_acceso) }}
+                        <a href="{{ url('/publica/' . $encuesta->slug . '?token=' . $encuesta->token_acceso) }}" target="_blank">
+                            {{ url('/publica/' . $encuesta->slug . '?token=' . $encuesta->token_acceso) }}
                         </a>
                     </div>
 
