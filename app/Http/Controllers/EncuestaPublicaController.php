@@ -141,7 +141,7 @@ class EncuestaPublicaController extends Controller
      */
     public function mostrarPorId($id)
     {
-        dd($id);
+
 
         // 🔍 DEBUG: Información de entrada
         Log::info('🔍 ENCUESTA PÚBLICA POR ID - Iniciando método mostrarPorId', [
@@ -151,7 +151,7 @@ class EncuestaPublicaController extends Controller
             'ip' => request()->ip(),
             'timestamp' => now()->toDateTimeString()
         ]);
-
+        dd($id);    
         try {
             // 🔍 DEBUG: Antes de buscar la encuesta por ID
             Log::info('🔍 ENCUESTA PÚBLICA POR ID - Buscando encuesta en BD', [
