@@ -77,6 +77,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('testing/encuesta-publica', [App\Http\Controllers\TestingEncuestaPublicaController::class, 'index'])->name('testing.encuesta-publica');
     Route::post('testing/encuesta-publica', [App\Http\Controllers\TestingEncuestaPublicaController::class, 'ejecutarPrueba'])->name('testing.encuesta-publica');
     Route::get('testing/encuesta-publica/logs', [App\Http\Controllers\TestingEncuestaPublicaController::class, 'obtenerLogs'])->name('testing.encuesta-publica-logs');
+    Route::get('testing/encuesta-publica/vista/{encuesta_id}', [App\Http\Controllers\TestingEncuestaPublicaController::class, 'mostrarVistaPublica'])->name('testing.encuesta-publica-vista');
 });
 
 // Información del sistema

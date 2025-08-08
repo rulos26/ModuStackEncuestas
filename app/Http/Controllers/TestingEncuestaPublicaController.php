@@ -73,6 +73,10 @@ class TestingEncuestaPublicaController extends Controller
                     $resultado = $this->probarDebug($encuestaId, $slug, $resultado);
                     break;
 
+                case 'vista_publica':
+                    $resultado = $this->probarVistaPublica($encuestaId, $slug, $resultado);
+                    break;
+
                 default:
                     throw new Exception("Tipo de prueba no válido: {$tipoPrueba}");
             }
@@ -282,6 +286,79 @@ class TestingEncuestaPublicaController extends Controller
                                 json_encode($debug, JSON_PRETTY_PRINT);
 
         return $resultado;
+    }
+
+    /**
+     * Probar vista pública
+     */
+    private function probarVistaPublica($encuestaId, $slug, $resultado)
+    {
+        Log::info('👀 TESTING - Probando vista pública', ['encuesta_id' => $encuestaId, 'slug' => $slug]);
+
+        $encuesta = Encuesta::find($encuestaId);
+        if (!$encuesta) {
+            throw new Exception("Encuesta con ID {$encuestaId} no encontrada");
+        }
+
+        // Generar URL para la vista pública
+        $urlVista = route('testing.encuesta-publica-vista', ['encuesta_id' => $encuestaId]);
+
+        $resultado['url_vista'] = $urlVista;
+        $resultado['detalles'] = "👀 Vista pública preparada:\n" .
+                                "   - Encuesta ID: {$encuesta->id}\n" .
+                                "   - Título: {$encuesta->titulo}\n" .
+                                "   - Slug: {$encuesta->slug}\n" .
+                                "   - URL Vista: {$urlVista}\n" .
+                                "   - Preguntas: " . $encuesta->preguntas()->count() . "\n" .
+                                "   - Estado: {$encuesta->estado}\n" .
+                                "   - Habilitada: " . ($encuesta->habilitada ? 'Sí' : 'No') . "\n\n" .
+                                "🔍 La vista se abrirá en una nueva ventana sin token ni autenticación.";
+
+        return $resultado;
+    }
+
+    /**
+     * Mostrar vista pública de encuesta
+     */
+    public function mostrarVistaPublica($encuestaId)
+    {
+        try {
+            Log::info('👀 TESTING - Mostrando vista pública', ['encuesta_id' => $encuestaId]);
+
+            $encuesta = Encuesta::with(['preguntas.respuestas', 'empresa'])
+                ->where('id', $encuestaId)
+                ->first();
+
+            if (!$encuesta) {
+                return view('encuestas.publica', [
+                    'encuesta' => null,
+                    'error' => 'Encuesta no encontrada.'
+                ]);
+            }
+
+            // Simular que la encuesta está disponible para la vista
+            $encuesta->habilitada = true;
+            $encuesta->estado = 'publicada';
+
+            Log::info('✅ TESTING - Vista pública renderizada', [
+                'encuesta_id' => $encuesta->id,
+                'titulo' => $encuesta->titulo,
+                'preguntas_count' => $encuesta->preguntas->count()
+            ]);
+
+            return view('encuestas.publica', compact('encuesta'));
+
+        } catch (Exception $e) {
+            Log::error('❌ TESTING - Error mostrando vista pública', [
+                'encuesta_id' => $encuestaId,
+                'error' => $e->getMessage()
+            ]);
+
+            return view('encuestas.publica', [
+                'encuesta' => null,
+                'error' => 'Error al cargar la encuesta: ' . $e->getMessage()
+            ]);
+        }
     }
 
     /**

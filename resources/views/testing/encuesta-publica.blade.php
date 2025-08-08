@@ -18,7 +18,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    
+
                     <!-- Información de la Encuesta -->
                     <div class="row mb-4">
                         <div class="col-md-6">
@@ -70,7 +70,7 @@
                                             <input type="number" class="form-control" id="encuesta_id" name="encuesta_id" value="13" min="1">
                                             <small class="form-text text-muted">ID de la encuesta a probar</small>
                                         </div>
-                                        
+
                                         <div class="form-group">
                                             <label for="slug_encuesta">Slug de Encuesta:</label>
                                             <input type="text" class="form-control" id="slug_encuesta" name="slug_encuesta" value="encuesta-de-prueba-tester-automatico-2025-07-30-194743">
@@ -84,6 +84,7 @@
                                                 <option value="responder">Responder Encuesta (POST)</option>
                                                 <option value="fin">Página de Fin (GET)</option>
                                                 <option value="debug">Debug Completo</option>
+                                                <option value="vista_publica">Probar Vista Pública (Sin Token)</option>
                                             </select>
                                         </div>
 
@@ -118,32 +119,39 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="btn-group-vertical w-100">
-                                        <a href="/publica/encuesta-de-prueba-tester-automatico-2025-07-30-194743" 
-                                           target="_blank" 
+                                        <a href="/publica/encuesta-de-prueba-tester-automatico-2025-07-30-194743"
+                                           target="_blank"
                                            class="btn btn-success mb-2">
                                             <i class="fas fa-eye"></i>
                                             Ver Encuesta Pública
                                         </a>
-                                        
-                                        <a href="/publica/encuesta-de-prueba-tester-automatico-2025-07-30-194743/fin" 
-                                           target="_blank" 
+
+                                        <a href="/publica/encuesta-de-prueba-tester-automatico-2025-07-30-194743/fin"
+                                           target="_blank"
                                            class="btn btn-info mb-2">
                                             <i class="fas fa-check-circle"></i>
                                             Página de Fin
                                         </a>
-                                        
-                                        <button type="button" 
+
+                                        <button type="button"
                                                 class="btn btn-warning mb-2"
                                                 onclick="if(typeof probarDebug === 'function') { probarDebug(); } else { alert('Función probarDebug no disponible'); }">
                                             <i class="fas fa-bug"></i>
                                             Debug Completo
                                         </button>
-                                        
-                                        <button type="button" 
+
+                                        <button type="button"
                                                 class="btn btn-secondary mb-2"
                                                 onclick="if(typeof verLogs === 'function') { verLogs(); } else { alert('Función verLogs no disponible'); }">
                                             <i class="fas fa-file-alt"></i>
                                             Ver Logs
+                                        </button>
+
+                                        <button type="button"
+                                                class="btn btn-danger mb-2"
+                                                onclick="if(typeof probarVistaPublica === 'function') { probarVistaPublica(); } else { alert('Función probarVistaPublica no disponible'); }">
+                                            <i class="fas fa-eye"></i>
+                                            Probar Vista Pública
                                         </button>
                                     </div>
                                 </div>
@@ -325,10 +333,53 @@ window.actualizarLogs = function() {
     });
 };
 
+window.probarVistaPublica = function() {
+    const encuestaId = $('#encuesta_id').val();
+    const slug = $('#slug_encuesta').val();
+
+    console.log('🔍 Probando vista pública para encuesta:', encuestaId, 'slug:', slug);
+
+    // Mostrar loading
+    $('#resultados').html(`
+        <div class="text-center">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+            <p>Preparando vista pública...</p>
+        </div>
+    `);
+
+    $.ajax({
+        url: '{{ route("testing.encuesta-publica") }}',
+        method: 'POST',
+        data: {
+            encuesta_id: encuestaId,
+            slug_encuesta: slug,
+            tipo_prueba: 'vista_publica',
+            user_agent: $('#user_agent').val(),
+            ip_address: $('#ip_address').val(),
+            _token: '{{ csrf_token() }}'
+        },
+        success: function(response) {
+            if (response.estado === 'completado') {
+                // Abrir la vista en una nueva ventana
+                const urlVista = response.url_vista;
+                window.open(urlVista, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+
+                // Mostrar resultado
+                window.mostrarResultados(response);
+            } else {
+                window.mostrarError('Error: ' + response.detalles);
+            }
+        },
+        error: function(xhr) {
+            window.mostrarError('Error en la petición: ' + xhr.responseText);
+        }
+    });
+};
+
 // Inicializar cuando el documento esté listo
 $(document).ready(function() {
     console.log('🔧 Inicializando pruebas de encuesta pública...');
-    
+
     // Verificar que las funciones estén disponibles
     console.log('✅ Funciones disponibles:');
     console.log('- ejecutarPrueba:', typeof window.ejecutarPrueba);
@@ -338,7 +389,8 @@ $(document).ready(function() {
     console.log('- probarDebug:', typeof window.probarDebug);
     console.log('- verLogs:', typeof window.verLogs);
     console.log('- actualizarLogs:', typeof window.actualizarLogs);
-    
+    console.log('- probarVistaPublica:', typeof window.probarVistaPublica);
+
     // Manejar envío del formulario
     $('#pruebaForm').on('submit', function(e) {
         e.preventDefault();
