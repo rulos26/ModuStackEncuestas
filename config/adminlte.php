@@ -595,6 +595,11 @@ return [
                     'route' => 'testing.index',
                     'icon' => 'fas fa-vial',
                 ],
+                [
+                    'text' => 'Pruebas Encuesta Pública',
+                    'route' => 'testing.encuesta-publica',
+                    'icon' => 'fas fa-vote-yea',
+                ],
             ],
         ],
         // Entradas públicas al final del menú principal
