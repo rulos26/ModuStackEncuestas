@@ -85,16 +85,16 @@ class EnvioMasivoEncuestasController extends Controller
      */
     public function generarLinkPublico($encuesta)
     {
-        // Construir URL pública sencilla usando el slug de la encuesta
-        // Sin token, sin autenticación - enlace directo como en el módulo anterior
-        $url = URL::to('/publica/' . $encuesta->slug . '/sin-token');
+        // Construir URL usando la vista de pruebas que creamos
+        // Formato: https://rulossoluciones.com/modustackencuestas/testing/encuesta-publica/vista/{id}
+        $url = URL::to('/testing/encuesta-publica/vista/' . $encuesta->id);
 
         Log::info('🔗 Envío Masivo - Generando enlace público', [
             'encuesta_id' => $encuesta->id,
             'encuesta_titulo' => $encuesta->titulo,
             'slug' => $encuesta->slug,
             'url_generada' => $url,
-            'tipo' => 'enlace_sencillo_sin_token'
+            'tipo' => 'vista_pruebas_con_id'
         ]);
 
         return $url;
@@ -185,7 +185,7 @@ class EnvioMasivoEncuestasController extends Controller
         $cuerpo .= "📅 Fecha límite: " . ($encuesta->fecha_fin ? $encuesta->fecha_fin->format('d/m/Y') : 'Sin fecha límite') . "\n\n";
         $cuerpo .= "🔗 Para acceder a la encuesta, haz clic en el siguiente enlace:\n";
         $cuerpo .= "{$linkEncuesta}\n\n";
-        $cuerpo .= "Este enlace es público y no requiere autenticación.\n\n";
+        $cuerpo .= "Este enlace te llevará directamente a la encuesta sin necesidad de autenticación.\n\n";
         $cuerpo .= "Si tienes problemas para acceder a la encuesta, contacta al administrador del sistema.\n\n";
         $cuerpo .= "Saludos,\n";
         $cuerpo .= "Equipo de Encuestas\n";
