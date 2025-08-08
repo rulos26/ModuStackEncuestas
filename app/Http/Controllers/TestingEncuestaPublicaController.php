@@ -27,7 +27,7 @@ class TestingEncuestaPublicaController extends Controller
         $inicio = microtime(true);
 
         try {
-            $encuestaId = $request->input('encuesta_id', 13);
+            $encuestaId = $request->input('encuesta_id', 25);
             $slug = $request->input('slug_encuesta', 'encuesta-de-prueba-tester-automatico-2025-07-30-194743');
             $tipoPrueba = $request->input('tipo_prueba', 'mostrar');
             $userAgent = $request->input('user_agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
