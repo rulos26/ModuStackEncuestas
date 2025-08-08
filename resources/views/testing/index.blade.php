@@ -201,8 +201,8 @@
                             </h3>
                         </div>
                         <div class="card-body">
-                            <form method="POST" action="{{ route('testing.run') }}">
-                                @csrf
+    <form method="POST" action="{{ route('testing.run') }}">
+        @csrf
                                 <input type="hidden" name="command" value="probar:envio-correos">
                                 <div class="row">
                                     <div class="col-md-3">

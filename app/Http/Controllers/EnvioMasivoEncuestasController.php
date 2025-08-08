@@ -88,7 +88,7 @@ class EnvioMasivoEncuestasController extends Controller
         // Generar dos enlaces diferentes
         $enlaces = [
             'vista_pruebas' => URL::to('/testing/encuesta-publica/vista/' . $encuesta->id),
-            'publica_por_id' => URL::to('/publica/id/' . $encuesta->id)
+            'publica_por_id' => URL::to('/publica/encuesta/' . $encuesta->id)
         ];
 
         Log::info('🔗 Envío Masivo - Generando enlaces públicos', [

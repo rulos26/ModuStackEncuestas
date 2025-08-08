@@ -161,14 +161,14 @@ class ConfiguracionEnvioController extends Controller
 
                 // Preparar datos de configuración
                 $datosConfiguracion = [
-                    'empresa_id' => $empresaId,
-                    'encuesta_id' => $encuestaData['encuesta_id'],
-                    'nombre_remitente' => $encuestaData['nombre_remitente'],
-                    'correo_remitente' => $encuestaData['correo_remitente'],
-                    'asunto' => $encuestaData['asunto'],
-                    'cuerpo_mensaje' => $encuestaData['cuerpo_mensaje'],
-                    'tipo_envio' => $encuestaData['tipo_envio'],
-                    'plantilla' => $encuestaData['plantilla'] ?? null,
+                        'empresa_id' => $empresaId,
+                        'encuesta_id' => $encuestaData['encuesta_id'],
+                        'nombre_remitente' => $encuestaData['nombre_remitente'],
+                        'correo_remitente' => $encuestaData['correo_remitente'],
+                        'asunto' => $encuestaData['asunto'],
+                        'cuerpo_mensaje' => $encuestaData['cuerpo_mensaje'],
+                        'tipo_envio' => $encuestaData['tipo_envio'],
+                        'plantilla' => $encuestaData['plantilla'] ?? null,
                     'activo' => $encuestaData['activo'] ?? true,
                 ];
 
@@ -187,7 +187,7 @@ class ConfiguracionEnvioController extends Controller
 
                 // Crear nueva configuración
                 $configuracion = ConfiguracionEnvio::create($datosConfiguracion);
-                $configuracionesGuardadas[] = $configuracion;
+                    $configuracionesGuardadas[] = $configuracion;
 
                 Log::info('Configuración de envío guardada', [
                     'configuracion_id' => $configuracion->id,

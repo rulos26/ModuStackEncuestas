@@ -98,24 +98,44 @@ class EncuestaPublicaController extends Controller
     public function mostrarVistaPublica($encuestaId)
     {
         try {
-            Log::info('👀 TESTING - Mostrando vista pública', ['encuesta_id' => $encuestaId]);
+            Log::info('🔍 ENCUESTA PÚBLICA - Mostrando vista por ID', [
+                'encuesta_id' => $encuestaId,
+                'request_url' => request()->fullUrl(),
+                'user_agent' => request()->userAgent(),
+                'ip' => request()->ip()
+            ]);
 
             $encuesta = Encuesta::with(['preguntas.respuestas', 'empresa'])
                 ->where('id', $encuestaId)
+                ->where('habilitada', true)
+                ->where('estado', 'publicada')
                 ->first();
 
             if (!$encuesta) {
+                Log::warning('❌ ENCUESTA PÚBLICA - Encuesta no encontrada', [
+                    'encuesta_id' => $encuestaId
+                ]);
                 return view('encuestas.publica', [
                     'encuesta' => null,
                     'error' => 'Encuesta no encontrada.'
                 ]);
             }
 
-            // Simular que la encuesta está disponible para la vista
-            $encuesta->habilitada = true;
-            $encuesta->estado = 'publicada';
+            // Verificar si la encuesta está disponible
+            if (!$encuesta->estaDisponible()) {
+                Log::warning('⚠️ ENCUESTA PÚBLICA - Encuesta no disponible', [
+                    'encuesta_id' => $encuesta->id,
+                    'fecha_inicio' => $encuesta->fecha_inicio,
+                    'fecha_fin' => $encuesta->fecha_fin
+                ]);
 
-            Log::info('✅ TESTING - Vista pública renderizada', [
+                return view('encuestas.publica', [
+                    'encuesta' => null,
+                    'error' => 'Esta encuesta no está disponible en este momento.'
+                ]);
+            }
+
+            Log::info('✅ ENCUESTA PÚBLICA - Vista pública renderizada', [
                 'encuesta_id' => $encuesta->id,
                 'titulo' => $encuesta->titulo,
                 'preguntas_count' => $encuesta->preguntas->count()
@@ -124,9 +144,11 @@ class EncuestaPublicaController extends Controller
             return view('encuestas.publica', compact('encuesta'));
 
         } catch (Exception $e) {
-            Log::error('❌ TESTING - Error mostrando vista pública', [
+            Log::error('❌ ENCUESTA PÚBLICA - Error mostrando vista pública', [
                 'encuesta_id' => $encuestaId,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
+                'error_file' => $e->getFile(),
+                'error_line' => $e->getLine()
             ]);
 
             return view('encuestas.publica', [

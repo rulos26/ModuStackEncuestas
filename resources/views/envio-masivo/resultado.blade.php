@@ -81,8 +81,8 @@
                             {{ url('/testing/encuesta-publica/vista/' . $encuesta->id) }}
                         </a><br>
                         <strong>🌐 Página Pública:</strong>
-                        <a href="{{ url('/publica/id/' . $encuesta->id) }}" target="_blank">
-                            {{ url('/publica/id/' . $encuesta->id) }}
+                        <a href="{{ url('/publica/encuesta/' . $encuesta->id) }}" target="_blank">
+                            {{ url('/publica/encuesta/' . $encuesta->id) }}
                         </a>
                     </div>
 
