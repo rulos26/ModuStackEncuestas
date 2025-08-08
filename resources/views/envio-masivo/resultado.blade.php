@@ -50,7 +50,7 @@
                                 </span>
                                 <div class="info-box-content">
                                     <span class="info-box-text">Fallidos</span>
-                                    <span class="info-box-number">{{ $resultado['fallidos'] }}</span>
+                                    <span class="info-box-number">{{ $resultado['fallidos_count'] }}</span>
                                 </div>
                             </div>
                         </div>
@@ -88,10 +88,10 @@
                         </div>
                     @endif
 
-                    @if($resultado['fallidos'] > 0)
+                    @if($resultado['fallidos_count'] > 0)
                         <div class="alert alert-warning">
                             <h6><i class="fas fa-exclamation-triangle mr-1"></i>Correos Fallidos</h6>
-                            <p class="mb-0">{{ $resultado['fallidos'] }} correos no pudieron ser enviados.</p>
+                            <p class="mb-0">{{ $resultado['fallidos_count'] }} correos no pudieron ser enviados.</p>
                         </div>
                     @endif
 
@@ -212,10 +212,10 @@ $(document).ready(function() {
             icon: 'success',
             confirmButtonText: 'Entendido'
         });
-    @elseif($resultado['fallidos'] > 0)
+    @elseif($resultado['fallidos_count'] > 0)
         Swal.fire({
             title: 'Envío Parcial',
-            text: '{{ $resultado["exitosos"] }} correos enviados, {{ $resultado["fallidos"] }} fallidos.',
+            text: '{{ $resultado["exitosos"] }} correos enviados, {{ $resultado["fallidos_count"] }} fallidos.',
             icon: 'warning',
             confirmButtonText: 'Entendido'
         });

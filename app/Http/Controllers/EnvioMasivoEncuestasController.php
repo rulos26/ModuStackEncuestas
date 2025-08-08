@@ -109,7 +109,7 @@ class EnvioMasivoEncuestasController extends Controller
             'fallidos' => [],
             'total' => $empleados->count(),
             'exitosos' => 0,
-            'fallidos' => 0
+            'fallidos_count' => 0
         ];
 
         foreach ($empleados as $empleado) {
@@ -121,7 +121,7 @@ class EnvioMasivoEncuestasController extends Controller
                         'empleado' => $empleado->nombre,
                         'error' => 'Formato de email inválido'
                     ];
-                    $resultado['fallidos']++;
+                    $resultado['fallidos_count']++;
                     continue;
                 }
 
@@ -149,7 +149,7 @@ class EnvioMasivoEncuestasController extends Controller
                     'empleado' => $empleado->nombre,
                     'error' => $e->getMessage()
                 ];
-                $resultado['fallidos']++;
+                $resultado['fallidos_count']++;
             }
         }
 
