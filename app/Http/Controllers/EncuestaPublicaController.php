@@ -141,6 +141,8 @@ class EncuestaPublicaController extends Controller
      */
     public function mostrarPorId($id)
     {
+        dd($id);
+
         // 🔍 DEBUG: Información de entrada
         Log::info('🔍 ENCUESTA PÚBLICA POR ID - Iniciando método mostrarPorId', [
             'encuesta_id' => $id,
