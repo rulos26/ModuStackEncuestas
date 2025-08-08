@@ -195,7 +195,7 @@ class EncuestaPublicaController extends Controller
                     'error' => 'Esta encuesta no está disponible en este momento.'
                 ]);
             }
-
+            dd($id,$encuesta,$encuesta->estaDisponible());
             // 🔍 DEBUG: Encuesta disponible, renderizando vista
             Log::info('✅ ENCUESTA PÚBLICA POR ID - Renderizando vista pública', [
                 'encuesta_id' => $encuesta->id,
