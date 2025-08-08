@@ -213,7 +213,7 @@ Route::prefix('publica')
     Route::get('{slug}/sin-token', [EncuestaPublicaController::class, 'mostrarSinToken'])
         ->name('publica.sin-token')
         ->middleware(['no.session']);
-    Route::get('id/{id}', [EncuestaPublicaController::class, 'mostrarPorId'])
+    Route::get('id/{id}', [EncuestaPublicaController::class, 'mostrarVistaPublica'])
         ->name('publica.por-id')
         ->middleware(['no.session']);
     Route::post('{id}', [EncuestaPublicaController::class, 'responder'])
