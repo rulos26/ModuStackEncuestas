@@ -189,28 +189,38 @@ Route::middleware(['auth'])->group(function () {
 // RUTAS DEL MÓDULO DE ENCUESTAS
 // ============================================================================
 
-// Rutas públicas de encuestas (sin autenticación y sin cookies)
-Route::prefix('publica')->name('encuestas.')->group(function () {
+// Rutas públicas de encuestas (sin autenticación, sin sesiones, sin cookies)
+Route::prefix('publica')
+    ->name('encuestas.')
+    ->withoutMiddleware([
+        \App\Http\Middleware\EncryptCookies::class,
+        \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+        \Illuminate\Session\Middleware\StartSession::class,
+        \Illuminate\Session\Middleware\AuthenticateSession::class,
+        \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+        \App\Http\Middleware\VerifyCsrfToken::class,
+    ])
+    ->group(function () {
     Route::get('{slug}', [EncuestaPublicaController::class, 'mostrar'])
         ->name('publica')
-        ->middleware(['no.cookie', 'verificar.token.encuesta']);
+        ->middleware(['public.page', 'verificar.token.encuesta']);
     Route::post('{id}', [EncuestaPublicaController::class, 'responder'])
         ->name('responder')
-        ->middleware('no.cookie');
+        ->middleware('public.page');
     Route::get('{slug}/fin', [EncuestaPublicaController::class, 'finEncuesta'])
         ->name('fin')
-        ->middleware('no.cookie');
+        ->middleware('public.page');
 
     // Rutas para renovación de enlaces
     Route::get('{slug}/renovar', [App\Http\Controllers\EncuestaRenovarController::class, 'mostrarFormularioRenovacion'])
         ->name('renovar.formulario')
-        ->middleware('no.cookie');
+        ->middleware('public.page');
     Route::post('{slug}/renovar', [App\Http\Controllers\EncuestaRenovarController::class, 'renovarEnlace'])
         ->name('renovar.enlace')
-        ->middleware('no.cookie');
+        ->middleware('public.page');
     Route::post('verificar-token', [App\Http\Controllers\EncuestaRenovarController::class, 'verificarToken'])
         ->name('verificar.token')
-        ->middleware('no.cookie');
+        ->middleware('public.page');
 });
 
 // Rutas protegidas de encuestas (con autenticación)

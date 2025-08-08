@@ -15,15 +15,6 @@ class EncuestaPublicaController extends Controller
      */
     public function mostrar($slug)
     {
-        // 🧪 LOGGING DE PRUEBA - ACCESO A MOSTRAR
-        Log::info('🧪 PRUEBA: Acceso a mostrar encuesta', [
-            'timestamp' => now(),
-            'slug' => $slug,
-            'request_url' => request()->url(),
-            'ip' => request()->ip(),
-            'user_agent' => request()->userAgent()
-        ]);
-
         try {
             $encuesta = Encuesta::with(['preguntas.respuestas', 'empresa'])
                 ->where('slug', $slug)
