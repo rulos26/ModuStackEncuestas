@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('adminlte::page')
 
 @section('title', 'Estadísticas de Envío Masivo')
 
