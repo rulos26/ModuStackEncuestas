@@ -6,18 +6,6 @@
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <h5><i class="fas fa-exclamation-triangle"></i> Error</h5>
             <p>{{ session('error') }}</p>
-
-            @if(session('error_details'))
-                <hr>
-                <h6>Detalles del Error:</h6>
-                <ul class="mb-0">
-                    <li><strong>Encuesta ID:</strong> {{ session('error_details.encuesta_id') }}</li>
-                    <li><strong>Mensaje:</strong> {{ session('error_details.error_message') }}</li>
-                    <li><strong>Archivo:</strong> {{ session('error_details.error_file') }}</li>
-                    <li><strong>Línea:</strong> {{ session('error_details.error_line') }}</li>
-                </ul>
-            @endif
-
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
@@ -49,7 +37,7 @@
                             <span class="obligatoria" data-pregunta-id="{{ $pregunta->id }}" data-pregunta-texto="{{ $pregunta->texto }}"> *</span>
                         @endif
                     </div>
-                    {{ $pregunta->id }}
+
                     @switch($pregunta->tipo)
                         @case('respuesta_corta')
                             <input type="text"
@@ -122,18 +110,6 @@
                             @break
 
                         @case('escala_lineal')
-                            @if(config('app.debug'))
-                                <!-- DEBUG: Información de escala -->
-                                <div class="alert alert-info">
-                                    <strong>DEBUG Escala:</strong><br>
-                                    - Tipo: {{ $pregunta->tipo }}<br>
-                                    - Escala min: {{ $pregunta->escala_min ?? 'NULL' }}<br>
-                                    - Escala max: {{ $pregunta->escala_max ?? 'NULL' }}<br>
-                                    - Etiqueta min: {{ $pregunta->escala_etiqueta_min ?? 'NULL' }}<br>
-                                    - Etiqueta max: {{ $pregunta->escala_etiqueta_max ?? 'NULL' }}
-                                </div>
-                            @endif
-
                             @if($pregunta->escala_max && $pregunta->escala_max > 0)
                                 <div class="escala-container">
                                     @for($i = ($pregunta->escala_min ?? 1); $i <= $pregunta->escala_max; $i++)
@@ -164,8 +140,6 @@
                                 <div class="alert alert-warning">
                                     <i class="fas fa-exclamation-triangle"></i>
                                     <strong>Error en escala:</strong> No se pudo determinar el rango de la escala.
-                                    <br>
-                                    <small>Escala máxima: {{ $pregunta->escala_max ?? 'No definida' }}</small>
                                 </div>
                             @endif
                             @break
@@ -182,7 +156,7 @@
             <div class="text-center mt-4">
                 <button type="submit" class="btn btn-enviar">
                     <i class="fas fa-paper-plane"></i>
-                    Enviar respuestasss
+                    Enviar respuestas
                 </button>
             </div>
         </form>

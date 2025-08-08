@@ -141,53 +141,37 @@ class EncuestaPublicaController extends Controller
      */
     public function mostrarPorId($id)
     {
-
-
-        // 🔍 DEBUG: Información de entrada
-        /* Log::info('🔍 ENCUESTA PÚBLICA POR ID - Iniciando método mostrarPorId', [
-            'encuesta_id' => $id,
-            'request_url' => request()->fullUrl(),
-            'user_agent' => request()->userAgent(),
-            'ip' => request()->ip(),
-            'timestamp' => now()->toDateTimeString()
-        ]);
- */
         try {
-            // 🔍 DEBUG: Antes de buscar la encuesta por ID
-           /*  Log::info('🔍 ENCUESTA PÚBLICA POR ID - Buscando encuesta en BD', [
-                'encuesta_id' => $id,
-                'filtros' => [
-                    'habilitada' => true,
-                    'estado' => 'publicada'
-                ]
-            ]); */
-
+            // Buscar encuesta por ID sin filtros estrictos para debugging
             $encuesta = Encuesta::with(['preguntas.respuestas', 'empresa'])
                 ->where('id', $id)
                 ->first();
-               // dd($id,$encuesta);
-            // 🔍 DEBUG: Encuesta encontrada
+
+            if (!$encuesta) {
+                Log::warning('❌ ENCUESTA PÚBLICA POR ID - Encuesta no encontrada', [
+                    'encuesta_id' => $id
+                ]);
+                return view('encuestas.publica', [
+                    'encuesta' => null,
+                    'error' => 'Encuesta no encontrada.'
+                ]);
+            }
+
+            // Log de información básica
             Log::info('✅ ENCUESTA PÚBLICA POR ID - Encuesta encontrada', [
                 'encuesta_id' => $encuesta->id,
                 'titulo' => $encuesta->titulo,
-                'slug' => $encuesta->slug,
                 'estado' => $encuesta->estado,
                 'habilitada' => $encuesta->habilitada,
-                'empresa_id' => $encuesta->empresa_id,
-                'empresa_nombre' => $encuesta->empresa ? $encuesta->empresa->nombre : 'Sin empresa',
-                'preguntas_count' => $encuesta->preguntas->count(),
-                'fecha_inicio' => $encuesta->fecha_inicio,
-                'fecha_fin' => $encuesta->fecha_fin
+                'preguntas_count' => $encuesta->preguntas->count()
             ]);
 
-            // Verificar si la encuesta está disponible
+            // Verificar disponibilidad solo si es necesario
             if (!$encuesta->estaDisponible()) {
                 Log::warning('⚠️ ENCUESTA PÚBLICA POR ID - Encuesta no disponible', [
                     'encuesta_id' => $encuesta->id,
-                    'slug' => $encuesta->slug,
                     'fecha_inicio' => $encuesta->fecha_inicio,
-                    'fecha_fin' => $encuesta->fecha_fin,
-                    'now' => now()->toDateTimeString()
+                    'fecha_fin' => $encuesta->fecha_fin
                 ]);
 
                 return view('encuestas.publica', [
@@ -196,27 +180,19 @@ class EncuestaPublicaController extends Controller
                 ]);
             }
 
-            // 🔍 DEBUG: Encuesta disponible, renderizando vista
-            Log::info('✅ ENCUESTA PÚBLICA POR ID - Renderizando vista pública', [
-                'encuesta_id' => $encuesta->id,
-                'preguntas_count' => $encuesta->preguntas->count(),
-                'vista' => 'encuestas.publica'
-            ]);
-            dd($id,$encuesta,$encuesta->estaDisponible(),$encuesta->estado,$encuesta->habilitada,$encuesta->preguntas->count());
             return view('encuestas.publica', compact('encuesta'));
+
         } catch (Exception $e) {
-            // 🔍 DEBUG: Error capturado
             Log::error('❌ ENCUESTA PÚBLICA POR ID - Error en método mostrarPorId', [
                 'encuesta_id' => $id,
                 'error_message' => $e->getMessage(),
                 'error_file' => $e->getFile(),
-                'error_line' => $e->getLine(),
-                'stack_trace' => $e->getTraceAsString()
+                'error_line' => $e->getLine()
             ]);
 
             return view('encuestas.publica', [
                 'encuesta' => null,
-                'error' => 'Encuesta no encontrada o no disponible.'
+                'error' => 'Error al cargar la encuesta: ' . $e->getMessage()
             ]);
         }
     }

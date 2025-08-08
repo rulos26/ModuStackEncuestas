@@ -135,21 +135,21 @@
 
                                         <button type="button"
                                                 class="btn btn-warning mb-2"
-                                                onclick="if(typeof probarDebug === 'function') { probarDebug(); } else { alert('Función probarDebug no disponible'); }">
+                                                onclick="probarDebug()">
                                             <i class="fas fa-bug"></i>
                                             Debug Completo
                                         </button>
 
                                         <button type="button"
                                                 class="btn btn-secondary mb-2"
-                                                onclick="if(typeof verLogs === 'function') { verLogs(); } else { alert('Función verLogs no disponible'); }">
+                                                onclick="verLogs()">
                                             <i class="fas fa-file-alt"></i>
                                             Ver Logs
                                         </button>
 
                                         <button type="button"
                                                 class="btn btn-danger mb-2"
-                                                onclick="if(typeof probarVistaPublica === 'function') { probarVistaPublica(); } else { alert('Función probarVistaPublica no disponible'); }">
+                                                onclick="probarVistaPublica()">
                                             <i class="fas fa-eye"></i>
                                             Probar Vista Pública
                                         </button>
@@ -169,7 +169,7 @@
                                         Resultados de la Prueba
                                     </h3>
                                     <div class="card-tools">
-                                        <button type="button" class="btn btn-tool" onclick="if(typeof limpiarResultados === 'function') { limpiarResultados(); } else { alert('Función limpiarResultados no disponible'); }">
+                                        <button type="button" class="btn btn-tool" onclick="limpiarResultados()">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </div>
@@ -213,7 +213,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary" onclick="if(typeof actualizarLogs === 'function') { actualizarLogs(); } else { alert('Función actualizarLogs no disponible'); }">Actualizar</button>
+                <button type="button" class="btn btn-primary" onclick="actualizarLogs()">Actualizar</button>
             </div>
         </div>
     </div>
@@ -222,8 +222,8 @@
 
 @push('js')
 <script>
-// Definir funciones globales inmediatamente
-window.ejecutarPrueba = function() {
+// Funciones optimizadas
+function ejecutarPrueba() {
     const datos = {
         encuesta_id: $('#encuesta_id').val(),
         slug_encuesta: $('#slug_encuesta').val(),
@@ -245,15 +245,15 @@ window.ejecutarPrueba = function() {
         method: 'POST',
         data: datos,
         success: function(response) {
-            window.mostrarResultados(response);
+            mostrarResultados(response);
         },
         error: function(xhr) {
-            window.mostrarError('Error en la petición: ' + xhr.responseText);
+            mostrarError('Error en la petición: ' + xhr.responseText);
         }
     });
-};
+}
 
-window.mostrarResultados = function(data) {
+function mostrarResultados(data) {
     let html = `
         <div class="alert alert-success">
             <h5><i class="fas fa-check-circle"></i> Prueba Completada</h5>
@@ -276,37 +276,37 @@ window.mostrarResultados = function(data) {
         </div>
     `;
     $('#resultados').html(html);
-};
+}
 
-window.mostrarError = function(mensaje) {
+function mostrarError(mensaje) {
     $('#resultados').html(`
         <div class="alert alert-danger">
             <h5><i class="fas fa-exclamation-triangle"></i> Error</h5>
             <p>${mensaje}</p>
         </div>
     `);
-};
+}
 
-window.limpiarResultados = function() {
+function limpiarResultados() {
     $('#resultados').html(`
         <div class="alert alert-info">
             <i class="fas fa-info-circle"></i>
             Ejecuta una prueba para ver los resultados aquí...
         </div>
     `);
-};
+}
 
-window.probarDebug = function() {
+function probarDebug() {
     $('#tipo_prueba').val('debug');
     $('#pruebaForm').submit();
-};
+}
 
-window.verLogs = function() {
+function verLogs() {
     $('#logsModal').modal('show');
-    window.actualizarLogs();
-};
+    actualizarLogs();
+}
 
-window.actualizarLogs = function() {
+function actualizarLogs() {
     $('#logsContent').html(`
         <div class="text-center">
             <i class="fas fa-spinner fa-spin"></i>
@@ -331,15 +331,12 @@ window.actualizarLogs = function() {
             `);
         }
     });
-};
+}
 
-window.probarVistaPublica = function() {
+function probarVistaPublica() {
     const encuestaId = $('#encuesta_id').val();
     const slug = $('#slug_encuesta').val();
 
-    console.log('🔍 Probando vista pública para encuesta:', encuestaId, 'slug:', slug);
-
-    // Mostrar loading
     $('#resultados').html(`
         <div class="text-center">
             <i class="fas fa-spinner fa-spin fa-2x"></i>
@@ -360,45 +357,25 @@ window.probarVistaPublica = function() {
         },
         success: function(response) {
             if (response.estado === 'completado') {
-                // Abrir la vista en una nueva ventana
                 const urlVista = response.url_vista;
                 window.open(urlVista, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
-
-                // Mostrar resultado
-                window.mostrarResultados(response);
+                mostrarResultados(response);
             } else {
-                window.mostrarError('Error: ' + response.detalles);
+                mostrarError('Error: ' + response.detalles);
             }
         },
         error: function(xhr) {
-            window.mostrarError('Error en la petición: ' + xhr.responseText);
+            mostrarError('Error en la petición: ' + xhr.responseText);
         }
     });
-};
+}
 
-// Inicializar cuando el documento esté listo
+// Inicialización
 $(document).ready(function() {
-    console.log('🔧 Inicializando pruebas de encuesta pública...');
-
-    // Verificar que las funciones estén disponibles
-    console.log('✅ Funciones disponibles:');
-    console.log('- ejecutarPrueba:', typeof window.ejecutarPrueba);
-    console.log('- mostrarResultados:', typeof window.mostrarResultados);
-    console.log('- mostrarError:', typeof window.mostrarError);
-    console.log('- limpiarResultados:', typeof window.limpiarResultados);
-    console.log('- probarDebug:', typeof window.probarDebug);
-    console.log('- verLogs:', typeof window.verLogs);
-    console.log('- actualizarLogs:', typeof window.actualizarLogs);
-    console.log('- probarVistaPublica:', typeof window.probarVistaPublica);
-
-    // Manejar envío del formulario
     $('#pruebaForm').on('submit', function(e) {
         e.preventDefault();
-        console.log('📝 Ejecutando prueba...');
-        window.ejecutarPrueba();
+        ejecutarPrueba();
     });
-
-    console.log('✅ Funciones de prueba inicializadas correctamente');
 });
 </script>
 @endpush
