@@ -151,7 +151,7 @@ class EncuestaPublicaController extends Controller
             'ip' => request()->ip(),
             'timestamp' => now()->toDateTimeString()
         ]);
-        dd($id);    
+
         try {
             // 🔍 DEBUG: Antes de buscar la encuesta por ID
             Log::info('🔍 ENCUESTA PÚBLICA POR ID - Buscando encuesta en BD', [
@@ -167,7 +167,7 @@ class EncuestaPublicaController extends Controller
                 ->where('habilitada', true)
                 ->where('estado', 'publicada')
                 ->firstOrFail();
-
+                dd($id,$encuesta);
             // 🔍 DEBUG: Encuesta encontrada
             Log::info('✅ ENCUESTA PÚBLICA POR ID - Encuesta encontrada', [
                 'encuesta_id' => $encuesta->id,
