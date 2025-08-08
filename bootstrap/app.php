@@ -18,11 +18,12 @@ return Application::configure(basePath: dirname(__DIR__))
         'safe.session' => \App\Http\Middleware\SafeSessionMiddleware::class,
         'no.cookie' => \App\Http\Middleware\NoCookieMiddleware::class,
         'public.page' => \App\Http\Middleware\PublicPageMiddleware::class,
+        'no.session' => \App\Http\Middleware\NoSessionMiddleware::class,
         'validar.fechas' => \App\Http\Middleware\ValidarFechas::class,
     ]);
 
-    // NO aplicar middlewares globales que manejen cookies
-    // Las rutas públicas usarán su propio middleware
+    // Agregar middleware global para configurar sesiones
+    $middleware->append(\App\Http\Middleware\InitializeSessionMiddleware::class);
 })
     ->withExceptions(function (Exceptions $exceptions) {
         //

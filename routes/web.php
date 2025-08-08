@@ -209,19 +209,19 @@ Route::prefix('publica')
     ->group(function () {
     Route::get('{slug}', [EncuestaPublicaController::class, 'mostrar'])
         ->name('publica')
-        ->middleware(['public.page', 'verificar.token.encuesta']);
+        ->middleware(['no.session', 'verificar.token.encuesta']);
     Route::get('{slug}/sin-token', [EncuestaPublicaController::class, 'mostrarSinToken'])
         ->name('publica.sin-token')
-        ->middleware(['public.page']);
+        ->middleware(['no.session']);
     Route::get('id/{id}', [EncuestaPublicaController::class, 'mostrarPorId'])
         ->name('publica.por-id')
-        ->middleware(['public.page']);
+        ->middleware(['no.session']);
     Route::post('{id}', [EncuestaPublicaController::class, 'responder'])
         ->name('responder')
-        ->middleware('public.page');
+        ->middleware('no.session');
     Route::get('{slug}/fin', [EncuestaPublicaController::class, 'finEncuesta'])
         ->name('fin')
-        ->middleware('public.page');
+        ->middleware('no.session');
 
     // Rutas para renovación de enlaces
     Route::get('{slug}/renovar', [App\Http\Controllers\EncuestaRenovarController::class, 'mostrarFormularioRenovacion'])
