@@ -49,7 +49,7 @@
                             <span class="obligatoria" data-pregunta-id="{{ $pregunta->id }}" data-pregunta-texto="{{ $pregunta->texto }}"> *</span>
                         @endif
                     </div>
-
+                    {{ $pregunta->id }}
                     @switch($pregunta->tipo)
                         @case('respuesta_corta')
                             <input type="text"
