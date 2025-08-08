@@ -189,21 +189,28 @@ Route::middleware(['auth'])->group(function () {
 // RUTAS DEL MÓDULO DE ENCUESTAS
 // ============================================================================
 
-// Rutas públicas de encuestas (sin autenticación)
+// Rutas públicas de encuestas (sin autenticación y sin cookies)
 Route::prefix('publica')->name('encuestas.')->group(function () {
     Route::get('{slug}', [EncuestaPublicaController::class, 'mostrar'])
         ->name('publica')
-        ->middleware('verificar.token.encuesta');
-    Route::post('{id}', [EncuestaPublicaController::class, 'responder'])->name('responder');
-    Route::get('{slug}/fin', [EncuestaPublicaController::class, 'finEncuesta'])->name('fin');
+        ->middleware(['no.cookie', 'verificar.token.encuesta']);
+    Route::post('{id}', [EncuestaPublicaController::class, 'responder'])
+        ->name('responder')
+        ->middleware('no.cookie');
+    Route::get('{slug}/fin', [EncuestaPublicaController::class, 'finEncuesta'])
+        ->name('fin')
+        ->middleware('no.cookie');
 
     // Rutas para renovación de enlaces
     Route::get('{slug}/renovar', [App\Http\Controllers\EncuestaRenovarController::class, 'mostrarFormularioRenovacion'])
-        ->name('renovar.formulario');
+        ->name('renovar.formulario')
+        ->middleware('no.cookie');
     Route::post('{slug}/renovar', [App\Http\Controllers\EncuestaRenovarController::class, 'renovarEnlace'])
-        ->name('renovar.enlace');
+        ->name('renovar.enlace')
+        ->middleware('no.cookie');
     Route::post('verificar-token', [App\Http\Controllers\EncuestaRenovarController::class, 'verificarToken'])
-        ->name('verificar.token');
+        ->name('verificar.token')
+        ->middleware('no.cookie');
 });
 
 // Rutas protegidas de encuestas (con autenticación)

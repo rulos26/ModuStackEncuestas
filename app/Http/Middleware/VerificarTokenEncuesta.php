@@ -58,7 +58,15 @@ class VerificarTokenEncuesta
         // Solo marcar como usado si no es un token general (para envío masivo)
         // Los tokens generales (general@encuesta.com) no se marcan como usados
         if ($tokenEncuesta->email_destinatario !== 'general@encuesta.com') {
-            $tokenEncuesta->marcarUsado($request->ip(), $request->userAgent());
+            try {
+                $tokenEncuesta->marcarUsado($request->ip(), $request->userAgent());
+            } catch (\Exception $e) {
+                // Si hay error al marcar como usado, continuar de todas formas
+                Log::warning('Error marcando token como usado', [
+                    'token_id' => $tokenEncuesta->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
         }
 
         // Agregar encuesta al request para uso posterior

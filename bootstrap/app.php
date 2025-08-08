@@ -16,11 +16,12 @@ return Application::configure(basePath: dirname(__DIR__))
         'validar.flujo.encuesta' => \App\Http\Middleware\ValidarFlujoEncuesta::class,
         'fix.session.hosting' => \App\Http\Middleware\FixSessionForHosting::class,
         'safe.session' => \App\Http\Middleware\SafeSessionMiddleware::class,
+        'no.cookie' => \App\Http\Middleware\NoCookieMiddleware::class,
         'validar.fechas' => \App\Http\Middleware\ValidarFechas::class,
     ]);
 
-    // Aplicar middleware seguro de sesiones globalmente
-    $middleware->prepend(\App\Http\Middleware\SafeSessionMiddleware::class);
+    // Aplicar middleware sin cookies globalmente
+    $middleware->prepend(\App\Http\Middleware\NoCookieMiddleware::class);
 })
     ->withExceptions(function (Exceptions $exceptions) {
         //
