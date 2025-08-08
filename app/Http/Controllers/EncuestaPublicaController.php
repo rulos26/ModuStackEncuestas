@@ -18,7 +18,7 @@ class EncuestaPublicaController extends Controller
         // 🔍 DEBUG: Información de entrada
         Log::info('🔍 ENCUESTA PÚBLICA - Iniciando método mostrar', [
             'slug' => $slug,
-            'request_url' => request()->fullUrl(),
+            'request_url' => request()->fullUrl(),  
             'user_agent' => request()->userAgent(),
             'ip' => request()->ip(),
             'timestamp' => now()->toDateTimeString()

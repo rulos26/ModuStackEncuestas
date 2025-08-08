@@ -148,6 +148,7 @@ class TestingEncuestaPublicaController extends Controller
                                 "🔍 Estados de la encuesta:\n" .
                                 json_encode($estados, JSON_PRETTY_PRINT);
 
+        dd($resultado);
         return $resultado;
     }
 
