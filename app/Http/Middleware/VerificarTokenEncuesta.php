@@ -55,8 +55,11 @@ class VerificarTokenEncuesta
             return $this->responderError('Token de acceso no encontrado.');
         }
 
-        // Marcar token como usado
-        $tokenEncuesta->marcarUsado($request->ip(), $request->userAgent());
+        // Solo marcar como usado si no es un token general (para envío masivo)
+        // Los tokens generales (general@encuesta.com) no se marcan como usados
+        if ($tokenEncuesta->email_destinatario !== 'general@encuesta.com') {
+            $tokenEncuesta->marcarUsado($request->ip(), $request->userAgent());
+        }
 
         // Agregar encuesta al request para uso posterior
         $request->attributes->add(['encuesta' => $encuesta]);

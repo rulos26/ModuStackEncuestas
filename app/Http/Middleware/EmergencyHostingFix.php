@@ -119,8 +119,11 @@ class EmergencyHostingFix
         }
 
         // Configurar cookies manualmente si es necesario
-        if (function_exists('setcookie')) {
-            setcookie('laravel_session', (string) session_id(), time() + 7200, '/', null, false, true);
+        if (function_exists('setcookie') && session_id()) {
+            $sessionId = session_id();
+            if ($sessionId) {
+                setcookie('laravel_session', $sessionId, time() + 7200, '/', '', false, true);
+            }
         }
     }
 }
