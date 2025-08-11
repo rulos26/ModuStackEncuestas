@@ -97,6 +97,7 @@ class EncuestaPublicaController extends Controller
 
     public function mostrarVistaPublica($encuestaId)
     {
+         dd($encuestaId);
         try {
             Log::info('🔍 ENCUESTA PÚBLICA - Mostrando vista por ID', [
                 'encuesta_id' => $encuestaId,
