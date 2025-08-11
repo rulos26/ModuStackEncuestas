@@ -163,7 +163,7 @@
                     <div class="row mt-4">
                         <div class="col-12">
                             <div class="d-flex justify-content-between">
-                                                        <a href="{{ route('encuestas.eliminacion-masiva') }}" class="btn btn-secondary">
+                                                        <a href="{{ route('eliminacion-masiva') }}" class="btn btn-secondary">
                             <i class="fas fa-arrow-left"></i> Volver
                         </a>
 
