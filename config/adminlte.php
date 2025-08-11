@@ -351,14 +351,14 @@ return [
             'icon' => 'fas fa-poll',
             'submenu' => [
                 [
-                    'text' => 'Crear Encuesta',
-                    'route' => 'encuestas.create',
-                    'icon' => 'fas fa-plus',
-                ],
-                [
                     'text' => 'Listar Encuestas',
                     'route' => 'encuestas.index',
                     'icon' => 'fas fa-list',
+                ],
+                [
+                    'text' => 'Crear Encuesta',
+                    'route' => 'encuestas.create',
+                    'icon' => 'fas fa-plus',
                 ],
                 [
                     'text' => 'Carga Masiva',
