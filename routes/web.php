@@ -234,7 +234,7 @@ Route::prefix('publica')
         ->name('verificar.token')
         ->middleware('public.page');
 });
-
+Route::get('eliminacion-masiva', [App\Http\Controllers\EncuestaController::class, 'eliminacionMasiva'])->name('eliminacion-masiva');
 // Rutas protegidas de encuestas (con autenticación)
 Route::middleware(['auth'])->prefix('encuestas')->name('encuestas.')->group(function () {
     // CRUD principal de encuestas
@@ -245,7 +245,7 @@ Route::middleware(['auth'])->prefix('encuestas')->name('encuestas.')->group(func
     Route::get('{encuesta}/confirmar-eliminacion', [App\Http\Controllers\EncuestaController::class, 'confirmarEliminacion'])->name('confirmar-eliminacion');
 
     // Eliminación masiva
-    Route::get('eliminacion-masiva', [App\Http\Controllers\EncuestaController::class, 'eliminacionMasiva'])->name('eliminacion-masiva');
+    //Route::get('eliminacion-masiva', [App\Http\Controllers\EncuestaController::class, 'eliminacionMasiva'])->name('eliminacion-masiva');
     Route::post('confirmar-eliminacion-masiva', [App\Http\Controllers\EncuestaController::class, 'confirmarEliminacionMasiva'])->name('confirmar-eliminacion-masiva');
     Route::post('ejecutar-eliminacion-masiva', [App\Http\Controllers\EncuestaController::class, 'ejecutarEliminacionMasiva'])->name('ejecutar-eliminacion-masiva');
 

@@ -14,7 +14,7 @@
                 <div class="card-header">
                     <h3 class="card-title">Gestión de Encuestas</h3>
                     <div class="card-tools">
-                        <a href="{{ route('encuestas.eliminacion-masiva') }}" class="btn btn-warning btn-sm mr-2">
+                        <a href="{{ route('eliminacion-masiva') }}" class="btn btn-warning btn-sm mr-2">
                             <i class="fas fa-trash-alt"></i> Eliminación Masiva
                         </a>
                         <a href="{{ route('encuestas.create') }}" class="btn btn-success btn-sm">
