@@ -345,6 +345,59 @@ return [
 
         ['header' => 'AJUSTES DE ENCUESTAS'],
 
+        // Gestión de Encuestas
+        [
+            'text' => 'Gestión de Encuestas',
+            'icon' => 'fas fa-poll',
+            'submenu' => [
+                [
+                    'text' => 'Crear Encuesta',
+                    'route' => 'encuestas.create',
+                    'icon' => 'fas fa-plus',
+                ],
+                [
+                    'text' => 'Listar Encuestas',
+                    'route' => 'encuestas.index',
+                    'icon' => 'fas fa-list',
+                ],
+                [
+                    'text' => 'Carga Masiva',
+                    'route' => 'carga-masiva.index',
+                    'icon' => 'fas fa-upload',
+                ],
+                [
+                    'text' => 'Análisis de Respuestas',
+                    'route' => 'respuestas.index',
+                    'icon' => 'fas fa-chart-bar',
+                ],
+                [
+                    'text' => 'Configuración de Envío',
+                    'route' => 'configuracion-envio.index',
+                    'icon' => 'fas fa-envelope-open-text',
+                ],
+                [
+                    'text' => 'Envío Masivo',
+                    'route' => 'envio-masivo.index',
+                    'icon' => 'fas fa-paper-plane',
+                ],
+                [
+                    'text' => 'Vista Previa',
+                    'url'  => '#', // Cambia por la ruta real si tienes una vista previa general
+                    'icon' => 'fas fa-eye',
+                ],
+                [
+                    'text' => 'Sistema de Pruebas',
+                    'route' => 'testing.index',
+                    'icon' => 'fas fa-vial',
+                ],
+                [
+                    'text' => 'Pruebas Encuesta Pública',
+                    'route' => 'testing.encuesta-publica',
+                    'icon' => 'fas fa-vote-yea',
+                ],
+            ],
+        ],
+
         ['header' => 'AJUSTES GENERALES DEL SISTEMA'],
 
         // Configuración
@@ -547,58 +600,6 @@ return [
                             ],
                         ],
                     ],
-                ],
-            ],
-        ],
-        // Gestión de Encuestas
-        [
-            'text' => 'Gestión de Encuestas',
-            'icon' => 'fas fa-poll',
-            'submenu' => [
-                [
-                    'text' => 'Crear Encuesta',
-                    'route' => 'encuestas.create',
-                    'icon' => 'fas fa-plus',
-                ],
-                [
-                    'text' => 'Listar Encuestas',
-                    'route' => 'encuestas.index',
-                    'icon' => 'fas fa-list',
-                ],
-                [
-                    'text' => 'Carga Masiva',
-                    'route' => 'carga-masiva.index',
-                    'icon' => 'fas fa-upload',
-                ],
-                [
-                    'text' => 'Análisis de Respuestas',
-                    'route' => 'respuestas.index',
-                    'icon' => 'fas fa-chart-bar',
-                ],
-                [
-                    'text' => 'Configuración de Envío',
-                    'route' => 'configuracion-envio.index',
-                    'icon' => 'fas fa-envelope-open-text',
-                ],
-                [
-                    'text' => 'Envío Masivo',
-                    'route' => 'envio-masivo.index',
-                    'icon' => 'fas fa-paper-plane',
-                ],
-                [
-                    'text' => 'Vista Previa',
-                    'url'  => '#', // Cambia por la ruta real si tienes una vista previa general
-                    'icon' => 'fas fa-eye',
-                ],
-                [
-                    'text' => 'Sistema de Pruebas',
-                    'route' => 'testing.index',
-                    'icon' => 'fas fa-vial',
-                ],
-                [
-                    'text' => 'Pruebas Encuesta Pública',
-                    'route' => 'testing.encuesta-publica',
-                    'icon' => 'fas fa-vote-yea',
                 ],
             ],
         ],
