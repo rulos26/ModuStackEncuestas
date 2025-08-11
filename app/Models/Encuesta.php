@@ -118,6 +118,30 @@ class Encuesta extends Model
     }
 
     /**
+     * Obtiene las configuraciones de envío de la encuesta
+     */
+    public function configuracionesEnvio(): HasMany
+    {
+        return $this->hasMany(ConfiguracionEnvio::class);
+    }
+
+    /**
+     * Obtiene los correos enviados relacionados con la encuesta
+     */
+    public function correosEnviados(): HasMany
+    {
+        return $this->hasMany(SentMail::class);
+    }
+
+    /**
+     * Obtiene las respuestas de usuarios de la encuesta
+     */
+    public function respuestasUsuarios(): HasMany
+    {
+        return $this->hasMany(RespuestaUsuario::class);
+    }
+
+    /**
      * Scope para encuestas habilitadas
      */
     public function scopeHabilitadas($query)

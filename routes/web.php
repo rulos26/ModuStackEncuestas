@@ -241,6 +241,14 @@ Route::middleware(['auth'])->prefix('encuestas')->name('encuestas.')->group(func
     Route::resource('/', App\Http\Controllers\EncuestaController::class)->parameters(['' => 'encuesta']);
     Route::post('{encuesta}/clonar', [App\Http\Controllers\EncuestaController::class, 'clonar'])->name('clone');
 
+    // Confirmación de eliminación
+    Route::get('{encuesta}/confirmar-eliminacion', [App\Http\Controllers\EncuestaController::class, 'confirmarEliminacion'])->name('confirmar-eliminacion');
+
+    // Eliminación masiva
+    Route::get('eliminacion-masiva', [App\Http\Controllers\EncuestaController::class, 'eliminacionMasiva'])->name('eliminacion-masiva');
+    Route::post('confirmar-eliminacion-masiva', [App\Http\Controllers\EncuestaController::class, 'confirmarEliminacionMasiva'])->name('confirmar-eliminacion-masiva');
+    Route::post('ejecutar-eliminacion-masiva', [App\Http\Controllers\EncuestaController::class, 'ejecutarEliminacionMasiva'])->name('ejecutar-eliminacion-masiva');
+
     // Aplicar middleware de validación de fechas a las rutas de creación y edición
     Route::post('/', [App\Http\Controllers\EncuestaController::class, 'store'])->name('store')->middleware('validar.fechas');
     Route::put('{encuesta}', [App\Http\Controllers\EncuestaController::class, 'update'])->name('update')->middleware('validar.fechas');

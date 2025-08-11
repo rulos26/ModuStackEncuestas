@@ -557,6 +557,26 @@ class SystemToolsController extends Controller
                         if ($encuestaId) $params['--encuesta_id'] = $encuestaId;
                         $resultado = $this->ejecutarComando('probar:contadores-encuesta', $params);
                         break;
+                    case 'probar_eliminacion_encuesta':
+                        $encuestaId = $request->get('encuesta_id');
+                        $dryRun = $request->get('dry_run', false);
+                        $params = [];
+                        if ($encuestaId) $params['encuesta_id'] = $encuestaId;
+                        if ($dryRun) $params['--dry-run'] = true;
+                        $resultado = $this->ejecutarComando('encuesta:probar-eliminacion', $params);
+                        break;
+                    case 'probar_eliminacion_masiva_encuestas':
+                        $encuestaIds = $request->get('encuesta_id');
+                        $estado = $request->get('estado');
+                        $limit = $request->get('limit', 10);
+                        $dryRun = $request->get('dry_run', false);
+                        $params = [];
+                        if ($encuestaIds) $params['--encuesta_ids'] = $encuestaIds;
+                        if ($estado) $params['--estado'] = $estado;
+                        if ($limit) $params['--limit'] = $limit;
+                        if ($dryRun) $params['--dry-run'] = true;
+                        $resultado = $this->ejecutarComando('encuesta:probar-eliminacion-masiva', $params);
+                        break;
                 }
             }
 

@@ -14,6 +14,9 @@
                 <div class="card-header">
                     <h3 class="card-title">Gestión de Encuestas</h3>
                     <div class="card-tools">
+                        <a href="{{ route('encuestas.eliminacion-masiva') }}" class="btn btn-warning btn-sm mr-2">
+                            <i class="fas fa-trash-alt"></i> Eliminación Masiva
+                        </a>
                         <a href="{{ route('encuestas.create') }}" class="btn btn-success btn-sm">
                             <i class="fas fa-plus"></i> Nueva Encuesta
                         </a>
@@ -115,18 +118,11 @@
                                                         <i class="fas fa-copy"></i>
                                                     </button>
                                                 </form>
-                                                <form action="{{ route('encuestas.destroy', $encuesta->id) }}"
-                                                      method="POST"
-                                                      style="display: inline;"
-                                                      onsubmit="return confirm('¿Seguro que deseas eliminar esta encuesta?');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit"
-                                                            class="btn btn-danger btn-sm"
-                                                            title="Eliminar">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </form>
+                                                <a href="{{ route('encuestas.confirmar-eliminacion', $encuesta->id) }}"
+                                                   class="btn btn-danger btn-sm"
+                                                   title="Eliminar encuesta">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
                                             </div>
                                         </td>
                                     </tr>

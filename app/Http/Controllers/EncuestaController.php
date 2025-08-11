@@ -293,21 +293,24 @@ class EncuestaController extends Controller
                 return $this->redirectIfNoAccess('No tienes permisos para eliminar esta encuesta.');
             }
 
-            // Verificar que no tenga preguntas asociadas
-            if ($encuesta->preguntas()->count() > 0) {
-                return redirect()->back()->with('error', 'No se puede eliminar una encuesta que tiene preguntas asociadas.');
-            }
+            // Crear backup antes de borrar (opcional)
+            $this->crearBackupEncuesta($encuesta);
 
+            // Obtener estadísticas antes de borrar para el log
+            $estadisticas = $this->obtenerEstadisticasEncuesta($encuesta);
+
+            // Borrar la encuesta (cascade automático)
             $encuesta->delete();
 
             Log::info('Encuesta eliminada exitosamente', [
                 'user_id' => Auth::id(),
                 'encuesta_id' => $encuesta->id,
-                'titulo' => $encuesta->titulo
+                'titulo' => $encuesta->titulo,
+                'estadisticas_eliminadas' => $estadisticas
             ]);
 
             return redirect()->route('encuestas.index')
-                ->with('success', 'Encuesta eliminada correctamente.');
+                ->with('success', 'Encuesta eliminada correctamente junto con todos sus datos relacionados.');
         } catch (Exception $e) {
             Log::error('Error eliminando encuesta', [
                 'user_id' => Auth::id(),
@@ -315,6 +318,326 @@ class EncuestaController extends Controller
                 'error' => $e->getMessage()
             ]);
             return redirect()->back()->with('error', 'Error al eliminar la encuesta: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Mostrar vista de confirmación de eliminación
+     */
+    public function confirmarEliminacion(Encuesta $encuesta)
+    {
+        try {
+            // Verificar permisos
+            if (!$this->checkUserAccess(['encuestas.destroy'])) {
+                $this->logAccessDenied('encuestas.confirmar-eliminacion', ['Superadmin', 'Admin'], ['encuestas.destroy']);
+                return $this->redirectIfNoAccess('No tienes permisos para eliminar encuestas.');
+            }
+
+            // Verificar que el usuario es el propietario o tiene permisos de admin
+            if ($encuesta->user_id !== Auth::id() && !$this->isAdmin()) {
+                $this->logAccessDenied('encuestas.confirmar-eliminacion', ['Superadmin', 'Admin'], ['encuestas.destroy']);
+                return $this->redirectIfNoAccess('No tienes permisos para eliminar esta encuesta.');
+            }
+
+            // Cargar relaciones para mostrar información
+            $encuesta->load(['preguntas.respuestas', 'empresa', 'user', 'bloquesEnvio', 'tokensAcceso', 'configuracionesEnvio']);
+
+            // Obtener estadísticas
+            $estadisticas = $this->obtenerEstadisticasEncuesta($encuesta);
+
+            return view('encuestas.confirmar-eliminacion', compact('encuesta', 'estadisticas'));
+        } catch (Exception $e) {
+            Log::error('Error mostrando confirmación de eliminación', [
+                'user_id' => Auth::id(),
+                'encuesta_id' => $encuesta->id,
+                'error' => $e->getMessage()
+            ]);
+            return redirect()->back()->with('error', 'Error al cargar la confirmación: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Crear backup de la encuesta antes de eliminar
+     */
+    private function crearBackupEncuesta(Encuesta $encuesta)
+    {
+        try {
+            // Cargar todas las relaciones
+            $encuesta->load(['preguntas.respuestas', 'empresa', 'user', 'bloquesEnvio', 'tokensAcceso', 'configuracionesEnvio']);
+
+            $backup = [
+                'encuesta' => $encuesta->toArray(),
+                'fecha_backup' => now()->toDateTimeString(),
+                'usuario_backup' => Auth::id(),
+                'accion' => 'eliminacion'
+            ];
+
+            // Guardar backup en logs (opcional: también se puede guardar en archivo o base de datos)
+            Log::info('Backup de encuesta antes de eliminar', [
+                'encuesta_id' => $encuesta->id,
+                'backup' => $backup
+            ]);
+
+        } catch (Exception $e) {
+            Log::warning('Error creando backup de encuesta', [
+                'encuesta_id' => $encuesta->id,
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Obtener estadísticas de la encuesta
+     */
+    private function obtenerEstadisticasEncuesta(Encuesta $encuesta)
+    {
+        return [
+            'preguntas_count' => $encuesta->preguntas()->count(),
+            'respuestas_count' => $encuesta->preguntas()->withCount('respuestas')->get()->sum('respuestas_count'),
+            'respuestas_usuarios_count' => $encuesta->respuestasUsuarios()->count(),
+            'bloques_envio_count' => $encuesta->bloquesEnvio()->count(),
+            'tokens_acceso_count' => $encuesta->tokensAcceso()->count(),
+            'configuraciones_envio_count' => $encuesta->configuracionesEnvio()->count(),
+            'correos_enviados_count' => $encuesta->correosEnviados()->count(),
+        ];
+    }
+
+    /**
+     * Mostrar vista de eliminación masiva
+     */
+    public function eliminacionMasiva()
+    {
+        try {
+            // Verificar permisos
+            if (!$this->checkUserAccess(['encuestas.destroy'])) {
+                $this->logAccessDenied('encuestas.eliminacion-masiva', ['Superadmin', 'Admin'], ['encuestas.destroy']);
+                return $this->redirectIfNoAccess('No tienes permisos para eliminar encuestas.');
+            }
+
+            // Obtener encuestas disponibles para el usuario
+            $encuestas = Encuesta::with(['empresa', 'user', 'preguntas'])
+                ->when(!$this->isAdmin(), function($query) {
+                    return $query->where('user_id', Auth::id());
+                })
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            return view('encuestas.eliminacion-masiva', compact('encuestas'));
+        } catch (Exception $e) {
+            Log::error('Error mostrando eliminación masiva', [
+                'user_id' => Auth::id(),
+                'error' => $e->getMessage()
+            ]);
+            return redirect()->back()->with('error', 'Error al cargar la eliminación masiva: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Confirmar eliminación masiva
+     */
+    public function confirmarEliminacionMasiva(Request $request)
+    {
+        try {
+            // Verificar permisos
+            if (!$this->checkUserAccess(['encuestas.destroy'])) {
+                $this->logAccessDenied('encuestas.confirmar-eliminacion-masiva', ['Superadmin', 'Admin'], ['encuestas.destroy']);
+                return $this->redirectIfNoAccess('No tienes permisos para eliminar encuestas.');
+            }
+
+            $encuestaIds = $request->input('encuesta_ids', []);
+
+            if (empty($encuestaIds)) {
+                return redirect()->back()->with('error', 'Debes seleccionar al menos una encuesta para eliminar.');
+            }
+
+            // Obtener encuestas seleccionadas
+            $encuestas = Encuesta::with([
+                'preguntas.respuestas',
+                'empresa',
+                'user',
+                'bloquesEnvio',
+                'tokensAcceso',
+                'configuracionesEnvio',
+                'correosEnviados',
+                'respuestasUsuarios'
+            ])
+            ->whereIn('id', $encuestaIds)
+            ->when(!$this->isAdmin(), function($query) {
+                return $query->where('user_id', Auth::id());
+            })
+            ->get();
+
+            if ($encuestas->isEmpty()) {
+                return redirect()->back()->with('error', 'No se encontraron encuestas válidas para eliminar.');
+            }
+
+            // Calcular estadísticas totales
+            $estadisticasTotales = $this->calcularEstadisticasMasivas($encuestas);
+
+            return view('encuestas.confirmar-eliminacion-masiva', compact('encuestas', 'estadisticasTotales'));
+        } catch (Exception $e) {
+            Log::error('Error confirmando eliminación masiva', [
+                'user_id' => Auth::id(),
+                'encuesta_ids' => $request->input('encuesta_ids'),
+                'error' => $e->getMessage()
+            ]);
+            return redirect()->back()->with('error', 'Error al confirmar eliminación masiva: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Ejecutar eliminación masiva
+     */
+    public function ejecutarEliminacionMasiva(Request $request)
+    {
+        try {
+            // Verificar permisos
+            if (!$this->checkUserAccess(['encuestas.destroy'])) {
+                $this->logAccessDenied('encuestas.ejecutar-eliminacion-masiva', ['Superadmin', 'Admin'], ['encuestas.destroy']);
+                return $this->redirectIfNoAccess('No tienes permisos para eliminar encuestas.');
+            }
+
+            $encuestaIds = $request->input('encuesta_ids', []);
+
+            if (empty($encuestaIds)) {
+                return redirect()->back()->with('error', 'No se especificaron encuestas para eliminar.');
+            }
+
+            // Obtener encuestas para backup
+            $encuestas = Encuesta::with([
+                'preguntas.respuestas',
+                'empresa',
+                'user',
+                'bloquesEnvio',
+                'tokensAcceso',
+                'configuracionesEnvio',
+                'correosEnviados',
+                'respuestasUsuarios'
+            ])
+            ->whereIn('id', $encuestaIds)
+            ->when(!$this->isAdmin(), function($query) {
+                return $query->where('user_id', Auth::id());
+            })
+            ->get();
+
+            if ($encuestas->isEmpty()) {
+                return redirect()->back()->with('error', 'No se encontraron encuestas válidas para eliminar.');
+            }
+
+            // Crear backup masivo
+            $this->crearBackupMasivo($encuestas);
+
+            // Calcular estadísticas antes de eliminar
+            $estadisticasTotales = $this->calcularEstadisticasMasivas($encuestas);
+
+            // Eliminar encuestas
+            $eliminadas = 0;
+            $errores = [];
+
+            foreach ($encuestas as $encuesta) {
+                try {
+                    $encuesta->delete();
+                    $eliminadas++;
+
+                    Log::info('Encuesta eliminada en proceso masivo', [
+                        'user_id' => Auth::id(),
+                        'encuesta_id' => $encuesta->id,
+                        'titulo' => $encuesta->titulo
+                    ]);
+                } catch (Exception $e) {
+                    $errores[] = "Error eliminando encuesta ID {$encuesta->id}: " . $e->getMessage();
+
+                    Log::error('Error eliminando encuesta en proceso masivo', [
+                        'user_id' => Auth::id(),
+                        'encuesta_id' => $encuesta->id,
+                        'error' => $e->getMessage()
+                    ]);
+                }
+            }
+
+            // Preparar mensaje de resultado
+            $mensaje = "Se eliminaron {$eliminadas} de " . count($encuestas) . " encuestas.";
+
+            if (!empty($errores)) {
+                $mensaje .= " Errores: " . implode(', ', $errores);
+            }
+
+            Log::info('Eliminación masiva completada', [
+                'user_id' => Auth::id(),
+                'encuestas_solicitadas' => count($encuestaIds),
+                'encuestas_eliminadas' => $eliminadas,
+                'errores' => count($errores),
+                'estadisticas_eliminadas' => $estadisticasTotales
+            ]);
+
+            return redirect()->route('encuestas.index')
+                ->with('success', $mensaje);
+
+        } catch (Exception $e) {
+            Log::error('Error ejecutando eliminación masiva', [
+                'user_id' => Auth::id(),
+                'encuesta_ids' => $request->input('encuesta_ids'),
+                'error' => $e->getMessage()
+            ]);
+            return redirect()->back()->with('error', 'Error al ejecutar eliminación masiva: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Calcular estadísticas para eliminación masiva
+     */
+    private function calcularEstadisticasMasivas($encuestas)
+    {
+        $totales = [
+            'encuestas_count' => $encuestas->count(),
+            'preguntas_count' => 0,
+            'respuestas_count' => 0,
+            'respuestas_usuarios_count' => 0,
+            'bloques_envio_count' => 0,
+            'tokens_acceso_count' => 0,
+            'configuraciones_envio_count' => 0,
+            'correos_enviados_count' => 0,
+        ];
+
+        foreach ($encuestas as $encuesta) {
+            $totales['preguntas_count'] += $encuesta->preguntas->count();
+            $totales['respuestas_count'] += $encuesta->preguntas->sum(function($p) { return $p->respuestas->count(); });
+            $totales['respuestas_usuarios_count'] += $encuesta->respuestasUsuarios->count();
+            $totales['bloques_envio_count'] += $encuesta->bloquesEnvio->count();
+            $totales['tokens_acceso_count'] += $encuesta->tokensAcceso->count();
+            $totales['configuraciones_envio_count'] += $encuesta->configuracionesEnvio->count();
+            $totales['correos_enviados_count'] += $encuesta->correosEnviados->count();
+        }
+
+        return $totales;
+    }
+
+    /**
+     * Crear backup masivo de encuestas
+     */
+    private function crearBackupMasivo($encuestas)
+    {
+        try {
+            $backup = [
+                'encuestas' => $encuestas->toArray(),
+                'fecha_backup' => now()->toDateTimeString(),
+                'usuario_backup' => Auth::id(),
+                'accion' => 'eliminacion_masiva',
+                'total_encuestas' => $encuestas->count()
+            ];
+
+            Log::info('Backup masivo de encuestas antes de eliminar', [
+                'user_id' => Auth::id(),
+                'total_encuestas' => $encuestas->count(),
+                'encuesta_ids' => $encuestas->pluck('id')->toArray(),
+                'backup' => $backup
+            ]);
+
+        } catch (Exception $e) {
+            Log::warning('Error creando backup masivo', [
+                'user_id' => Auth::id(),
+                'error' => $e->getMessage()
+            ]);
         }
     }
 

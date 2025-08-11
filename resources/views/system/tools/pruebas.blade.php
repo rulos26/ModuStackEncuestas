@@ -147,6 +147,12 @@
                         <option value="generar_enlace_encuesta" {{ $tipo === 'generar_enlace_encuesta' ? 'selected' : '' }}>
                             🔗 Generar Enlace de Encuesta
                         </option>
+                        <option value="probar_eliminacion_encuesta" {{ $tipo === 'probar_eliminacion_encuesta' ? 'selected' : '' }}>
+                            🗑️ Probar Eliminación de Encuesta
+                        </option>
+                        <option value="probar_eliminacion_masiva_encuestas" {{ $tipo === 'probar_eliminacion_masiva_encuestas' ? 'selected' : '' }}>
+                            🗑️ Probar Eliminación Masiva de Encuestas
+                        </option>
                         <option value="solucionar_csrf_hosting" {{ $tipo === 'solucionar_csrf_hosting' ? 'selected' : '' }}>
                             Solucionar Error CSRF en Hosting
                         </option>
@@ -922,6 +928,26 @@ $(document).ready(function() {
                 $('#empresa_id_group').hide();
                 $('#tipo_destinatario_group').hide();
                 $('#cron_options_group').hide();
+            } else if (selectedValue === 'probar_eliminacion_encuesta') {
+                $('#encuesta_id').attr('placeholder', 'ID de la encuesta (opcional) - Lista todas si no se especifica');
+                $('#encuesta_id').prop('required', false);
+                $('#email_group').hide();
+                $('#cantidad_group').hide();
+                $('#horas_group').hide();
+                $('#configuracion_id_group').hide();
+                $('#empresa_id_group').hide();
+                $('#tipo_destinatario_group').hide();
+                $('#cron_options_group').show();
+            } else if (selectedValue === 'probar_eliminacion_masiva_encuestas') {
+                $('#encuesta_id').attr('placeholder', 'IDs de encuestas separados por coma (opcional) - Ej: 1,2,3');
+                $('#encuesta_id').prop('required', false);
+                $('#email_group').hide();
+                $('#cantidad_group').hide();
+                $('#horas_group').hide();
+                $('#configuracion_id_group').hide();
+                $('#empresa_id_group').hide();
+                $('#tipo_destinatario_group').hide();
+                $('#cron_options_group').show();
             } else if (selectedValue === 'fix_session_419') {
                 $('#encuesta_id').attr('placeholder', 'No requiere ID - Soluciona error 419 de sesiones');
                 $('#email_group').hide();
