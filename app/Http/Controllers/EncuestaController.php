@@ -405,14 +405,16 @@ class EncuestaController extends Controller
     /**
      * Mostrar vista de eliminación masiva
      */
-    public function eliminacionMasiva()
+        public function eliminacionMasiva()
     {
         try {
             Log::info('🔍 Accediendo a eliminación masiva', [
                 'user_id' => Auth::id(),
                 'user_name' => Auth::user()->name ?? 'N/A',
                 'user_roles' => Auth::user()->roles->pluck('name') ?? [],
-                'user_permissions' => Auth::user()->permissions->pluck('name') ?? []
+                'user_permissions' => Auth::user()->permissions->pluck('name') ?? [],
+                'request_url' => request()->fullUrl(),
+                'request_method' => request()->method()
             ]);
 
                         // Verificar permisos
@@ -436,7 +438,8 @@ class EncuestaController extends Controller
             Log::info('✅ Eliminación masiva cargada exitosamente', [
                 'user_id' => Auth::id(),
                 'encuestas_count' => $encuestas->count(),
-                'is_admin' => $this->isAdmin()
+                'is_admin' => $this->isAdmin(),
+                'view_path' => 'encuestas.eliminacion-masiva'
             ]);
 
             return view('encuestas.eliminacion-masiva', compact('encuestas'));

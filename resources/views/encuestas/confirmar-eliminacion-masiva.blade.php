@@ -163,9 +163,9 @@
                     <div class="row mt-4">
                         <div class="col-12">
                             <div class="d-flex justify-content-between">
-                                <a href="{{ route('encuestas.eliminacion-masiva') }}" class="btn btn-secondary">
-                                    <i class="fas fa-arrow-left"></i> Volver
-                                </a>
+                                                        <a href="{{ route('encuestas.eliminacion-masiva') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Volver
+                        </a>
 
                                 <div>
                                     <button type="button" id="btn-eliminar" class="btn btn-danger" disabled>
@@ -215,7 +215,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                <form action="{{ route('encuestas.ejecutar-eliminacion-masiva') }}" method="POST" style="display: inline;">
+                                        <form action="{{ route('encuestas.ejecutar-eliminacion-masiva') }}" method="POST" style="display: inline;">
                     @csrf
                     @foreach($encuestas as $encuesta)
                         <input type="hidden" name="encuesta_ids[]" value="{{ $encuesta->id }}">
