@@ -29,6 +29,11 @@ class ProbarEliminacionEncuesta extends Command
      */
     public function handle()
     {
+        // Verificar si STDIN está disponible (para entornos web)
+        if (!defined('STDIN')) {
+            define('STDIN', fopen('php://stdin', 'r'));
+        }
+
         $encuestaId = $this->argument('encuesta_id');
         $dryRun = $this->option('dry-run');
 
@@ -36,22 +41,14 @@ class ProbarEliminacionEncuesta extends Command
         $this->line('');
 
         try {
-            // Si no se especifica ID, mostrar lista de encuestas disponibles
             if (!$encuestaId) {
                 $this->mostrarEncuestasDisponibles();
                 return;
             }
 
-            // Buscar la encuesta
             $encuesta = Encuesta::with([
-                'preguntas.respuestas',
-                'empresa',
-                'user',
-                'bloquesEnvio',
-                'tokensAcceso',
-                'configuracionesEnvio',
-                'correosEnviados',
-                'respuestasUsuarios'
+                'preguntas.respuestas', 'empresa', 'user', 'bloquesEnvio', 'tokensAcceso',
+                'configuracionesEnvio', 'correosEnviados', 'respuestasUsuarios'
             ])->find($encuestaId);
 
             if (!$encuesta) {
@@ -62,13 +59,8 @@ class ProbarEliminacionEncuesta extends Command
             $this->info("✅ Encuesta encontrada: {$encuesta->titulo}");
             $this->line('');
 
-            // Mostrar información de la encuesta
             $this->mostrarInformacionEncuesta($encuesta);
-
-            // Mostrar estadísticas
             $this->mostrarEstadisticas($encuesta);
-
-            // Mostrar relaciones que se eliminarán
             $this->mostrarRelaciones($encuesta);
 
             if ($dryRun) {
@@ -77,30 +69,28 @@ class ProbarEliminacionEncuesta extends Command
                 return 0;
             }
 
-            // Confirmar eliminación
-            if (!$this->confirm('¿Estás seguro de que quieres eliminar esta encuesta?')) {
-                $this->info('❌ Eliminación cancelada por el usuario.');
-                return 0;
+            // En entorno web, saltar la confirmación interactiva
+            if (!defined('STDIN') || !STDIN) {
+                $this->warn('⚠️  Ejecutando en entorno web - saltando confirmación interactiva');
+                $this->info('🗑️  Eliminando encuesta...');
+            } else {
+                if (!$this->confirm('¿Estás seguro de que quieres eliminar esta encuesta?')) {
+                    $this->info('❌ Eliminación cancelada por el usuario.');
+                    return 0;
+                }
             }
 
-            // Crear backup antes de eliminar
             $this->crearBackup($encuesta);
-
-            // Eliminar la encuesta
             $this->info('🗑️ Eliminando encuesta...');
             $encuesta->delete();
-
             $this->info('✅ Encuesta eliminada exitosamente');
             $this->info('📊 Backup guardado en logs');
-
             return 0;
 
         } catch (Exception $e) {
             $this->error("❌ Error: {$e->getMessage()}");
             Log::error('Error en comando probar eliminación', [
-                'encuesta_id' => $encuestaId,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'encuesta_id' => $encuestaId, 'error' => $e->getMessage(), 'trace' => $e->getTraceAsString()
             ]);
             return 1;
         }

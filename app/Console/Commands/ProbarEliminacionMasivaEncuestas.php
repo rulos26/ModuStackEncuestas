@@ -29,6 +29,11 @@ class ProbarEliminacionMasivaEncuestas extends Command
      */
     public function handle()
     {
+        // Verificar si STDIN está disponible (para entornos web)
+        if (!defined('STDIN')) {
+            define('STDIN', fopen('php://stdin', 'r'));
+        }
+
         $encuestaIds = $this->option('encuesta_ids');
         $estado = $this->option('estado');
         $dryRun = $this->option('dry-run');
@@ -38,35 +43,23 @@ class ProbarEliminacionMasivaEncuestas extends Command
         $this->line('');
 
         try {
-            // Construir query
             $query = Encuesta::with([
-                'preguntas.respuestas',
-                'empresa',
-                'user',
-                'bloquesEnvio',
-                'tokensAcceso',
-                'configuracionesEnvio',
-                'correosEnviados',
-                'respuestasUsuarios'
+                'preguntas.respuestas', 'empresa', 'user', 'bloquesEnvio', 'tokensAcceso',
+                'configuracionesEnvio', 'correosEnviados', 'respuestasUsuarios'
             ]);
 
-            // Filtrar por IDs específicos
             if ($encuestaIds) {
                 $ids = array_map('trim', explode(',', $encuestaIds));
                 $query->whereIn('id', $ids);
                 $this->info("📋 Filtrando por IDs: " . implode(', ', $ids));
             }
 
-            // Filtrar por estado
             if ($estado) {
                 $query->where('estado', $estado);
                 $this->info("📊 Filtrando por estado: {$estado}");
             }
 
-            // Aplicar límite
             $query->limit($limit);
-
-            // Obtener encuestas
             $encuestas = $query->orderBy('created_at', 'desc')->get();
 
             if ($encuestas->isEmpty()) {
@@ -77,14 +70,9 @@ class ProbarEliminacionMasivaEncuestas extends Command
             $this->info("✅ Se encontraron {$encuestas->count()} encuestas para procesar");
             $this->line('');
 
-            // Mostrar información de las encuestas
             $this->mostrarInformacionEncuestas($encuestas);
-
-            // Calcular y mostrar estadísticas
             $estadisticas = $this->calcularEstadisticasMasivas($encuestas);
             $this->mostrarEstadisticas($estadisticas);
-
-            // Mostrar relaciones que se eliminarán
             $this->mostrarRelacionesMasivas($encuestas);
 
             if ($dryRun) {
@@ -93,20 +81,22 @@ class ProbarEliminacionMasivaEncuestas extends Command
                 return 0;
             }
 
-            // Confirmar eliminación
-            if (!$this->confirm("¿Estás seguro de que quieres eliminar {$encuestas->count()} encuestas?")) {
-                $this->info('❌ Eliminación cancelada por el usuario.');
-                return 0;
+            // En entorno web, saltar la confirmación interactiva
+            if (!defined('STDIN') || !STDIN) {
+                $this->warn('⚠️  Ejecutando en entorno web - saltando confirmación interactiva');
+                $this->info('🗑️  Eliminando encuestas...');
+            } else {
+                if (!$this->confirm("¿Estás seguro de que quieres eliminar {$encuestas->count()} encuestas?")) {
+                    $this->info('❌ Eliminación cancelada por el usuario.');
+                    return 0;
+                }
             }
 
-            // Crear backup antes de eliminar
             $this->crearBackupMasivo($encuestas);
-
-            // Eliminar encuestas
             $this->info('🗑️ Eliminando encuestas...');
+
             $eliminadas = 0;
             $errores = [];
-
             $progressBar = $this->output->createProgressBar($encuestas->count());
             $progressBar->start();
 
@@ -114,20 +104,15 @@ class ProbarEliminacionMasivaEncuestas extends Command
                 try {
                     $encuesta->delete();
                     $eliminadas++;
-
                     Log::info('Encuesta eliminada en proceso masivo (comando)', [
-                        'encuesta_id' => $encuesta->id,
-                        'titulo' => $encuesta->titulo
+                        'encuesta_id' => $encuesta->id, 'titulo' => $encuesta->titulo
                     ]);
                 } catch (Exception $e) {
                     $errores[] = "Error eliminando encuesta ID {$encuesta->id}: " . $e->getMessage();
-
                     Log::error('Error eliminando encuesta en proceso masivo (comando)', [
-                        'encuesta_id' => $encuesta->id,
-                        'error' => $e->getMessage()
+                        'encuesta_id' => $encuesta->id, 'error' => $e->getMessage()
                     ]);
                 }
-
                 $progressBar->advance();
             }
 
@@ -144,14 +129,12 @@ class ProbarEliminacionMasivaEncuestas extends Command
             }
 
             $this->info('📊 Backup guardado en logs');
-
             return 0;
 
         } catch (Exception $e) {
             $this->error("❌ Error: {$e->getMessage()}");
             Log::error('Error en comando probar eliminación masiva', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'error' => $e->getMessage(), 'trace' => $e->getTraceAsString()
             ]);
             return 1;
         }

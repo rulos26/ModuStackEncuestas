@@ -408,8 +408,19 @@ class EncuestaController extends Controller
     public function eliminacionMasiva()
     {
         try {
-            // Verificar permisos
+            Log::info('🔍 Accediendo a eliminación masiva', [
+                'user_id' => Auth::id(),
+                'user_name' => Auth::user()->name ?? 'N/A',
+                'user_roles' => Auth::user()->roles->pluck('name') ?? [],
+                'user_permissions' => Auth::user()->permissions->pluck('name') ?? []
+            ]);
+
+                        // Verificar permisos
             if (!$this->checkUserAccess(['encuestas.destroy'])) {
+                Log::warning('❌ Acceso denegado a eliminación masiva', [
+                    'user_id' => Auth::id(),
+                    'required_permissions' => ['encuestas.destroy']
+                ]);
                 $this->logAccessDenied('encuestas.eliminacion-masiva', ['Superadmin', 'Admin'], ['encuestas.destroy']);
                 return $this->redirectIfNoAccess('No tienes permisos para eliminar encuestas.');
             }
@@ -421,6 +432,12 @@ class EncuestaController extends Controller
                 })
                 ->orderBy('created_at', 'desc')
                 ->get();
+
+            Log::info('✅ Eliminación masiva cargada exitosamente', [
+                'user_id' => Auth::id(),
+                'encuestas_count' => $encuestas->count(),
+                'is_admin' => $this->isAdmin()
+            ]);
 
             return view('encuestas.eliminacion-masiva', compact('encuestas'));
         } catch (Exception $e) {
