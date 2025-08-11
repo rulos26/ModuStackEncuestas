@@ -197,7 +197,7 @@
                                 <label for="encuesta_id">ID de Encuesta:</label>
                                 <input type="number" class="form-control" id="encuesta_id" name="encuesta_id"
                                        placeholder="ID de encuesta (ej: 1, 2, 3...)" value="{{ request('encuesta_id') }}">
-                                <small class="form-text text-muted">
+                                <small class="form-text text-muted" id="encuesta_id_help">
                                     ID de la encuesta para pruebas específicas.
                                 </small>
                             </div>
@@ -931,6 +931,7 @@ $(document).ready(function() {
             } else if (selectedValue === 'probar_eliminacion_encuesta') {
                 $('#encuesta_id').attr('placeholder', 'ID de la encuesta (opcional) - Lista todas si no se especifica');
                 $('#encuesta_id').prop('required', false);
+                $('#encuesta_id_help').text('ID de la encuesta para pruebas específicas.');
                 $('#email_group').hide();
                 $('#cantidad_group').hide();
                 $('#horas_group').hide();
@@ -939,13 +940,24 @@ $(document).ready(function() {
                 $('#tipo_destinatario_group').hide();
                 $('#cron_options_group').show();
             } else if (selectedValue === 'probar_eliminacion_masiva_encuestas') {
-                $('#encuesta_id').attr('placeholder', 'IDs de encuestas separados por coma (opcional) - Ej: 1,2,3');
+                $('#encuesta_id').attr('placeholder', 'IDs específicos (opcional) - Ej: 1,2,3 | Dejar vacío para todas');
                 $('#encuesta_id').prop('required', false);
+                $('#encuesta_id_help').text('IDs de encuestas específicas separados por coma. Dejar vacío para procesar todas las encuestas disponibles.');
                 $('#email_group').hide();
-                $('#cantidad_group').hide();
+                $('#cantidad_group').show();
+                $('#cantidad_group label').text('Límite de encuestas:');
+                $('#cantidad_group input').attr('placeholder', '10 (máximo)');
                 $('#horas_group').hide();
                 $('#configuracion_id_group').hide();
-                $('#empresa_id_group').hide();
+                $('#empresa_id_group').show();
+                $('#empresa_id_group label').text('Estado de encuestas:');
+                $('#empresa_id_group select').html(`
+                    <option value="">Todos los estados</option>
+                    <option value="borrador">Solo borradores</option>
+                    <option value="publicada">Solo publicadas</option>
+                    <option value="en_progreso">Solo en progreso</option>
+                    <option value="completada">Solo completadas</option>
+                `);
                 $('#tipo_destinatario_group').hide();
                 $('#cron_options_group').show();
             } else if (selectedValue === 'fix_session_419') {
@@ -977,6 +989,7 @@ $(document).ready(function() {
                 $('#horas_group').hide();
             } else {
                 $('#encuesta_id').attr('placeholder', 'ID de la encuesta para pruebas');
+                $('#encuesta_id_help').text('ID de la encuesta para pruebas específicas.');
             }
                     } else {
                 $('#encuesta_id').prop('required', false);

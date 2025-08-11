@@ -567,8 +567,8 @@ class SystemToolsController extends Controller
                         break;
                     case 'probar_eliminacion_masiva_encuestas':
                         $encuestaIds = $request->get('encuesta_id');
-                        $estado = $request->get('estado');
-                        $limit = $request->get('limit', 10);
+                        $estado = $request->get('empresa_id'); // Campo reutilizado para estado
+                        $limit = $request->get('cantidad', 10);
                         $dryRun = $request->get('dry_run', false);
                         $params = [];
                         if ($encuestaIds) $params['--encuesta_ids'] = $encuestaIds;
