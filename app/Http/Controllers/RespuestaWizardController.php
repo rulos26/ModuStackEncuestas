@@ -25,87 +25,11 @@ class RespuestaWizardController extends Controller
     public function index()
     {
         try {
-            // Obtener encuestas que tienen preguntas sin respuestas configuradas
-            $todasEncuestas = Encuesta::with(['empresa', 'preguntas.respuestas'])
+            // Obtener todas las encuestas sin filtro
+            $encuestas = Encuesta::with(['empresa', 'preguntas.respuestas'])
                 ->where('estado', '!=', 'borrador')
                 ->orderBy('created_at', 'desc')
                 ->get();
-
-            $encuestas = $todasEncuestas->filter(function ($encuesta) {
-                // Filtrar encuestas que tienen preguntas sin respuestas
-                $preguntasSinRespuestas = $encuesta->preguntas->filter(function ($pregunta) {
-                    $tieneRespuestas = $pregunta->respuestas->count() > 0;
-                    $esTipoConfigurable = in_array($pregunta->tipo, ['seleccion_unica', 'casillas_verificacion', 'seleccion_multiple']);
-
-                    // Log detallado para debugging
-                    if ($esTipoConfigurable) {
-                        Log::info('Pregunta analizada', [
-                            'pregunta_id' => $pregunta->id,
-                            'pregunta_texto' => $pregunta->texto,
-                            'pregunta_tipo' => $pregunta->tipo,
-                            'tiene_respuestas' => $tieneRespuestas,
-                            'respuestas_count' => $pregunta->respuestas->count(),
-                            'encuesta_id' => $pregunta->encuesta_id
-                        ]);
-                    }
-
-                    return !$tieneRespuestas && $esTipoConfigurable;
-                });
-
-                // Log para debugging
-                if ($preguntasSinRespuestas->count() > 0) {
-                    Log::info('Encuesta con preguntas sin respuestas encontrada', [
-                        'encuesta_id' => $encuesta->id,
-                        'encuesta_titulo' => $encuesta->titulo,
-                        'preguntas_sin_respuestas' => $preguntasSinRespuestas->count(),
-                        'tipos_preguntas' => $preguntasSinRespuestas->pluck('tipo')->toArray()
-                    ]);
-                }
-
-                return $preguntasSinRespuestas->count() > 0;
-            });
-
-            // Log para debugging
-            Log::info('Wizard de respuestas - encuestas encontradas', [
-                'total_encuestas' => $encuestas->count(),
-                'encuestas_ids' => $encuestas->pluck('id')->toArray()
-            ]);
-
-            // Debug adicional: verificar todas las encuestas
-            foreach ($todasEncuestas as $encuesta) {
-                $preguntasConfigurables = $encuesta->preguntas->filter(function ($pregunta) {
-                    return in_array($pregunta->tipo, ['seleccion_unica', 'casillas_verificacion', 'seleccion_multiple']);
-                });
-
-                if ($preguntasConfigurables->count() > 0) {
-                    Log::info('Encuesta con preguntas configurables', [
-                        'encuesta_id' => $encuesta->id,
-                        'encuesta_titulo' => $encuesta->titulo,
-                        'total_preguntas_configurables' => $preguntasConfigurables->count(),
-                        'preguntas_detalle' => $preguntasConfigurables->map(function ($pregunta) {
-                            return [
-                                'id' => $pregunta->id,
-                                'tipo' => $pregunta->tipo,
-                                'texto' => $pregunta->texto,
-                                'tiene_respuestas' => $pregunta->respuestas->count(),
-                                'respuestas_count' => $pregunta->respuestas->count()
-                            ];
-                        })->toArray()
-                    ]);
-                }
-            }
-
-            // Verificar si realmente no hay encuestas con preguntas sin respuestas
-            if ($encuestas->count() === 0) {
-                Log::warning('No se encontraron encuestas con preguntas sin respuestas', [
-                    'total_encuestas_revisadas' => $todasEncuestas->count(),
-                    'encuestas_con_preguntas_configurables' => $todasEncuestas->filter(function ($encuesta) {
-                        return $encuesta->preguntas->some(function ($pregunta) {
-                            return in_array($pregunta->tipo, ['seleccion_unica', 'casillas_verificacion', 'seleccion_multiple']);
-                        });
-                    })->count()
-                ]);
-            }
 
             // Inicializar contador de sesión si no existe
             if (!Session::has('wizard_respuestas_count')) {
