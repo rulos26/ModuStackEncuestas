@@ -22,7 +22,7 @@
                         <h5><i class="fas fa-lightbulb"></i> ¿Qué hace este wizard?</h5>
                         <p class="mb-0">
                             Este wizard te permite <strong>configurar las respuestas concretas</strong> para las preguntas de tipo
-                            "Selección Única" y "Casillas de Verificación" que ya han sido creadas en las encuestas.
+                            "Selección Única", "Casillas de Verificación" y "Selección Múltiple" que ya han sido creadas en las encuestas.
                         </p>
                     </div>
 
@@ -91,10 +91,10 @@
                                                     <small class="text-muted">Sin Respuestas:</small>
                                                     <p class="mb-1">
                                                         <span class="badge badge-danger">
-                                                            {{ $encuesta->preguntas->filter(function($p) {
-                                                                return $p->respuestas->isEmpty() &&
-                                                                       in_array($p->tipo, ['seleccion_unica', 'casillas_verificacion']);
-                                                            })->count() }}
+                                                                                                                         {{ $encuesta->preguntas->filter(function($p) {
+                                                                 return $p->respuestas->isEmpty() &&
+                                                                        in_array($p->tipo, ['seleccion_unica', 'casillas_verificacion', 'seleccion_multiple']);
+                                                             })->count() }}
                                                         </span>
                                                     </p>
                                                 </div>

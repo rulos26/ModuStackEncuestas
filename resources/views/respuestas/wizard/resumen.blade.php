@@ -134,9 +134,15 @@
                                             @endif
                                         </td>
                                         <td>
-                                            <span class="badge badge-{{ $pregunta->tipo === 'seleccion_unica' ? 'primary' : 'success' }}">
-                                                <i class="fas fa-{{ $pregunta->tipo === 'seleccion_unica' ? 'dot-circle' : 'check-square' }}"></i>
-                                                {{ $pregunta->tipo === 'seleccion_unica' ? 'Selección Única' : 'Casillas' }}
+                                            <span class="badge badge-{{ $pregunta->tipo === 'seleccion_unica' ? 'primary' : ($pregunta->tipo === 'casillas_verificacion' ? 'success' : 'info') }}">
+                                                <i class="fas fa-{{ $pregunta->tipo === 'seleccion_unica' ? 'dot-circle' : ($pregunta->tipo === 'casillas_verificacion' ? 'check-square' : 'list-check') }}"></i>
+                                                @if($pregunta->tipo === 'seleccion_unica')
+                                                    Selección Única
+                                                @elseif($pregunta->tipo === 'casillas_verificacion')
+                                                    Casillas
+                                                @elseif($pregunta->tipo === 'seleccion_multiple')
+                                                    Selección Múltiple
+                                                @endif
                                             </span>
                                         </td>
                                         <td>

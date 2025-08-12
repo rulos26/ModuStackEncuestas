@@ -2,7 +2,7 @@
 
 ## 📋 Descripción General
 
-El **Wizard de Configuración de Respuestas** es un módulo administrativo diseñado para que los administradores del sistema configuren las **respuestas concretas** que estarán disponibles para las preguntas de tipo "Selección Única" y "Casillas de Verificación" en las encuestas.
+El **Wizard de Configuración de Respuestas** es un módulo administrativo diseñado para que los administradores del sistema configuren las **respuestas concretas** que estarán disponibles para las preguntas de tipo "Selección Única", "Casillas de Verificación" y "Selección Múltiple" en las encuestas.
 
 ### 🎯 Propósito Principal
 
@@ -14,7 +14,7 @@ El **Wizard de Configuración de Respuestas** es un módulo administrativo dise�
 
 ### 1. **Selección de Encuesta**
 - Lista encuestas que tienen preguntas sin respuestas configuradas
-- Filtra automáticamente preguntas de tipo "Selección Única" y "Casillas de Verificación"
+- Filtra automáticamente preguntas de tipo "Selección Única", "Casillas de Verificación" y "Selección Múltiple"
 - Muestra estadísticas de preguntas pendientes
 
 ### 2. **Configuración de Respuestas**
@@ -106,6 +106,7 @@ Route::middleware(['auth', 'respuesta.wizard.session'])->group(function () {
 
 - **Selección Única**: Los usuarios pueden elegir una sola opción
 - **Casillas de Verificación**: Los usuarios pueden elegir múltiples opciones
+- **Selección Múltiple**: Los usuarios pueden elegir múltiples opciones
 
 ### **Tipos NO Soportados**
 

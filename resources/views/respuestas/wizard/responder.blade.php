@@ -113,9 +113,15 @@
                                 @endif
                             </div>
                             <div class="col-md-4 text-right">
-                                <span class="badge badge-{{ $preguntaActual->tipo === 'seleccion_unica' ? 'primary' : 'success' }}">
-                                    <i class="fas fa-{{ $preguntaActual->tipo === 'seleccion_unica' ? 'dot-circle' : 'check-square' }}"></i>
-                                    {{ $preguntaActual->tipo === 'seleccion_unica' ? 'Selección Única' : 'Casillas de Verificación' }}
+                                <span class="badge badge-{{ $preguntaActual->tipo === 'seleccion_unica' ? 'primary' : ($preguntaActual->tipo === 'casillas_verificacion' ? 'success' : 'info') }}">
+                                    <i class="fas fa-{{ $preguntaActual->tipo === 'seleccion_unica' ? 'dot-circle' : ($preguntaActual->tipo === 'casillas_verificacion' ? 'check-square' : 'list-check') }}"></i>
+                                    @if($preguntaActual->tipo === 'seleccion_unica')
+                                        Selección Única
+                                    @elseif($preguntaActual->tipo === 'casillas_verificacion')
+                                        Casillas de Verificación
+                                    @elseif($preguntaActual->tipo === 'seleccion_multiple')
+                                        Selección Múltiple
+                                    @endif
                                 </span>
                             </div>
                         </div>
@@ -136,7 +142,9 @@
                                 <strong>Importante:</strong> Agrega las opciones de respuesta que estarán disponibles para los usuarios.
                                 @if($preguntaActual->tipo === 'seleccion_unica')
                                     Los usuarios podrán seleccionar <strong>una sola opción</strong>.
-                                @else
+                                @elseif($preguntaActual->tipo === 'casillas_verificacion')
+                                    Los usuarios podrán seleccionar <strong>múltiples opciones</strong>.
+                                @elseif($preguntaActual->tipo === 'seleccion_multiple')
                                     Los usuarios podrán seleccionar <strong>múltiples opciones</strong>.
                                 @endif
                             </div>

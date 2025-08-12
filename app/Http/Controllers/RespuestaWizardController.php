@@ -31,10 +31,10 @@ class RespuestaWizardController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->get()
                 ->filter(function ($encuesta) {
-                    // Filtrar encuestas que tienen preguntas sin respuestas
+                                        // Filtrar encuestas que tienen preguntas sin respuestas
                     return $encuesta->preguntas->some(function ($pregunta) {
                         return $pregunta->respuestas->isEmpty() &&
-                               in_array($pregunta->tipo, ['seleccion_unica', 'casillas_verificacion']);
+                                in_array($pregunta->tipo, ['seleccion_unica', 'casillas_verificacion', 'seleccion_multiple']);
                     });
                 });
 
@@ -74,9 +74,9 @@ class RespuestaWizardController extends Controller
                 Session::put('wizard_encuesta_id', $encuestaId);
             }
 
-            // Obtener preguntas que necesitan respuestas (solo selección única y casillas)
+            // Obtener preguntas que necesitan respuestas (selección única, casillas y selección múltiple)
             $preguntas = $encuesta->preguntas()
-                ->whereIn('tipo', ['seleccion_unica', 'casillas_verificacion'])
+                ->whereIn('tipo', ['seleccion_unica', 'casillas_verificacion', 'seleccion_multiple'])
                 ->whereDoesntHave('respuestas')
                 ->orderBy('orden')
                 ->get();
@@ -138,7 +138,7 @@ class RespuestaWizardController extends Controller
 
             // Obtener preguntas que necesitan respuestas
             $preguntas = $encuesta->preguntas()
-                ->whereIn('tipo', ['seleccion_unica', 'casillas_verificacion'])
+                ->whereIn('tipo', ['seleccion_unica', 'casillas_verificacion', 'seleccion_multiple'])
                 ->whereDoesntHave('respuestas')
                 ->orderBy('orden')
                 ->get();
@@ -216,7 +216,7 @@ class RespuestaWizardController extends Controller
 
             // Obtener preguntas con sus respuestas recién agregadas
             $preguntasConRespuestas = $encuesta->preguntas()
-                ->whereIn('tipo', ['seleccion_unica', 'casillas_verificacion'])
+                ->whereIn('tipo', ['seleccion_unica', 'casillas_verificacion', 'seleccion_multiple'])
                 ->with('respuestas')
                 ->orderBy('orden')
                 ->get();
@@ -334,6 +334,14 @@ class RespuestaWizardController extends Controller
                 break;
 
             case 'casillas_verificacion':
+                $rules['respuestas'] = 'required|array|min:1';
+                $rules['respuestas.*.texto'] = 'required|string|max:255';
+                $rules['respuestas.*.orden'] = 'required|integer|min:1';
+                $messages['respuestas.required'] = 'Debes agregar al menos una opción de respuesta.';
+                $messages['respuestas.*.texto.required'] = 'El texto de la respuesta es obligatorio.';
+                break;
+
+            case 'seleccion_multiple':
                 $rules['respuestas'] = 'required|array|min:1';
                 $rules['respuestas.*.texto'] = 'required|string|max:255';
                 $rules['respuestas.*.orden'] = 'required|integer|min:1';
