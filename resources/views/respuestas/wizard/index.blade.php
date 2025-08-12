@@ -81,11 +81,11 @@
                                                         });
                                                     @endphp
                                                     <option value="{{ $encuesta->id }}"
-                                                            data-preguntas="{{ $preguntasSinRespuestas->count() }}"
+                                                            data-preguntas="{{ $encuesta->preguntas_sin_respuestas }}"
                                                             data-empresa="{{ $encuesta->empresa->nombre ?? 'Sin empresa' }}"
                                                             data-estado="{{ $encuesta->estado }}">
                                                         {{ $encuesta->titulo }}
-                                                        ({{ $preguntasSinRespuestas->count() }} preguntas sin configurar)
+                                                        ({{ $encuesta->preguntas_sin_respuestas }} preguntas sin configurar)
                                                     </option>
                                                 @endforeach
                                             </select>

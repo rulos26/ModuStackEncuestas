@@ -27,10 +27,18 @@ class RespuestaWizardController extends Controller
         try {
             // Obtener todas las encuestas sin filtro
             $encuestas = Encuesta::with(['empresa', 'preguntas.respuestas'])
-
                 ->orderBy('created_at', 'desc')
                 ->get();
-//dd($encuestas);
+
+            // Calcular preguntas sin respuestas para cada encuesta
+            foreach ($encuestas as $encuesta) {
+                $preguntasSinRespuestas = $encuesta->preguntas()
+                    ->whereIn('tipo', ['seleccion_unica', 'casillas_verificacion', 'seleccion_multiple'])
+                    ->whereDoesntHave('respuestas')
+                    ->count();
+                $encuesta->preguntas_sin_respuestas = $preguntasSinRespuestas;
+            }
+
             // Inicializar contador de sesión si no existe
             if (!Session::has('wizard_respuestas_count')) {
                 Session::put('wizard_respuestas_count', 0);

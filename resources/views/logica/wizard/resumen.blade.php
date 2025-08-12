@@ -52,7 +52,7 @@
                     </h5>
                 </div>
                 <div class="card-body">
-                    @if($resumenLogica->count() > 0)
+                    @if(count($resumenLogica) > 0)
                         <div class="table-responsive">
                             <table class="table table-bordered table-hover">
                                 <thead class="thead-light">
@@ -195,7 +195,7 @@
             </div>
 
             <!-- Diagrama de Flujo -->
-            @if($resumenLogica->count() > 0)
+            @if(count($resumenLogica) > 0)
                 <div class="card mt-3">
                     <div class="card-header">
                         <h5 class="card-title mb-0">
