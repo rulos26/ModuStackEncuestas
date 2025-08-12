@@ -265,6 +265,13 @@ Route::middleware(['auth'])->prefix('encuestas')->name('encuestas.')->group(func
     Route::delete('{encuesta}/preguntas/{pregunta}', [PreguntaController::class, 'destroy'])->name('preguntas.destroy');
     Route::delete('{encuesta}/preguntas', [PreguntaController::class, 'destroyAll'])->name('preguntas.destroyAll');
 
+    // Wizard de preguntas
+    Route::get('preguntas/wizard', [App\Http\Controllers\PreguntaWizardController::class, 'index'])->name('preguntas.wizard.index');
+    Route::get('preguntas/wizard/create', [App\Http\Controllers\PreguntaWizardController::class, 'create'])->name('preguntas.wizard.create');
+    Route::post('preguntas/wizard/store', [App\Http\Controllers\PreguntaWizardController::class, 'store'])->name('preguntas.wizard.store');
+    Route::post('preguntas/wizard/confirm', [App\Http\Controllers\PreguntaWizardController::class, 'confirm'])->name('preguntas.wizard.confirm');
+    Route::get('preguntas/wizard/cancel', [App\Http\Controllers\PreguntaWizardController::class, 'cancel'])->name('preguntas.wizard.cancel');
+
     // Gestión de respuestas
     Route::get('{encuesta}/respuestas', [EncuestaRespuestaController::class, 'create'])
         ->name('respuestas.create')
