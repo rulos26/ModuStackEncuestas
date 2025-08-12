@@ -176,6 +176,12 @@
                                         <i class="fas fa-list"></i> <span id="numRespuestas">1</span> opción(es)
                                     </span>
                                 </div>
+                                <!-- Botón de prueba para debugging -->
+                                <div class="mt-2">
+                                    <button type="button" class="btn btn-warning btn-sm" id="btnTest">
+                                        <i class="fas fa-bug"></i> Test JavaScript
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -202,31 +208,61 @@
 
 @section('scripts')
 <script>
+// Verificar que jQuery esté disponible
+if (typeof jQuery === 'undefined') {
+    console.error('jQuery no está cargado!');
+    alert('Error: jQuery no está disponible. El wizard no funcionará correctamente.');
+} else {
+    console.log('jQuery está disponible, versión:', jQuery.fn.jquery);
+}
+
 $(document).ready(function() {
+    console.log('Document ready - Inicializando wizard de respuestas');
+
     let respuestaIndex = 1;
 
-    // Agregar nueva respuesta
-    $('#btnAgregarRespuesta').click(function() {
-        console.log('Agregando nueva respuesta, índice:', respuestaIndex);
+    // Verificar que el botón existe
+    const btnAgregar = $('#btnAgregarRespuesta');
+    if (btnAgregar.length === 0) {
+        console.error('Botón #btnAgregarRespuesta no encontrado!');
+        return;
+    }
 
-        const newRespuesta = `
-            <div class="row mb-2 respuesta-item">
-                <div class="col-md-8">
-                    <input type="text" name="respuestas[${respuestaIndex}][texto]" class="form-control"
-                           placeholder="Escribe la opción de respuesta..." required>
-                </div>
-                <div class="col-md-2">
-                    <input type="number" name="respuestas[${respuestaIndex}][orden]" class="form-control"
-                           placeholder="Orden" value="${respuestaIndex + 1}" min="1" required>
-                </div>
-                <div class="col-md-2">
-                    <button type="button" class="btn btn-danger btn-block btn-remove-respuesta">
-                        <i class="fas fa-trash"></i> Eliminar
-                    </button>
-                </div>
-            </div>
-        `;
+    console.log('Botón encontrado:', btnAgregar.length, 'elementos');
 
+    // Verificar que el contenedor existe
+    const container = $('#respuestasContainer');
+    if (container.length === 0) {
+        console.error('Contenedor #respuestasContainer no encontrado!');
+        return;
+    }
+
+    console.log('Contenedor encontrado:', container.length, 'elementos');
+
+    // Agregar nueva respuesta - Versión simplificada
+    $('#btnAgregarRespuesta').on('click', function(e) {
+        e.preventDefault();
+        console.log('Click en botón agregar respuesta');
+        console.log('Índice actual:', respuestaIndex);
+
+        // Crear el HTML de la nueva respuesta
+        var newRespuesta = '<div class="row mb-2 respuesta-item">';
+        newRespuesta += '<div class="col-md-8">';
+        newRespuesta += '<input type="text" name="respuestas[' + respuestaIndex + '][texto]" class="form-control" placeholder="Escribe la opción de respuesta..." required>';
+        newRespuesta += '</div>';
+        newRespuesta += '<div class="col-md-2">';
+        newRespuesta += '<input type="number" name="respuestas[' + respuestaIndex + '][orden]" class="form-control" placeholder="Orden" value="' + (respuestaIndex + 1) + '" min="1" required>';
+        newRespuesta += '</div>';
+        newRespuesta += '<div class="col-md-2">';
+        newRespuesta += '<button type="button" class="btn btn-danger btn-block btn-remove-respuesta">';
+        newRespuesta += '<i class="fas fa-trash"></i> Eliminar';
+        newRespuesta += '</button>';
+        newRespuesta += '</div>';
+        newRespuesta += '</div>';
+
+        console.log('HTML a agregar:', newRespuesta);
+
+        // Agregar al contenedor
         $('#respuestasContainer').append(newRespuesta);
         respuestaIndex++;
 
@@ -235,26 +271,25 @@ $(document).ready(function() {
             $('.btn-remove-respuesta:first').prop('disabled', false);
         }
 
-        console.log('Total de respuestas:', $('.respuesta-item').length);
+        console.log('Total de respuestas después de agregar:', $('.respuesta-item').length);
 
         // Actualizar contador
         $('#numRespuestas').text($('.respuesta-item').length);
 
-        // Mostrar mensaje de confirmación
-        const toast = $(`
-            <div class="alert alert-success alert-dismissible fade show" role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
-                <i class="fas fa-check-circle"></i> Nueva opción agregada correctamente
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        `);
-        $('body').append(toast);
+        // Mostrar mensaje de confirmación simple
+        alert('Nueva opción agregada correctamente!');
+    });
 
-        // Auto-ocultar después de 3 segundos
-        setTimeout(function() {
-            toast.alert('close');
-        }, 3000);
+    // Botón de prueba para debugging
+    $('#btnTest').on('click', function() {
+        console.log('=== TEST JAVASCRIPT ===');
+        console.log('jQuery disponible:', typeof jQuery !== 'undefined');
+        console.log('Botón agregar existe:', $('#btnAgregarRespuesta').length);
+        console.log('Contenedor existe:', $('#respuestasContainer').length);
+        console.log('Respuestas actuales:', $('.respuesta-item').length);
+        console.log('Índice actual:', respuestaIndex);
+
+        alert('Revisa la consola del navegador para ver los detalles del test');
     });
 
     // Eliminar respuesta
