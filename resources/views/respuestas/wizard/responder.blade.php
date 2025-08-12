@@ -168,9 +168,14 @@
                             </div>
 
                             <div class="mt-3">
-                                <button type="button" class="btn btn-success" id="btnAgregarRespuesta">
-                                    <i class="fas fa-plus"></i> Agregar Otra Opción
-                                </button>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <button type="button" class="btn btn-success" id="btnAgregarRespuesta">
+                                        <i class="fas fa-plus"></i> Agregar Otra Opción
+                                    </button>
+                                    <span class="badge badge-info" id="contadorRespuestas">
+                                        <i class="fas fa-list"></i> <span id="numRespuestas">1</span> opción(es)
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
@@ -202,6 +207,8 @@ $(document).ready(function() {
 
     // Agregar nueva respuesta
     $('#btnAgregarRespuesta').click(function() {
+        console.log('Agregando nueva respuesta, índice:', respuestaIndex);
+
         const newRespuesta = `
             <div class="row mb-2 respuesta-item">
                 <div class="col-md-8">
@@ -225,26 +232,52 @@ $(document).ready(function() {
 
         // Habilitar botón eliminar de la primera respuesta si hay más de una
         if ($('.respuesta-item').length > 1) {
-            $('.btn-remove-respuesta').prop('disabled', false);
+            $('.btn-remove-respuesta:first').prop('disabled', false);
         }
+
+        console.log('Total de respuestas:', $('.respuesta-item').length);
+
+        // Actualizar contador
+        $('#numRespuestas').text($('.respuesta-item').length);
+
+        // Mostrar mensaje de confirmación
+        const toast = $(`
+            <div class="alert alert-success alert-dismissible fade show" role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
+                <i class="fas fa-check-circle"></i> Nueva opción agregada correctamente
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        `);
+        $('body').append(toast);
+
+        // Auto-ocultar después de 3 segundos
+        setTimeout(function() {
+            toast.alert('close');
+        }, 3000);
     });
 
     // Eliminar respuesta
     $(document).on('click', '.btn-remove-respuesta', function() {
         $(this).closest('.respuesta-item').remove();
 
-        // Deshabilitar botón eliminar si solo queda una respuesta
+        // Deshabilitar botón eliminar de la primera respuesta si solo queda una
         if ($('.respuesta-item').length === 1) {
-            $('.btn-remove-respuesta').prop('disabled', true);
+            $('.btn-remove-respuesta:first').prop('disabled', true);
         }
 
         // Reindexar los campos
         $('.respuesta-item').each(function(index) {
             $(this).find('input[name*="[texto]"]').attr('name', `respuestas[${index}][texto]`);
             $(this).find('input[name*="[orden]"]').attr('name', `respuestas[${index}][orden]`);
+            // Actualizar el valor del orden
+            $(this).find('input[name*="[orden]"]').val(index + 1);
         });
 
         respuestaIndex = $('.respuesta-item').length;
+
+        // Actualizar contador
+        $('#numRespuestas').text($('.respuesta-item').length);
     });
 
     // Validación del formulario
