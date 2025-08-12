@@ -1,8 +1,12 @@
 # Mejoras en el Wizard de Preguntas
 
-## Problema Resuelto
+## Problemas Resueltos
 
+### 1. Pérdida de Estado del Wizard
 El wizard de preguntas perdía el estado de la encuesta seleccionada cuando el usuario intentaba agregar otra pregunta después de crear una. Esto ocurría porque el sistema no mantenía correctamente el ID de la encuesta entre las diferentes etapas del wizard.
+
+### 2. Error de Contabilización de Preguntas
+El sistema mostraba un número incorrecto de preguntas totales debido a una doble contabilización. Se estaba sumando las preguntas existentes en la base de datos con las preguntas creadas en la sesión, causando que se mostrara un número mayor al real.
 
 ## Soluciones Implementadas
 
@@ -35,7 +39,16 @@ Este middleware proporciona:
 - **Información detallada**: Muestra el ID de la encuesta y el progreso actual
 - **Estadísticas mejoradas**: Cuatro tarjetas informativas en lugar de tres
 
-### 4. Comando de Limpieza
+### 4. Helper para Cálculos Precisos
+
+**Archivo creado:** `app/Helpers/WizardHelper.php`
+
+Este helper proporciona:
+- **Cálculos precisos**: Evita la doble contabilización de preguntas
+- **Estado del wizard**: Información completa del estado actual
+- **Funciones utilitarias**: Métodos para manejar el estado del wizard
+
+### 5. Comando de Limpieza
 
 **Archivo creado:** `app/Console/Commands/CleanExpiredWizardSessions.php`
 
@@ -79,6 +92,8 @@ Route::middleware(['auth', 'wizard.session'])->group(function () {
 - ✅ **Respaldo robusto**: Cookies como respaldo de las sesiones
 - ✅ **Limpieza automática**: Sistema para limpiar sesiones expiradas
 - ✅ **Interfaz clara**: Indicadores visuales del estado actual
+- ✅ **Contabilización precisa**: Muestra el número correcto de preguntas
+- ✅ **Cálculos confiables**: Evita errores de doble contabilización
 
 ## Uso
 

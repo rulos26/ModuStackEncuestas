@@ -44,6 +44,9 @@
                 <span class="badge badge-primary ml-2">
                     <i class="fas fa-poll"></i> Encuesta ID: {{ Session::get('wizard_encuesta_id') }}
                 </span>
+                <span class="badge badge-info ml-2">
+                    <i class="fas fa-database"></i> {{ \App\Models\Encuesta::find(Session::get('wizard_encuesta_id'))->preguntas->count() ?? 0 }} preguntas en BD
+                </span>
                 <div class="mt-2">
                     <a href="{{ route('preguntas.wizard.create') }}" class="btn btn-success btn-sm">
                         <i class="fas fa-plus"></i> Continuar Agregando Preguntas

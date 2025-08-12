@@ -43,7 +43,7 @@
             <p class="mb-0">
                 <strong>{{ Session::get('wizard_preguntas_count', 0) }}</strong> pregunta(s) creada(s) en esta sesión.
                 <span class="badge badge-primary ml-2">
-                    <i class="fas fa-poll"></i> {{ $encuesta->preguntas->count() + Session::get('wizard_preguntas_count', 0) }} total en la encuesta
+                    <i class="fas fa-poll"></i> {{ $encuesta->preguntas->count() }} total en la encuesta
                 </span>
             </p>
         </div>

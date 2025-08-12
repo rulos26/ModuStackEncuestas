@@ -73,7 +73,7 @@
                 <span class="info-box-icon"><i class="fas fa-poll"></i></span>
                 <div class="info-box-content">
                     <span class="info-box-text">Total en Encuesta</span>
-                    <span class="info-box-number">{{ $encuesta->preguntas->count() + $preguntasCount }}</span>
+                    <span class="info-box-number">{{ $encuesta->preguntas->count() }}</span>
                     <div class="progress">
                         <div class="progress-bar" style="width: 100%"></div>
                     </div>

@@ -221,6 +221,9 @@ class PreguntaWizardController extends Controller
             $preguntasCount = Session::get('wizard_preguntas_count', 0) + 1;
             Session::put('wizard_preguntas_count', $preguntasCount);
 
+            // Recargar la encuesta para obtener el conteo actualizado
+            $encuesta->refresh();
+
             DB::commit();
 
             Log::info('Pregunta creada en wizard', [
