@@ -173,6 +173,12 @@
                                         <i class="fas fa-list"></i> <span id="numRespuestas">1</span> opción(es)
                                     </span>
                                 </div>
+                                <!-- Botón de prueba -->
+                                <div class="mt-2">
+                                    <button type="button" class="btn btn-warning btn-sm" onclick="alert('JavaScript funciona!')">
+                                        <i class="fas fa-check"></i> Probar JavaScript
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -199,148 +205,73 @@
 
 @section('scripts')
 <script>
-// Verificar que jQuery esté disponible
-if (typeof jQuery === 'undefined') {
-    console.error('jQuery no está cargado!');
-    alert('Error: jQuery no está disponible. El wizard no funcionará correctamente.');
-} else {
-    console.log('jQuery está disponible, versión:', jQuery.fn.jquery);
-}
+// Versión con JavaScript vanilla y jQuery como respaldo
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('=== WIZARD DE RESPUESTAS INICIADO ===');
 
-$(document).ready(function() {
-    console.log('Document ready - Inicializando wizard de respuestas');
+    // Contador simple
+    let contador = 1;
 
-    let respuestaIndex = 1;
+    // Función para agregar respuesta (JavaScript vanilla)
+    function agregarRespuesta() {
+        console.log('Agregando respuesta número:', contador);
 
-    // Verificar que el botón existe
-    const btnAgregar = $('#btnAgregarRespuesta');
-    if (btnAgregar.length === 0) {
-        console.error('Botón #btnAgregarRespuesta no encontrado!');
-        return;
+        var container = document.getElementById('respuestasContainer');
+        var contadorElement = document.getElementById('numRespuestas');
+
+        var html = '<div class="row mb-2 respuesta-item">';
+        html += '<div class="col-md-8">';
+        html += '<input type="text" name="respuestas[' + contador + '][texto]" class="form-control" placeholder="Escribe la opción de respuesta..." required>';
+        html += '</div>';
+        html += '<div class="col-md-2">';
+        html += '<input type="number" name="respuestas[' + contador + '][orden]" class="form-control" placeholder="Orden" value="' + (contador + 1) + '" min="1" required>';
+        html += '</div>';
+        html += '<div class="col-md-2">';
+        html += '<button type="button" class="btn btn-danger btn-block btn-remove-respuesta">';
+        html += '<i class="fas fa-trash"></i> Eliminar';
+        html += '</button>';
+        html += '</div>';
+        html += '</div>';
+
+        container.insertAdjacentHTML('beforeend', html);
+        contador++;
+
+        // Actualizar contador visual
+        var items = document.querySelectorAll('.respuesta-item');
+        contadorElement.textContent = items.length;
+
+        console.log('Respuesta agregada. Total:', items.length);
+        alert('¡Respuesta agregada!');
     }
 
-    console.log('Botón encontrado:', btnAgregar.length, 'elementos');
+    // Función para eliminar respuesta (JavaScript vanilla)
+    function eliminarRespuesta(elemento) {
+        var item = elemento.closest('.respuesta-item');
+        item.remove();
 
-    // Verificar que el contenedor existe
-    const container = $('#respuestasContainer');
-    if (container.length === 0) {
-        console.error('Contenedor #respuestasContainer no encontrado!');
-        return;
+        var contadorElement = document.getElementById('numRespuestas');
+        var items = document.querySelectorAll('.respuesta-item');
+        contadorElement.textContent = items.length;
+
+        console.log('Respuesta eliminada. Total:', items.length);
     }
 
-    console.log('Contenedor encontrado:', container.length, 'elementos');
-
-    // Agregar nueva respuesta - Versión simplificada
-    $('#btnAgregarRespuesta').on('click', function(e) {
-        e.preventDefault();
-        console.log('Click en botón agregar respuesta');
-        console.log('Índice actual:', respuestaIndex);
-
-        // Crear el HTML de la nueva respuesta
-        var newRespuesta = '<div class="row mb-2 respuesta-item">';
-        newRespuesta += '<div class="col-md-8">';
-        newRespuesta += '<input type="text" id="respuesta-texto-' + respuestaIndex + '" name="respuestas[' + respuestaIndex + '][texto]" class="form-control" placeholder="Escribe la opción de respuesta..." required>';
-        newRespuesta += '</div>';
-        newRespuesta += '<div class="col-md-2">';
-        newRespuesta += '<input type="number" id="respuesta-orden-' + respuestaIndex + '" name="respuestas[' + respuestaIndex + '][orden]" class="form-control" placeholder="Orden" value="' + (respuestaIndex + 1) + '" min="1" required>';
-        newRespuesta += '</div>';
-        newRespuesta += '<div class="col-md-2">';
-        newRespuesta += '<button type="button" id="btn-remove-' + respuestaIndex + '" class="btn btn-danger btn-block btn-remove-respuesta">';
-        newRespuesta += '<i class="fas fa-trash"></i> Eliminar';
-        newRespuesta += '</button>';
-        newRespuesta += '</div>';
-        newRespuesta += '</div>';
-
-        console.log('HTML a agregar:', newRespuesta);
-
-        // Agregar al contenedor
-        $('#respuestasContainer').append(newRespuesta);
-        respuestaIndex++;
-
-        // Habilitar botón eliminar de la primera respuesta si hay más de una
-        if ($('.respuesta-item').length > 1) {
-            $('.btn-remove-respuesta:first').prop('disabled', false);
-        }
-
-        console.log('Total de respuestas después de agregar:', $('.respuesta-item').length);
-
-        // Actualizar contador
-        $('#numRespuestas').text($('.respuesta-item').length);
-
-        // Mostrar mensaje de confirmación simple
-        alert('Nueva opción agregada correctamente!');
-    });
-
-    // Eliminar respuesta
-    $(document).on('click', '.btn-remove-respuesta', function() {
-        $(this).closest('.respuesta-item').remove();
-
-        // Deshabilitar botón eliminar de la primera respuesta si solo queda una
-        if ($('.respuesta-item').length === 1) {
-            $('.btn-remove-respuesta:first').prop('disabled', true);
-        }
-
-        // Reindexar los campos
-        $('.respuesta-item').each(function(index) {
-            // Actualizar nombres de campos
-            $(this).find('input[name*="[texto]"]').attr('name', 'respuestas[' + index + '][texto]');
-            $(this).find('input[name*="[orden]"]').attr('name', 'respuestas[' + index + '][orden]');
-
-            // Actualizar IDs de campos
-            $(this).find('input[name*="[texto]"]').attr('id', 'respuesta-texto-' + index);
-            $(this).find('input[name*="[orden]"]').attr('id', 'respuesta-orden-' + index);
-
-            // Actualizar ID del botón eliminar
-            $(this).find('.btn-remove-respuesta').attr('id', 'btn-remove-' + index);
-
-            // Actualizar el valor del orden
-            $(this).find('input[name*="[orden]"]').val(index + 1);
-        });
-
-        respuestaIndex = $('.respuesta-item').length;
-
-        // Actualizar contador
-        $('#numRespuestas').text($('.respuesta-item').length);
-    });
-
-    // Validación del formulario
-    $('#respuestasForm').submit(function(e) {
-        const respuestas = $('input[name*="[texto]"]').filter(function() {
-            return $(this).val().trim() !== '';
-        });
-
-        if (respuestas.length === 0) {
+    // Evento click para agregar (JavaScript vanilla)
+    document.addEventListener('click', function(e) {
+        if (e.target && e.target.id === 'btnAgregarRespuesta') {
             e.preventDefault();
-            alert('Debes agregar al menos una opción de respuesta.');
-            return false;
+            console.log('Botón agregar clickeado');
+            agregarRespuesta();
         }
 
-        // Validar que no haya textos duplicados
-        const textos = [];
-        let hayDuplicados = false;
-
-        respuestas.each(function() {
-            const texto = $(this).val().trim().toLowerCase();
-            if (textos.includes(texto)) {
-                hayDuplicados = true;
-                return false;
-            }
-            textos.push(texto);
-        });
-
-        if (hayDuplicados) {
+        if (e.target && e.target.classList.contains('btn-remove-respuesta')) {
             e.preventDefault();
-            alert('No puedes tener opciones de respuesta duplicadas.');
-            return false;
+            console.log('Botón eliminar clickeado');
+            eliminarRespuesta(e.target);
         }
     });
 
-    // Confirmación antes de cancelar
-    $('a[href*="cancel"]').click(function(e) {
-        if (!confirm('¿Estás seguro de que quieres cancelar el wizard? Las respuestas agregadas se guardarán.')) {
-            e.preventDefault();
-        }
-    });
+    console.log('=== WIZARD LISTO ===');
 });
 </script>
 @endsection
