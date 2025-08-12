@@ -2,7 +2,7 @@
 
 @section('title', 'Configurar Respuestas - Pregunta ' . ($preguntaIndex + 1))
 
-@@extends('layouts.app')
+
 
 @section('content')
 <div class="container">
