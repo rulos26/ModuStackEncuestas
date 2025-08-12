@@ -130,7 +130,7 @@
                     <!-- FORMULARIO DE RESPUESTAS -->
                     <form action="{{ route('respuestas.wizard.store') }}" method="POST" id="respuestasForm">
                         @csrf
-                        <input type="hidden" name="pregunta_id" value="{{ $preguntaActual->id }}">
+                        <input type="hidden" id="pregunta_id" name="pregunta_id" value="{{ $preguntaActual->id }}">
 
                         <div class="form-group">
                             <h5><i class="fas fa-list"></i> Opciones de Respuesta <span class="text-danger">*</span></h5>
@@ -157,7 +157,7 @@
                                                placeholder="Orden" value="1" min="1" required>
                                     </div>
                                     <div class="col-md-2">
-                                        <button type="button" class="btn btn-danger btn-block btn-remove-respuesta" disabled>
+                                        <button type="button" id="btn-remove-0" class="btn btn-danger btn-block btn-remove-respuesta" disabled>
                                             <i class="fas fa-trash"></i> Eliminar
                                         </button>
                                     </div>
@@ -190,7 +190,7 @@
                                 </a>
                             </div>
                             <div class="col-md-6">
-                                <button type="submit" class="btn btn-primary btn-lg btn-block">
+                                <button type="submit" id="btnGuardar" class="btn btn-primary btn-lg btn-block">
                                     <i class="fas fa-save"></i> Guardar Respuestas y Continuar
                                 </button>
                             </div>
@@ -253,7 +253,7 @@ $(document).ready(function() {
         newRespuesta += '<input type="number" id="respuesta-orden-' + respuestaIndex + '" name="respuestas[' + respuestaIndex + '][orden]" class="form-control" placeholder="Orden" value="' + (respuestaIndex + 1) + '" min="1" required>';
         newRespuesta += '</div>';
         newRespuesta += '<div class="col-md-2">';
-        newRespuesta += '<button type="button" class="btn btn-danger btn-block btn-remove-respuesta">';
+        newRespuesta += '<button type="button" id="btn-remove-' + respuestaIndex + '" class="btn btn-danger btn-block btn-remove-respuesta">';
         newRespuesta += '<i class="fas fa-trash"></i> Eliminar';
         newRespuesta += '</button>';
         newRespuesta += '</div>';
@@ -300,16 +300,19 @@ $(document).ready(function() {
             $('.btn-remove-respuesta:first').prop('disabled', true);
         }
 
-                // Reindexar los campos
+                        // Reindexar los campos
         $('.respuesta-item').each(function(index) {
             // Actualizar nombres de campos
             $(this).find('input[name*="[texto]"]').attr('name', 'respuestas[' + index + '][texto]');
             $(this).find('input[name*="[orden]"]').attr('name', 'respuestas[' + index + '][orden]');
-
+ 
             // Actualizar IDs de campos
             $(this).find('input[name*="[texto]"]').attr('id', 'respuesta-texto-' + index);
             $(this).find('input[name*="[orden]"]').attr('id', 'respuesta-orden-' + index);
-
+            
+            // Actualizar ID del botón eliminar
+            $(this).find('.btn-remove-respuesta').attr('id', 'btn-remove-' + index);
+ 
             // Actualizar el valor del orden
             $(this).find('input[name*="[orden]"]').val(index + 1);
         });
