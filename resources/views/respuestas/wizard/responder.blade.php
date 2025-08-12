@@ -157,7 +157,7 @@
                                                placeholder="Orden" value="1" min="1" required>
                                     </div>
                                     <div class="col-md-2">
-                                        <button type="button" id="btn-remove-0" class="btn btn-danger btn-block btn-remove-respuesta" disabled>
+                                        <button type="button" id="btn-remove-0" class="btn btn-danger btn-block btn-remove-respuesta" onclick="eliminarRespuestaDirecto(this)" disabled>
                                             <i class="fas fa-trash"></i> Eliminar
                                         </button>
                                     </div>
@@ -166,7 +166,7 @@
 
                             <div class="mt-3">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <button type="button" class="btn btn-success" id="btnAgregarRespuesta">
+                                    <button type="button" class="btn btn-success" id="btnAgregarRespuesta" onclick="agregarRespuestaDirecto()">
                                         <i class="fas fa-plus"></i> Agregar Otra Opción
                                     </button>
                                     <span class="badge badge-info" id="contadorRespuestas">
@@ -177,6 +177,9 @@
                                 <div class="mt-2">
                                     <button type="button" class="btn btn-warning btn-sm" onclick="alert('JavaScript funciona!')">
                                         <i class="fas fa-check"></i> Probar JavaScript
+                                    </button>
+                                    <button type="button" class="btn btn-info btn-sm" onclick="verificarBotones()">
+                                        <i class="fas fa-search"></i> Verificar Botones
                                     </button>
                                 </div>
                             </div>
@@ -205,6 +208,70 @@
 
 @section('scripts')
 <script>
+// Función global para verificar botones
+function verificarBotones() {
+    var btnAgregar = document.getElementById('btnAgregarRespuesta');
+    var container = document.getElementById('respuestasContainer');
+
+    var mensaje = 'Verificación de elementos:\n';
+    mensaje += 'Botón agregar: ' + (btnAgregar ? 'ENCONTRADO' : 'NO ENCONTRADO') + '\n';
+    mensaje += 'Contenedor: ' + (container ? 'ENCONTRADO' : 'NO ENCONTRADO') + '\n';
+    mensaje += 'Total respuestas actuales: ' + document.querySelectorAll('.respuesta-item').length;
+
+    alert(mensaje);
+}
+
+// Función global para agregar respuesta (método directo)
+function agregarRespuestaDirecto() {
+    console.log('Función agregarRespuestaDirecto llamada');
+
+    var container = document.getElementById('respuestasContainer');
+    var contadorElement = document.getElementById('numRespuestas');
+
+    if (!container) {
+        alert('Error: Contenedor no encontrado');
+        return;
+    }
+
+    var items = document.querySelectorAll('.respuesta-item');
+    var contador = items.length;
+
+    var html = '<div class="row mb-2 respuesta-item">';
+    html += '<div class="col-md-8">';
+    html += '<input type="text" name="respuestas[' + contador + '][texto]" class="form-control" placeholder="Escribe la opción de respuesta..." required>';
+    html += '</div>';
+    html += '<div class="col-md-2">';
+    html += '<input type="number" name="respuestas[' + contador + '][orden]" class="form-control" placeholder="Orden" value="' + (contador + 1) + '" min="1" required>';
+    html += '</div>';
+    html += '<div class="col-md-2">';
+    html += '<button type="button" class="btn btn-danger btn-block btn-remove-respuesta" onclick="eliminarRespuestaDirecto(this)">';
+    html += '<i class="fas fa-trash"></i> Eliminar';
+    html += '</button>';
+    html += '</div>';
+    html += '</div>';
+
+    container.insertAdjacentHTML('beforeend', html);
+
+    // Actualizar contador visual
+    var newItems = document.querySelectorAll('.respuesta-item');
+    contadorElement.textContent = newItems.length;
+
+    console.log('Respuesta agregada. Total:', newItems.length);
+    alert('¡Respuesta agregada!');
+}
+
+// Función global para eliminar respuesta (método directo)
+function eliminarRespuestaDirecto(elemento) {
+    var item = elemento.closest('.respuesta-item');
+    item.remove();
+
+    var contadorElement = document.getElementById('numRespuestas');
+    var items = document.querySelectorAll('.respuesta-item');
+    contadorElement.textContent = items.length;
+
+    console.log('Respuesta eliminada. Total:', items.length);
+}
+
 // Versión con JavaScript vanilla y jQuery como respaldo
 document.addEventListener('DOMContentLoaded', function() {
     console.log('=== WIZARD DE RESPUESTAS INICIADO ===');
@@ -270,6 +337,18 @@ document.addEventListener('DOMContentLoaded', function() {
             eliminarRespuesta(e.target);
         }
     });
+
+    // También agregar el evento directamente al botón
+    var btnAgregar = document.getElementById('btnAgregarRespuesta');
+    if (btnAgregar) {
+        btnAgregar.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Botón agregar clickeado (evento directo)');
+            agregarRespuesta();
+        });
+    } else {
+        console.error('Botón btnAgregarRespuesta no encontrado!');
+    }
 
     console.log('=== WIZARD LISTO ===');
 });
