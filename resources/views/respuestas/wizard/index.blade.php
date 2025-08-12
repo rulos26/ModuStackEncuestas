@@ -56,78 +56,80 @@
                         </div>
                     </div>
 
-                    @if($encuestas->count() > 0)
-                        <div class="row">
-                            @foreach($encuestas as $encuesta)
-                                <div class="col-md-6 col-lg-4 mb-4">
-                                    <div class="card h-100 border-primary">
-                                        <div class="card-header bg-primary text-white">
-                                            <h6 class="card-title mb-0">
-                                                <i class="fas fa-poll"></i> {{ $encuesta->titulo }}
-                                            </h6>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="row">
-                                                <div class="col-6">
-                                                    <small class="text-muted">Empresa:</small>
-                                                    <p class="mb-1"><strong>{{ $encuesta->empresa->nombre ?? 'Sin empresa' }}</strong></p>
-                                                </div>
-                                                <div class="col-6">
-                                                    <small class="text-muted">Estado:</small>
-                                                    <p class="mb-1">
-                                                        <span class="badge badge-{{ $encuesta->estado === 'publicada' ? 'success' : 'warning' }}">
-                                                            {{ ucfirst($encuesta->estado) }}
-                                                        </span>
-                                                    </p>
-                                                </div>
-                                            </div>
-
-                                            <div class="row mt-2">
-                                                <div class="col-6">
-                                                    <small class="text-muted">Total Preguntas:</small>
-                                                    <p class="mb-1"><strong>{{ $encuesta->preguntas->count() }}</strong></p>
-                                                </div>
-                                                <div class="col-6">
-                                                    <small class="text-muted">Sin Respuestas:</small>
-                                                    <p class="mb-1">
-                                                        <span class="badge badge-danger">
-                                                                                                                         {{ $encuesta->preguntas->filter(function($p) {
-                                                                 return $p->respuestas->isEmpty() &&
-                                                                        in_array($p->tipo, ['seleccion_unica', 'casillas_verificacion', 'seleccion_multiple']);
-                                                             })->count() }}
-                                                        </span>
-                                                    </p>
-                                                </div>
-                                            </div>
-
-                                            <div class="mt-3">
-                                                <a href="{{ route('respuestas.wizard.responder', ['encuesta_id' => $encuesta->id]) }}"
-                                                   class="btn btn-primary btn-block">
-                                                    <i class="fas fa-cogs"></i> Configurar Respuestas
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <div class="card-footer text-muted">
-                                            <small>
-                                                <i class="fas fa-calendar"></i> Creada: {{ $encuesta->created_at->format('d/m/Y H:i') }}
+                                        <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="card-title mb-0">
+                                        <i class="fas fa-list"></i> Seleccionar Encuesta
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <form action="{{ route('respuestas.wizard.responder') }}" method="GET" id="encuestaForm">
+                                        <div class="form-group">
+                                            <label for="encuesta_id">
+                                                <i class="fas fa-poll"></i> Encuesta a Configurar
+                                                <span class="text-danger">*</span>
+                                            </label>
+                                            <select name="encuesta_id" id="encuesta_id" class="form-control form-control-lg" required>
+                                                <option value="">-- Selecciona una encuesta --</option>
+                                                @foreach($encuestas as $encuesta)
+                                                    @php
+                                                        $preguntasSinRespuestas = $encuesta->preguntas->filter(function($p) {
+                                                            return $p->respuestas->isEmpty() &&
+                                                                   in_array($p->tipo, ['seleccion_unica', 'casillas_verificacion', 'seleccion_multiple']);
+                                                        });
+                                                    @endphp
+                                                    <option value="{{ $encuesta->id }}"
+                                                            data-preguntas="{{ $preguntasSinRespuestas->count() }}"
+                                                            data-empresa="{{ $encuesta->empresa->nombre ?? 'Sin empresa' }}"
+                                                            data-estado="{{ $encuesta->estado }}">
+                                                        {{ $encuesta->titulo }}
+                                                        ({{ $preguntasSinRespuestas->count() }} preguntas sin configurar)
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <small class="form-text text-muted">
+                                                Selecciona la encuesta para la cual quieres configurar las respuestas de las preguntas.
                                             </small>
                                         </div>
-                                    </div>
+
+                                        <!-- Información de la encuesta seleccionada -->
+                                        <div id="encuesta-info" class="mt-3" style="display: none;">
+                                            <div class="alert alert-info">
+                                                <h6><i class="fas fa-info-circle"></i> Información de la Encuesta</h6>
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <strong>Empresa:</strong> <span id="empresa-info">-</span>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <strong>Estado:</strong> <span id="estado-info">-</span>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <strong>Preguntas por configurar:</strong>
+                                                        <span id="preguntas-info" class="badge badge-warning">-</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mt-4">
+                                            <div class="col-md-6">
+                                                <a href="{{ route('encuestas.index') }}" class="btn btn-outline-secondary btn-lg btn-block">
+                                                    <i class="fas fa-arrow-left"></i> Volver
+                                                </a>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <button type="submit" class="btn btn-primary btn-lg btn-block" id="btnSiguiente" disabled>
+                                                    <i class="fas fa-arrow-right"></i> Siguiente
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
                                 </div>
-                            @endforeach
+                            </div>
                         </div>
-                    @else
-                        <div class="text-center py-5">
-                            <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
-                            <h4 class="mt-3 text-success">¡Excelente trabajo!</h4>
-                            <p class="text-muted">
-                                Todas las encuestas ya tienen sus respuestas configuradas correctamente.
-                            </p>
-                            <a href="{{ route('encuestas.index') }}" class="btn btn-primary">
-                                <i class="fas fa-arrow-left"></i> Volver a Encuestas
-                            </a>
-                        </div>
-                    @endif
+                    </div>
                 </div>
             </div>
         </div>
@@ -140,6 +142,42 @@
 $(document).ready(function() {
     // Tooltips
     $('[data-toggle="tooltip"]').tooltip();
+
+    // Manejar selección de encuesta
+    $('#encuesta_id').change(function() {
+        const selectedOption = $(this).find('option:selected');
+        const encuestaId = $(this).val();
+
+        if (encuestaId) {
+            // Mostrar información de la encuesta
+            $('#empresa-info').text(selectedOption.data('empresa'));
+            $('#estado-info').text(selectedOption.data('estado'));
+            $('#preguntas-info').text(selectedOption.data('preguntas'));
+
+            // Mostrar el panel de información
+            $('#encuesta-info').show();
+
+            // Habilitar botón siguiente
+            $('#btnSiguiente').prop('disabled', false);
+        } else {
+            // Ocultar información y deshabilitar botón
+            $('#encuesta-info').hide();
+            $('#btnSiguiente').prop('disabled', true);
+        }
+    });
+
+    // Validación del formulario
+    $('#encuestaForm').submit(function(e) {
+        const encuestaId = $('#encuesta_id').val();
+
+        if (!encuestaId) {
+            e.preventDefault();
+            alert('Debes seleccionar una encuesta para continuar.');
+            return false;
+        }
+
+        return true;
+    });
 
     // Confirmación antes de cancelar
     $('.btn-cancel').click(function(e) {
