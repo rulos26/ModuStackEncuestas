@@ -120,7 +120,7 @@
                                                 </a>
                                             </div>
                                             <div class="col-md-6">
-                                                <button type="submit" class="btn btn-primary btn-lg btn-block" id="btnSiguiente" disabled>
+                                                <button type="submit" class="btn btn-primary btn-lg btn-block" id="btnSiguiente" >
                                                     <i class="fas fa-arrow-right"></i> Siguiente
                                                 </button>
                                             </div>
