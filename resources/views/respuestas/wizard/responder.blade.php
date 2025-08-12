@@ -208,8 +208,10 @@
 
 @section('scripts')
 <script>
-// Función global para verificar botones
-function verificarBotones() {
+console.log('=== INICIANDO SCRIPT ===');
+
+// Definir funciones globales inmediatamente
+window.verificarBotones = function() {
     var btnAgregar = document.getElementById('btnAgregarRespuesta');
     var container = document.getElementById('respuestasContainer');
 
@@ -219,10 +221,9 @@ function verificarBotones() {
     mensaje += 'Total respuestas actuales: ' + document.querySelectorAll('.respuesta-item').length;
 
     alert(mensaje);
-}
+};
 
-// Función global para agregar respuesta (método directo)
-function agregarRespuestaDirecto() {
+window.agregarRespuestaDirecto = function() {
     console.log('Función agregarRespuestaDirecto llamada');
 
     var container = document.getElementById('respuestasContainer');
@@ -258,10 +259,9 @@ function agregarRespuestaDirecto() {
 
     console.log('Respuesta agregada. Total:', newItems.length);
     alert('¡Respuesta agregada!');
-}
+};
 
-// Función global para eliminar respuesta (método directo)
-function eliminarRespuestaDirecto(elemento) {
+window.eliminarRespuestaDirecto = function(elemento) {
     var item = elemento.closest('.respuesta-item');
     item.remove();
 
@@ -270,7 +270,7 @@ function eliminarRespuestaDirecto(elemento) {
     contadorElement.textContent = items.length;
 
     console.log('Respuesta eliminada. Total:', items.length);
-}
+};
 
 // Versión con JavaScript vanilla y jQuery como respaldo
 document.addEventListener('DOMContentLoaded', function() {
@@ -351,6 +351,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     console.log('=== WIZARD LISTO ===');
+});
+
+console.log('=== SCRIPT COMPLETAMENTE CARGADO ===');
+console.log('Funciones disponibles:', {
+    verificarBotones: typeof window.verificarBotones,
+    agregarRespuestaDirecto: typeof window.agregarRespuestaDirecto,
+    eliminarRespuestaDirecto: typeof window.eliminarRespuestaDirecto
 });
 </script>
 @endsection
