@@ -30,7 +30,7 @@ class RespuestaWizardController extends Controller
 
                 ->orderBy('created_at', 'desc')
                 ->get();
-dd($encuestas);
+//dd($encuestas);
             // Inicializar contador de sesión si no existe
             if (!Session::has('wizard_respuestas_count')) {
                 Session::put('wizard_respuestas_count', 0);
