@@ -133,10 +133,7 @@
                         <input type="hidden" name="pregunta_id" value="{{ $preguntaActual->id }}">
 
                         <div class="form-group">
-                            <label for="respuestas-container">
-                                <i class="fas fa-list"></i> Opciones de Respuesta
-                                <span class="text-danger">*</span>
-                            </label>
+                            <h5><i class="fas fa-list"></i> Opciones de Respuesta <span class="text-danger">*</span></h5>
                             <div class="alert alert-warning">
                                 <i class="fas fa-exclamation-triangle"></i>
                                 <strong>Importante:</strong> Agrega las opciones de respuesta que estarán disponibles para los usuarios.
@@ -149,16 +146,14 @@
                                 @endif
                             </div>
 
-                            <div id="respuestasContainer" aria-labelledby="respuestas-container">
+                            <div id="respuestasContainer">
                                 <div class="row mb-2 respuesta-item">
                                     <div class="col-md-8">
-                                        <label for="respuesta-texto-0" class="sr-only">Texto de la opción 1</label>
-                                        <input type="text" id="respuesta-texto-0" name="respuestas[0][texto]" class="form-control"
+                                        <input type="text" name="respuestas[0][texto]" class="form-control"
                                                placeholder="Escribe la opción de respuesta..." required>
                                     </div>
                                     <div class="col-md-2">
-                                        <label for="respuesta-orden-0" class="sr-only">Orden de la opción 1</label>
-                                        <input type="number" id="respuesta-orden-0" name="respuestas[0][orden]" class="form-control"
+                                        <input type="number" name="respuestas[0][orden]" class="form-control"
                                                placeholder="Orden" value="1" min="1" required>
                                     </div>
                                     <div class="col-md-2">
@@ -208,21 +203,7 @@
 </div>
 @endsection
 
-@section('css')
-<style>
-.sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-}
-</style>
-@endsection
+
 
 @section('scripts')
 <script>
@@ -266,12 +247,10 @@ $(document).ready(function() {
         // Crear el HTML de la nueva respuesta
         var newRespuesta = '<div class="row mb-2 respuesta-item">';
         newRespuesta += '<div class="col-md-8">';
-        newRespuesta += '<label for="respuesta-texto-' + respuestaIndex + '" class="sr-only">Texto de la opción ' + (respuestaIndex + 1) + '</label>';
-        newRespuesta += '<input type="text" id="respuesta-texto-' + respuestaIndex + '" name="respuestas[' + respuestaIndex + '][texto]" class="form-control" placeholder="Escribe la opción de respuesta..." required>';
+        newRespuesta += '<input type="text" name="respuestas[' + respuestaIndex + '][texto]" class="form-control" placeholder="Escribe la opción de respuesta..." required>';
         newRespuesta += '</div>';
         newRespuesta += '<div class="col-md-2">';
-        newRespuesta += '<label for="respuesta-orden-' + respuestaIndex + '" class="sr-only">Orden de la opción ' + (respuestaIndex + 1) + '</label>';
-        newRespuesta += '<input type="number" id="respuesta-orden-' + respuestaIndex + '" name="respuestas[' + respuestaIndex + '][orden]" class="form-control" placeholder="Orden" value="' + (respuestaIndex + 1) + '" min="1" required>';
+        newRespuesta += '<input type="number" name="respuestas[' + respuestaIndex + '][orden]" class="form-control" placeholder="Orden" value="' + (respuestaIndex + 1) + '" min="1" required>';
         newRespuesta += '</div>';
         newRespuesta += '<div class="col-md-2">';
         newRespuesta += '<button type="button" class="btn btn-danger btn-block btn-remove-respuesta">';
@@ -321,21 +300,11 @@ $(document).ready(function() {
             $('.btn-remove-respuesta:first').prop('disabled', true);
         }
 
-        // Reindexar los campos
+                // Reindexar los campos
         $('.respuesta-item').each(function(index) {
             // Actualizar nombres de campos
-            $(this).find('input[name*="[texto]"]').attr('name', `respuestas[${index}][texto]`);
-            $(this).find('input[name*="[orden]"]').attr('name', `respuestas[${index}][orden]`);
-
-            // Actualizar IDs y labels
-            $(this).find('input[name*="[texto]"]').attr('id', `respuesta-texto-${index}`);
-            $(this).find('input[name*="[orden]"]').attr('id', `respuesta-orden-${index}`);
-
-            // Actualizar labels
-            $(this).find('label[for*="respuesta-texto-"]').attr('for', `respuesta-texto-${index}`);
-            $(this).find('label[for*="respuesta-orden-"]').attr('for', `respuesta-orden-${index}`);
-            $(this).find('label[for*="respuesta-texto-"]').text(`Texto de la opción ${index + 1}`);
-            $(this).find('label[for*="respuesta-orden-"]').text(`Orden de la opción ${index + 1}`);
+            $(this).find('input[name*="[texto]"]').attr('name', 'respuestas[' + index + '][texto]');
+            $(this).find('input[name*="[orden]"]').attr('name', 'respuestas[' + index + '][orden]');
 
             // Actualizar el valor del orden
             $(this).find('input[name*="[orden]"]').val(index + 1);
