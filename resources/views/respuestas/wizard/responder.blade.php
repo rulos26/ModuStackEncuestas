@@ -2,6 +2,90 @@
 
 @section('title', 'Configurar Respuestas - Pregunta ' . ($preguntaIndex + 1))
 
+@section('css')
+<style>
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+</style>
+@endsection
+
+@section('js')
+<script>
+// Definir funciones globales inmediatamente en el head
+window.verificarBotones = function() {
+    var btnAgregar = document.getElementById('btnAgregarRespuesta');
+    var container = document.getElementById('respuestasContainer');
+
+    var mensaje = 'Verificación de elementos:\n';
+    mensaje += 'Botón agregar: ' + (btnAgregar ? 'ENCONTRADO' : 'NO ENCONTRADO') + '\n';
+    mensaje += 'Contenedor: ' + (container ? 'ENCONTRADO' : 'NO ENCONTRADO') + '\n';
+    mensaje += 'Total respuestas actuales: ' + document.querySelectorAll('.respuesta-item').length;
+
+    alert(mensaje);
+};
+
+window.agregarRespuestaDirecto = function() {
+    console.log('Función agregarRespuestaDirecto llamada');
+
+    var container = document.getElementById('respuestasContainer');
+    var contadorElement = document.getElementById('numRespuestas');
+
+    if (!container) {
+        alert('Error: Contenedor no encontrado');
+        return;
+    }
+
+    var items = document.querySelectorAll('.respuesta-item');
+    var contador = items.length;
+
+    var html = '<div class="row mb-2 respuesta-item">';
+    html += '<div class="col-md-8">';
+    html += '<input type="text" name="respuestas[' + contador + '][texto]" class="form-control" placeholder="Escribe la opción de respuesta..." required>';
+    html += '</div>';
+    html += '<div class="col-md-2">';
+    html += '<input type="number" name="respuestas[' + contador + '][orden]" class="form-control" placeholder="Orden" value="' + (contador + 1) + '" min="1" required>';
+    html += '</div>';
+    html += '<div class="col-md-2">';
+    html += '<button type="button" class="btn btn-danger btn-block btn-remove-respuesta" onclick="eliminarRespuestaDirecto(this)">';
+    html += '<i class="fas fa-trash"></i> Eliminar';
+    html += '</button>';
+    html += '</div>';
+    html += '</div>';
+
+    container.insertAdjacentHTML('beforeend', html);
+
+    // Actualizar contador visual
+    var newItems = document.querySelectorAll('.respuesta-item');
+    contadorElement.textContent = newItems.length;
+
+    console.log('Respuesta agregada. Total:', newItems.length);
+    alert('¡Respuesta agregada!');
+};
+
+window.eliminarRespuestaDirecto = function(elemento) {
+    var item = elemento.closest('.respuesta-item');
+    item.remove();
+
+    var contadorElement = document.getElementById('numRespuestas');
+    var items = document.querySelectorAll('.respuesta-item');
+    contadorElement.textContent = items.length;
+
+    console.log('Respuesta eliminada. Total:', items.length);
+};
+
+console.log('=== FUNCIONES GLOBALES DEFINIDAS EN HEAD ===');
+</script>
+@endsection
+
 @section('content')
 <div class="container-fluid">
     <div class="row">
@@ -208,156 +292,15 @@
 
 @section('scripts')
 <script>
-console.log('=== INICIANDO SCRIPT ===');
-
-// Definir funciones globales inmediatamente
-window.verificarBotones = function() {
-    var btnAgregar = document.getElementById('btnAgregarRespuesta');
-    var container = document.getElementById('respuestasContainer');
-
-    var mensaje = 'Verificación de elementos:\n';
-    mensaje += 'Botón agregar: ' + (btnAgregar ? 'ENCONTRADO' : 'NO ENCONTRADO') + '\n';
-    mensaje += 'Contenedor: ' + (container ? 'ENCONTRADO' : 'NO ENCONTRADO') + '\n';
-    mensaje += 'Total respuestas actuales: ' + document.querySelectorAll('.respuesta-item').length;
-
-    alert(mensaje);
-};
-
-window.agregarRespuestaDirecto = function() {
-    console.log('Función agregarRespuestaDirecto llamada');
-
-    var container = document.getElementById('respuestasContainer');
-    var contadorElement = document.getElementById('numRespuestas');
-
-    if (!container) {
-        alert('Error: Contenedor no encontrado');
-        return;
-    }
-
-    var items = document.querySelectorAll('.respuesta-item');
-    var contador = items.length;
-
-    var html = '<div class="row mb-2 respuesta-item">';
-    html += '<div class="col-md-8">';
-    html += '<input type="text" name="respuestas[' + contador + '][texto]" class="form-control" placeholder="Escribe la opción de respuesta..." required>';
-    html += '</div>';
-    html += '<div class="col-md-2">';
-    html += '<input type="number" name="respuestas[' + contador + '][orden]" class="form-control" placeholder="Orden" value="' + (contador + 1) + '" min="1" required>';
-    html += '</div>';
-    html += '<div class="col-md-2">';
-    html += '<button type="button" class="btn btn-danger btn-block btn-remove-respuesta" onclick="eliminarRespuestaDirecto(this)">';
-    html += '<i class="fas fa-trash"></i> Eliminar';
-    html += '</button>';
-    html += '</div>';
-    html += '</div>';
-
-    container.insertAdjacentHTML('beforeend', html);
-
-    // Actualizar contador visual
-    var newItems = document.querySelectorAll('.respuesta-item');
-    contadorElement.textContent = newItems.length;
-
-    console.log('Respuesta agregada. Total:', newItems.length);
-    alert('¡Respuesta agregada!');
-};
-
-window.eliminarRespuestaDirecto = function(elemento) {
-    var item = elemento.closest('.respuesta-item');
-    item.remove();
-
-    var contadorElement = document.getElementById('numRespuestas');
-    var items = document.querySelectorAll('.respuesta-item');
-    contadorElement.textContent = items.length;
-
-    console.log('Respuesta eliminada. Total:', items.length);
-};
-
-// Versión con JavaScript vanilla y jQuery como respaldo
+// Código adicional para debugging
 document.addEventListener('DOMContentLoaded', function() {
     console.log('=== WIZARD DE RESPUESTAS INICIADO ===');
-
-    // Contador simple
-    let contador = 1;
-
-    // Función para agregar respuesta (JavaScript vanilla)
-    function agregarRespuesta() {
-        console.log('Agregando respuesta número:', contador);
-
-        var container = document.getElementById('respuestasContainer');
-        var contadorElement = document.getElementById('numRespuestas');
-
-        var html = '<div class="row mb-2 respuesta-item">';
-        html += '<div class="col-md-8">';
-        html += '<input type="text" name="respuestas[' + contador + '][texto]" class="form-control" placeholder="Escribe la opción de respuesta..." required>';
-        html += '</div>';
-        html += '<div class="col-md-2">';
-        html += '<input type="number" name="respuestas[' + contador + '][orden]" class="form-control" placeholder="Orden" value="' + (contador + 1) + '" min="1" required>';
-        html += '</div>';
-        html += '<div class="col-md-2">';
-        html += '<button type="button" class="btn btn-danger btn-block btn-remove-respuesta">';
-        html += '<i class="fas fa-trash"></i> Eliminar';
-        html += '</button>';
-        html += '</div>';
-        html += '</div>';
-
-        container.insertAdjacentHTML('beforeend', html);
-        contador++;
-
-        // Actualizar contador visual
-        var items = document.querySelectorAll('.respuesta-item');
-        contadorElement.textContent = items.length;
-
-        console.log('Respuesta agregada. Total:', items.length);
-        alert('¡Respuesta agregada!');
-    }
-
-    // Función para eliminar respuesta (JavaScript vanilla)
-    function eliminarRespuesta(elemento) {
-        var item = elemento.closest('.respuesta-item');
-        item.remove();
-
-        var contadorElement = document.getElementById('numRespuestas');
-        var items = document.querySelectorAll('.respuesta-item');
-        contadorElement.textContent = items.length;
-
-        console.log('Respuesta eliminada. Total:', items.length);
-    }
-
-    // Evento click para agregar (JavaScript vanilla)
-    document.addEventListener('click', function(e) {
-        if (e.target && e.target.id === 'btnAgregarRespuesta') {
-            e.preventDefault();
-            console.log('Botón agregar clickeado');
-            agregarRespuesta();
-        }
-
-        if (e.target && e.target.classList.contains('btn-remove-respuesta')) {
-            e.preventDefault();
-            console.log('Botón eliminar clickeado');
-            eliminarRespuesta(e.target);
-        }
+    console.log('Funciones disponibles:', {
+        verificarBotones: typeof window.verificarBotones,
+        agregarRespuestaDirecto: typeof window.agregarRespuestaDirecto,
+        eliminarRespuestaDirecto: typeof window.eliminarRespuestaDirecto
     });
-
-    // También agregar el evento directamente al botón
-    var btnAgregar = document.getElementById('btnAgregarRespuesta');
-    if (btnAgregar) {
-        btnAgregar.addEventListener('click', function(e) {
-            e.preventDefault();
-            console.log('Botón agregar clickeado (evento directo)');
-            agregarRespuesta();
-        });
-    } else {
-        console.error('Botón btnAgregarRespuesta no encontrado!');
-    }
-
     console.log('=== WIZARD LISTO ===');
-});
-
-console.log('=== SCRIPT COMPLETAMENTE CARGADO ===');
-console.log('Funciones disponibles:', {
-    verificarBotones: typeof window.verificarBotones,
-    agregarRespuestaDirecto: typeof window.agregarRespuestaDirecto,
-    eliminarRespuestaDirecto: typeof window.eliminarRespuestaDirecto
 });
 </script>
 @endsection
