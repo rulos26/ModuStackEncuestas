@@ -370,6 +370,11 @@ return [
                 'route' => 'respuestas.wizard.index',
                 'icon' => 'fas fa-cogs',
             ],
+                            [
+                'text' => 'Configurar Lógica de Salto',
+                'route' => 'logica.wizard.index',
+                'icon' => 'fas fa-project-diagram',
+            ],
                 [
                     'text' => 'Carga Masiva',
                     'route' => 'carga-masiva.index',

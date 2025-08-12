@@ -342,6 +342,16 @@ Route::middleware(['auth', 'respuesta.wizard.session'])->group(function () {
     Route::get('respuestas/wizard/cancel', [App\Http\Controllers\RespuestaWizardController::class, 'cancel'])->name('respuestas.wizard.cancel');
 });
 
+// Rutas del Wizard de Lógica de Preguntas
+Route::middleware(['auth', 'logica.wizard.session'])->group(function () {
+    Route::get('logica/wizard', [App\Http\Controllers\LogicaWizardController::class, 'index'])->name('logica.wizard.index');
+    Route::get('logica/wizard/configurar', [App\Http\Controllers\LogicaWizardController::class, 'configurar'])->name('logica.wizard.configurar');
+    Route::post('logica/wizard/store', [App\Http\Controllers\LogicaWizardController::class, 'store'])->name('logica.wizard.store');
+    Route::get('logica/wizard/resumen', [App\Http\Controllers\LogicaWizardController::class, 'resumen'])->name('logica.wizard.resumen');
+    Route::post('logica/wizard/confirmar', [App\Http\Controllers\LogicaWizardController::class, 'confirmar'])->name('logica.wizard.confirmar');
+    Route::get('logica/wizard/cancel', [App\Http\Controllers\LogicaWizardController::class, 'cancel'])->name('logica.wizard.cancel');
+});
+
 Route::middleware(['auth'])->prefix('system/tools')->name('system.tools.')->group(function () {
     Route::get('/', [App\Http\Controllers\SystemToolsController::class, 'dashboard'])->name('dashboard');
     Route::get('diagnosticar-encuestas', [App\Http\Controllers\SystemToolsController::class, 'diagnosticarEncuestas'])->name('diagnosticar-encuestas');
