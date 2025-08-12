@@ -366,6 +366,11 @@ return [
                     'icon' => 'fas fa-magic',
                 ],
                 [
+                    'text' => 'Wizard de Respuestas',
+                    'route' => 'respuestas.wizard.index',
+                    'icon' => 'fas fa-clipboard-check',
+                ],
+                [
                     'text' => 'Carga Masiva',
                     'route' => 'carga-masiva.index',
                     'icon' => 'fas fa-upload',
