@@ -365,11 +365,11 @@ return [
                     'route' => 'preguntas.wizard.index',
                     'icon' => 'fas fa-magic',
                 ],
-                [
-                    'text' => 'Wizard de Respuestas',
-                    'route' => 'respuestas.wizard.index',
-                    'icon' => 'fas fa-clipboard-check',
-                ],
+                            [
+                'text' => 'Configurar Respuestas',
+                'route' => 'respuestas.wizard.index',
+                'icon' => 'fas fa-cogs',
+            ],
                 [
                     'text' => 'Carga Masiva',
                     'route' => 'carga-masiva.index',

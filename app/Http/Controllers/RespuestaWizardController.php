@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Encuesta;
 use App\Models\Pregunta;
-use App\Models\RespuestaUsuario;
 use App\Models\Respuesta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -21,17 +20,23 @@ class RespuestaWizardController extends Controller
     }
 
     /**
-     * Paso 1: Selección de encuesta para responder
+     * Paso 1: Listado de encuestas para agregar respuestas
      */
     public function index()
     {
         try {
-            // Obtener encuestas disponibles para responder
-            $encuestas = Encuesta::with(['empresa', 'preguntas'])
-                ->where('estado', 'publicada')
-                ->where('habilitada', true)
+            // Obtener encuestas que tienen preguntas sin respuestas configuradas
+            $encuestas = Encuesta::with(['empresa', 'preguntas.respuestas'])
+                ->where('estado', '!=', 'borrador')
                 ->orderBy('created_at', 'desc')
-                ->get();
+                ->get()
+                ->filter(function ($encuesta) {
+                    // Filtrar encuestas que tienen preguntas sin respuestas
+                    return $encuesta->preguntas->some(function ($pregunta) {
+                        return $pregunta->respuestas->isEmpty() &&
+                               in_array($pregunta->tipo, ['seleccion_unica', 'casillas_verificacion']);
+                    });
+                });
 
             // Inicializar contador de sesión si no existe
             if (!Session::has('wizard_respuestas_count')) {
@@ -49,7 +54,7 @@ class RespuestaWizardController extends Controller
     }
 
     /**
-     * Paso 2: Mostrar pregunta para responder
+     * Paso 2: Mostrar pregunta para agregar respuestas
      */
     public function responder(Request $request)
     {
@@ -62,43 +67,42 @@ class RespuestaWizardController extends Controller
                     ->with('error', 'Debes seleccionar una encuesta.');
             }
 
-            $encuesta = Encuesta::with('preguntas')->findOrFail($encuestaId);
-
-            // Verificar que la encuesta esté habilitada
-            if (!$encuesta->habilitada || $encuesta->estado !== 'publicada') {
-                return redirect()->route('respuestas.wizard.index')
-                    ->with('error', 'Esta encuesta no está disponible para responder.');
-            }
+            $encuesta = Encuesta::with(['preguntas.respuestas'])->findOrFail($encuestaId);
 
             // Guardar encuesta seleccionada en sesión si no existe
             if (!Session::has('wizard_encuesta_id')) {
                 Session::put('wizard_encuesta_id', $encuestaId);
             }
 
-            // Obtener preguntas ordenadas
-            $preguntas = $encuesta->preguntas()->orderBy('orden')->get();
+            // Obtener preguntas que necesitan respuestas (solo selección única y casillas)
+            $preguntas = $encuesta->preguntas()
+                ->whereIn('tipo', ['seleccion_unica', 'casillas_verificacion'])
+                ->whereDoesntHave('respuestas')
+                ->orderBy('orden')
+                ->get();
 
             if ($preguntas->isEmpty()) {
                 return redirect()->route('respuestas.wizard.index')
-                    ->with('error', 'Esta encuesta no tiene preguntas configuradas.');
+                    ->with('success', 'Todas las preguntas de esta encuesta ya tienen respuestas configuradas.');
             }
 
             // Obtener índice de la pregunta actual
             $preguntaIndex = Session::get('wizard_pregunta_index', 0);
 
             if ($preguntaIndex >= $preguntas->count()) {
-                // Todas las preguntas han sido respondidas
+                // Todas las preguntas han sido procesadas
                 return redirect()->route('respuestas.wizard.resumen');
             }
 
             $preguntaActual = $preguntas[$preguntaIndex];
             $totalPreguntas = $preguntas->count();
 
-            Log::info('Acceso al wizard de respuestas', [
+            Log::info('Acceso al wizard de respuestas administrativo', [
                 'user_id' => Auth::id(),
                 'encuesta_id' => $encuestaId,
                 'pregunta_index' => $preguntaIndex,
-                'total_preguntas' => $totalPreguntas
+                'total_preguntas' => $totalPreguntas,
+                'pregunta_tipo' => $preguntaActual->tipo
             ]);
 
             return view('respuestas.wizard.responder', compact('encuesta', 'preguntaActual', 'preguntaIndex', 'totalPreguntas'));
@@ -115,7 +119,7 @@ class RespuestaWizardController extends Controller
     }
 
     /**
-     * Paso 3: Guardar respuesta y avanzar
+     * Paso 3: Guardar respuestas y avanzar
      */
     public function store(Request $request)
     {
@@ -130,8 +134,14 @@ class RespuestaWizardController extends Controller
 
             DB::beginTransaction();
 
-            $encuesta = Encuesta::with('preguntas')->findOrFail($encuestaId);
-            $preguntas = $encuesta->preguntas()->orderBy('orden')->get();
+            $encuesta = Encuesta::with(['preguntas.respuestas'])->findOrFail($encuestaId);
+
+            // Obtener preguntas que necesitan respuestas
+            $preguntas = $encuesta->preguntas()
+                ->whereIn('tipo', ['seleccion_unica', 'casillas_verificacion'])
+                ->whereDoesntHave('respuestas')
+                ->orderBy('orden')
+                ->get();
 
             if ($preguntaIndex >= $preguntas->count()) {
                 return redirect()->route('respuestas.wizard.resumen');
@@ -139,14 +149,14 @@ class RespuestaWizardController extends Controller
 
             $preguntaActual = $preguntas[$preguntaIndex];
 
-            // Validar respuesta según el tipo de pregunta
-            $this->validarRespuesta($request, $preguntaActual);
+            // Validar respuestas según el tipo de pregunta
+            $this->validarRespuestas($request, $preguntaActual);
 
-            // Guardar respuesta
-            $respuestaUsuario = $this->guardarRespuesta($request, $encuestaId, $preguntaActual);
+            // Guardar respuestas
+            $respuestasCreadas = $this->guardarRespuestas($request, $preguntaActual);
 
             // Incrementar contador de respuestas
-            $respuestasCount = Session::get('wizard_respuestas_count', 0) + 1;
+            $respuestasCount = Session::get('wizard_respuestas_count', 0) + $respuestasCreadas;
             Session::put('wizard_respuestas_count', $respuestasCount);
 
             // Avanzar al siguiente índice
@@ -155,27 +165,27 @@ class RespuestaWizardController extends Controller
 
             DB::commit();
 
-            Log::info('Respuesta guardada en wizard', [
+            Log::info('Respuestas guardadas en wizard administrativo', [
                 'user_id' => Auth::id(),
                 'encuesta_id' => $encuestaId,
                 'pregunta_id' => $preguntaActual->id,
-                'respuesta_id' => $respuestaUsuario->id,
+                'respuestas_creadas' => $respuestasCreadas,
                 'respuestas_en_sesion' => $respuestasCount
             ]);
 
             // Verificar si es la última pregunta
             if ($siguienteIndex >= $preguntas->count()) {
                 return redirect()->route('respuestas.wizard.resumen')
-                    ->with('success', '¡Has completado todas las preguntas!');
+                    ->with('success', '¡Has configurado todas las respuestas!');
             }
 
             return redirect()->route('respuestas.wizard.responder')
-                ->with('success', 'Respuesta guardada correctamente. Continuando con la siguiente pregunta.');
+                ->with('success', "Se agregaron {$respuestasCreadas} respuesta(s). Continuando con la siguiente pregunta.");
 
         } catch (Exception $e) {
             DB::rollBack();
 
-            Log::error('Error guardando respuesta en wizard', [
+            Log::error('Error guardando respuestas en wizard', [
                 'user_id' => Auth::id(),
                 'encuesta_id' => Session::get('wizard_encuesta_id'),
                 'data' => $request->all(),
@@ -184,12 +194,12 @@ class RespuestaWizardController extends Controller
 
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Error al guardar la respuesta: ' . $e->getMessage());
+                ->with('error', 'Error al guardar las respuestas: ' . $e->getMessage());
         }
     }
 
     /**
-     * Paso 4: Resumen de respuestas
+     * Paso 4: Resumen de respuestas agregadas
      */
     public function resumen()
     {
@@ -202,16 +212,16 @@ class RespuestaWizardController extends Controller
                     ->with('error', 'Sesión de wizard expirada.');
             }
 
-            $encuesta = Encuesta::with('preguntas')->findOrFail($encuestaId);
+            $encuesta = Encuesta::with(['preguntas.respuestas'])->findOrFail($encuestaId);
 
-            // Obtener todas las respuestas del usuario para esta encuesta
-            $respuestasUsuario = RespuestaUsuario::where('encuesta_id', $encuestaId)
-                ->where('ip_address', request()->ip())
-                ->with(['pregunta', 'respuesta'])
-                ->orderBy('created_at')
+            // Obtener preguntas con sus respuestas recién agregadas
+            $preguntasConRespuestas = $encuesta->preguntas()
+                ->whereIn('tipo', ['seleccion_unica', 'casillas_verificacion'])
+                ->with('respuestas')
+                ->orderBy('orden')
                 ->get();
 
-            return view('respuestas.wizard.resumen', compact('encuesta', 'respuestasUsuario', 'respuestasCount'));
+            return view('respuestas.wizard.resumen', compact('encuesta', 'preguntasConRespuestas', 'respuestasCount'));
 
         } catch (Exception $e) {
             Log::error('Error en resumen del wizard', [
@@ -243,7 +253,7 @@ class RespuestaWizardController extends Controller
 
             if ($action === 'finish') {
                 // Finalizar wizard
-                Log::info('Wizard de respuestas finalizado', [
+                Log::info('Wizard de respuestas administrativo finalizado', [
                     'user_id' => Auth::id(),
                     'encuesta_id' => $encuestaId,
                     'respuestas_creadas' => $respuestasCount
@@ -253,13 +263,13 @@ class RespuestaWizardController extends Controller
                 Session::forget(['wizard_encuesta_id', 'wizard_pregunta_index', 'wizard_respuestas_count']);
 
                 return redirect()->route('respuestas.wizard.index')
-                    ->with('success', "¡Encuesta completada exitosamente! Has respondido {$respuestasCount} pregunta(s).");
+                    ->with('success', "¡Configuración completada! Se agregaron {$respuestasCount} respuesta(s) a la encuesta.");
             } else {
                 // Iniciar otra encuesta
                 Session::forget(['wizard_encuesta_id', 'wizard_pregunta_index', 'wizard_respuestas_count']);
 
                 return redirect()->route('respuestas.wizard.index')
-                    ->with('info', 'Puedes seleccionar otra encuesta para responder.');
+                    ->with('info', 'Puedes seleccionar otra encuesta para configurar respuestas.');
             }
 
         } catch (Exception $e) {
@@ -286,14 +296,14 @@ class RespuestaWizardController extends Controller
             // Limpiar sesión
             Session::forget(['wizard_encuesta_id', 'wizard_pregunta_index', 'wizard_respuestas_count']);
 
-            Log::info('Wizard de respuestas cancelado', [
+            Log::info('Wizard de respuestas administrativo cancelado', [
                 'user_id' => Auth::id(),
                 'encuesta_id' => $encuestaId,
                 'respuestas_en_sesion' => $respuestasCount
             ]);
 
             return redirect()->route('respuestas.wizard.index')
-                ->with('info', 'Wizard cancelado. Tus respuestas parciales se han guardado.');
+                ->with('info', 'Wizard cancelado. Las respuestas agregadas se han guardado.');
 
         } catch (Exception $e) {
             Log::error('Error cancelando wizard', [
@@ -307,112 +317,59 @@ class RespuestaWizardController extends Controller
     }
 
     /**
-     * Validar respuesta según el tipo de pregunta
+     * Validar respuestas según el tipo de pregunta
      */
-    private function validarRespuesta(Request $request, Pregunta $pregunta)
+    private function validarRespuestas(Request $request, Pregunta $pregunta)
     {
         $rules = [];
         $messages = [];
 
         switch ($pregunta->tipo) {
-            case 'respuesta_corta':
-            case 'parrafo':
-                $rules['respuesta_texto'] = 'required|string';
-                if ($pregunta->min_caracteres) {
-                    $rules['respuesta_texto'] .= '|min:' . $pregunta->min_caracteres;
-                }
-                if ($pregunta->max_caracteres) {
-                    $rules['respuesta_texto'] .= '|max:' . $pregunta->max_caracteres;
-                }
-                $messages['respuesta_texto.required'] = 'Debes responder esta pregunta.';
-                break;
-
             case 'seleccion_unica':
-                $rules['respuesta_id'] = 'required|exists:respuestas,id';
-                $messages['respuesta_id.required'] = 'Debes seleccionar una opción.';
+                $rules['respuestas'] = 'required|array|min:1';
+                $rules['respuestas.*.texto'] = 'required|string|max:255';
+                $rules['respuestas.*.orden'] = 'required|integer|min:1';
+                $messages['respuestas.required'] = 'Debes agregar al menos una opción de respuesta.';
+                $messages['respuestas.*.texto.required'] = 'El texto de la respuesta es obligatorio.';
                 break;
 
             case 'casillas_verificacion':
-                $rules['respuesta_ids'] = 'required|array|min:1';
-                $rules['respuesta_ids.*'] = 'exists:respuestas,id';
-                $messages['respuesta_ids.required'] = 'Debes seleccionar al menos una opción.';
-                break;
-
-            case 'escala_lineal':
-                $rules['respuesta_escala'] = 'required|integer|between:' . $pregunta->escala_min . ',' . $pregunta->escala_max;
-                $messages['respuesta_escala.required'] = 'Debes seleccionar un valor en la escala.';
-                break;
-
-            case 'fecha':
-                $rules['respuesta_fecha'] = 'required|date';
-                $messages['respuesta_fecha.required'] = 'Debes seleccionar una fecha.';
-                break;
-
-            case 'hora':
-                $rules['respuesta_hora'] = 'required|date_format:H:i';
-                $messages['respuesta_hora.required'] = 'Debes seleccionar una hora.';
+                $rules['respuestas'] = 'required|array|min:1';
+                $rules['respuestas.*.texto'] = 'required|string|max:255';
+                $rules['respuestas.*.orden'] = 'required|integer|min:1';
+                $messages['respuestas.required'] = 'Debes agregar al menos una opción de respuesta.';
+                $messages['respuestas.*.texto.required'] = 'El texto de la respuesta es obligatorio.';
                 break;
 
             default:
-                $rules['respuesta_texto'] = 'required|string';
-                $messages['respuesta_texto.required'] = 'Debes responder esta pregunta.';
+                throw new Exception('Tipo de pregunta no soportado para agregar respuestas.');
         }
 
         $request->validate($rules, $messages);
     }
 
     /**
-     * Guardar respuesta en la base de datos
+     * Guardar respuestas en la base de datos
      */
-    private function guardarRespuesta(Request $request, int $encuestaId, Pregunta $pregunta)
+    private function guardarRespuestas(Request $request, Pregunta $pregunta)
     {
-        $data = [
-            'encuesta_id' => $encuestaId,
-            'pregunta_id' => $pregunta->id,
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-        ];
+        $respuestasCreadas = 0;
+        $respuestas = $request->respuestas;
 
-        switch ($pregunta->tipo) {
-            case 'respuesta_corta':
-            case 'parrafo':
-                $data['respuesta_texto'] = $request->respuesta_texto;
-                break;
-
-            case 'seleccion_unica':
-                $data['respuesta_id'] = $request->respuesta_id;
-                break;
-
-            case 'casillas_verificacion':
-                // Para casillas de verificación, crear múltiples registros
-                $respuestasIds = $request->respuesta_ids;
-                foreach ($respuestasIds as $respuestaId) {
-                    RespuestaUsuario::create([
-                        'encuesta_id' => $encuestaId,
-                        'pregunta_id' => $pregunta->id,
-                        'respuesta_id' => $respuestaId,
-                        'ip_address' => request()->ip(),
-                        'user_agent' => request()->userAgent(),
-                    ]);
-                }
-                return null; // Ya se crearon los registros
-
-            case 'escala_lineal':
-                $data['respuesta_texto'] = $request->respuesta_escala;
-                break;
-
-            case 'fecha':
-                $data['respuesta_texto'] = $request->respuesta_fecha;
-                break;
-
-            case 'hora':
-                $data['respuesta_texto'] = $request->respuesta_hora;
-                break;
-
-            default:
-                $data['respuesta_texto'] = $request->respuesta_texto;
+        foreach ($respuestas as $respuestaData) {
+            if (!empty($respuestaData['texto'])) {
+                Respuesta::create([
+                    'pregunta_id' => $pregunta->id,
+                    'texto' => $respuestaData['texto'],
+                    'orden' => $respuestaData['orden'],
+                    'activa' => true,
+                    'created_by' => Auth::id(),
+                    'updated_by' => Auth::id(),
+                ]);
+                $respuestasCreadas++;
+            }
         }
 
-        return RespuestaUsuario::create($data);
+        return $respuestasCreadas;
     }
 }
