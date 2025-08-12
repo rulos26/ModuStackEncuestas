@@ -21,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
         'no.session' => \App\Http\Middleware\NoSessionMiddleware::class,
         'validar.fechas' => \App\Http\Middleware\ValidarFechas::class,
         'wizard.session' => \App\Http\Middleware\WizardSessionMiddleware::class,
+        'respuesta.wizard.session' => \App\Http\Middleware\RespuestaWizardSessionMiddleware::class,
     ]);
 
     // Agregar middleware global para configurar sesiones

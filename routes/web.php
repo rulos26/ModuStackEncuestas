@@ -332,6 +332,16 @@ Route::middleware(['auth'])->prefix('respuestas')->name('respuestas.')->group(fu
     Route::get('ver/{encuestaId}', [App\Http\Controllers\RespuestasController::class, 'ver'])->name('ver');
 });
 
+// Wizard de respuestas (rutas independientes)
+Route::middleware(['auth', 'respuesta.wizard.session'])->group(function () {
+    Route::get('respuestas/wizard', [App\Http\Controllers\RespuestaWizardController::class, 'index'])->name('respuestas.wizard.index');
+    Route::get('respuestas/wizard/responder', [App\Http\Controllers\RespuestaWizardController::class, 'responder'])->name('respuestas.wizard.responder');
+    Route::post('respuestas/wizard/store', [App\Http\Controllers\RespuestaWizardController::class, 'store'])->name('respuestas.wizard.store');
+    Route::get('respuestas/wizard/resumen', [App\Http\Controllers\RespuestaWizardController::class, 'resumen'])->name('respuestas.wizard.resumen');
+    Route::post('respuestas/wizard/confirmar', [App\Http\Controllers\RespuestaWizardController::class, 'confirmar'])->name('respuestas.wizard.confirmar');
+    Route::get('respuestas/wizard/cancel', [App\Http\Controllers\RespuestaWizardController::class, 'cancel'])->name('respuestas.wizard.cancel');
+});
+
 Route::middleware(['auth'])->prefix('system/tools')->name('system.tools.')->group(function () {
     Route::get('/', [App\Http\Controllers\SystemToolsController::class, 'dashboard'])->name('dashboard');
     Route::get('diagnosticar-encuestas', [App\Http\Controllers\SystemToolsController::class, 'diagnosticarEncuestas'])->name('diagnosticar-encuestas');
