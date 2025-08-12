@@ -149,11 +149,11 @@
                             <div id="respuestasContainer">
                                 <div class="row mb-2 respuesta-item">
                                     <div class="col-md-8">
-                                        <input type="text" name="respuestas[0][texto]" class="form-control"
+                                        <input type="text" id="respuesta-texto-0" name="respuestas[0][texto]" class="form-control"
                                                placeholder="Escribe la opción de respuesta..." required>
                                     </div>
                                     <div class="col-md-2">
-                                        <input type="number" name="respuestas[0][orden]" class="form-control"
+                                        <input type="number" id="respuesta-orden-0" name="respuestas[0][orden]" class="form-control"
                                                placeholder="Orden" value="1" min="1" required>
                                     </div>
                                     <div class="col-md-2">
@@ -247,10 +247,10 @@ $(document).ready(function() {
         // Crear el HTML de la nueva respuesta
         var newRespuesta = '<div class="row mb-2 respuesta-item">';
         newRespuesta += '<div class="col-md-8">';
-        newRespuesta += '<input type="text" name="respuestas[' + respuestaIndex + '][texto]" class="form-control" placeholder="Escribe la opción de respuesta..." required>';
+        newRespuesta += '<input type="text" id="respuesta-texto-' + respuestaIndex + '" name="respuestas[' + respuestaIndex + '][texto]" class="form-control" placeholder="Escribe la opción de respuesta..." required>';
         newRespuesta += '</div>';
         newRespuesta += '<div class="col-md-2">';
-        newRespuesta += '<input type="number" name="respuestas[' + respuestaIndex + '][orden]" class="form-control" placeholder="Orden" value="' + (respuestaIndex + 1) + '" min="1" required>';
+        newRespuesta += '<input type="number" id="respuesta-orden-' + respuestaIndex + '" name="respuestas[' + respuestaIndex + '][orden]" class="form-control" placeholder="Orden" value="' + (respuestaIndex + 1) + '" min="1" required>';
         newRespuesta += '</div>';
         newRespuesta += '<div class="col-md-2">';
         newRespuesta += '<button type="button" class="btn btn-danger btn-block btn-remove-respuesta">';
@@ -305,6 +305,10 @@ $(document).ready(function() {
             // Actualizar nombres de campos
             $(this).find('input[name*="[texto]"]').attr('name', 'respuestas[' + index + '][texto]');
             $(this).find('input[name*="[orden]"]').attr('name', 'respuestas[' + index + '][orden]');
+
+            // Actualizar IDs de campos
+            $(this).find('input[name*="[texto]"]').attr('id', 'respuesta-texto-' + index);
+            $(this).find('input[name*="[orden]"]').attr('id', 'respuesta-orden-' + index);
 
             // Actualizar el valor del orden
             $(this).find('input[name*="[orden]"]').val(index + 1);
