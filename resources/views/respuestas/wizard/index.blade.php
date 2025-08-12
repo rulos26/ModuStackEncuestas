@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('adminlte::page')
 
 @section('title', 'Wizard de Respuestas - Configuración Administrativa')
 
