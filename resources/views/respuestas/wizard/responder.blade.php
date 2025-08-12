@@ -206,161 +206,55 @@
 
 
 @section('scripts')
+<!-- Script de funcionalidad -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-// Verificar que jQuery esté disponible
-if (typeof jQuery === 'undefined') {
-    console.error('jQuery no está cargado!');
-    alert('Error: jQuery no está disponible. El wizard no funcionará correctamente.');
-} else {
-    console.log('jQuery está disponible, versión:', jQuery.fn.jquery);
-}
-
-$(document).ready(function() {
-    console.log('Document ready - Inicializando wizard de respuestas');
-
-    let respuestaIndex = 1;
-
-    // Verificar que el botón existe
-    const btnAgregar = $('#btnAgregarRespuesta');
-    if (btnAgregar.length === 0) {
-        console.error('Botón #btnAgregarRespuesta no encontrado!');
-        return;
+// Verificar si jQuery está cargado, si no, cargarlo desde CDN
+(function ensureJQueryLoaded(callback) {
+    if (typeof jQuery === 'undefined') {
+        let script = document.createElement('script');
+        script.src = "https://code.jquery.com/jquery-3.6.0.min.js";
+        script.onload = callback;
+        document.head.appendChild(script);
+    } else {
+        callback();
     }
+})(function () {
 
-    console.log('Botón encontrado:', btnAgregar.length, 'elementos');
+    // Esperar que el DOM esté listo
+    $(function () {
+        console.log("jQuery listo y DOM cargado.");
 
-    // Verificar que el contenedor existe
-    const container = $('#respuestasContainer');
-    if (container.length === 0) {
-        console.error('Contenedor #respuestasContainer no encontrado!');
-        return;
-    }
-
-    console.log('Contenedor encontrado:', container.length, 'elementos');
-
-    // Agregar nueva respuesta - Versión simplificada
-    $('#btnAgregarRespuesta').on('click', function(e) {
-        e.preventDefault();
-        console.log('Click en botón agregar respuesta');
-        console.log('Índice actual:', respuestaIndex);
-
-        // Crear el HTML de la nueva respuesta
-        var newRespuesta = '<div class="row mb-2 respuesta-item">';
-        newRespuesta += '<div class="col-md-8">';
-        newRespuesta += '<input type="text" id="respuesta-texto-' + respuestaIndex + '" name="respuestas[' + respuestaIndex + '][texto]" class="form-control" placeholder="Escribe la opción de respuesta..." required>';
-        newRespuesta += '</div>';
-        newRespuesta += '<div class="col-md-2">';
-        newRespuesta += '<input type="number" id="respuesta-orden-' + respuestaIndex + '" name="respuestas[' + respuestaIndex + '][orden]" class="form-control" placeholder="Orden" value="' + (respuestaIndex + 1) + '" min="1" required>';
-        newRespuesta += '</div>';
-        newRespuesta += '<div class="col-md-2">';
-        newRespuesta += '<button type="button" id="btn-remove-' + respuestaIndex + '" class="btn btn-danger btn-block btn-remove-respuesta">';
-        newRespuesta += '<i class="fas fa-trash"></i> Eliminar';
-        newRespuesta += '</button>';
-        newRespuesta += '</div>';
-        newRespuesta += '</div>';
-
-        console.log('HTML a agregar:', newRespuesta);
-
-        // Agregar al contenedor
-        $('#respuestasContainer').append(newRespuesta);
-        respuestaIndex++;
-
-        // Habilitar botón eliminar de la primera respuesta si hay más de una
-        if ($('.respuesta-item').length > 1) {
-            $('.btn-remove-respuesta:first').prop('disabled', false);
-        }
-
-        console.log('Total de respuestas después de agregar:', $('.respuesta-item').length);
-
-        // Actualizar contador
-        $('#numRespuestas').text($('.respuesta-item').length);
-
-        // Mostrar mensaje de confirmación simple
-        alert('Nueva opción agregada correctamente!');
-    });
-
-    // Botón de prueba para debugging
-    $('#btnTest').on('click', function() {
-        console.log('=== TEST JAVASCRIPT ===');
-        console.log('jQuery disponible:', typeof jQuery !== 'undefined');
-        console.log('Botón agregar existe:', $('#btnAgregarRespuesta').length);
-        console.log('Contenedor existe:', $('#respuestasContainer').length);
-        console.log('Respuestas actuales:', $('.respuesta-item').length);
-        console.log('Índice actual:', respuestaIndex);
-
-        alert('Revisa la consola del navegador para ver los detalles del test');
-    });
-
-    // Eliminar respuesta
-    $(document).on('click', '.btn-remove-respuesta', function() {
-        $(this).closest('.respuesta-item').remove();
-
-        // Deshabilitar botón eliminar de la primera respuesta si solo queda una
-        if ($('.respuesta-item').length === 1) {
-            $('.btn-remove-respuesta:first').prop('disabled', true);
-        }
-
-                        // Reindexar los campos
-        $('.respuesta-item').each(function(index) {
-            // Actualizar nombres de campos
-            $(this).find('input[name*="[texto]"]').attr('name', 'respuestas[' + index + '][texto]');
-            $(this).find('input[name*="[orden]"]').attr('name', 'respuestas[' + index + '][orden]');
- 
-            // Actualizar IDs de campos
-            $(this).find('input[name*="[texto]"]').attr('id', 'respuesta-texto-' + index);
-            $(this).find('input[name*="[orden]"]').attr('id', 'respuesta-orden-' + index);
-            
-            // Actualizar ID del botón eliminar
-            $(this).find('.btn-remove-respuesta').attr('id', 'btn-remove-' + index);
- 
-            // Actualizar el valor del orden
-            $(this).find('input[name*="[orden]"]').val(index + 1);
-        });
-
-        respuestaIndex = $('.respuesta-item').length;
-
-        // Actualizar contador
-        $('#numRespuestas').text($('.respuesta-item').length);
-    });
-
-    // Validación del formulario
-    $('#respuestasForm').submit(function(e) {
-        const respuestas = $('input[name*="[texto]"]').filter(function() {
-            return $(this).val().trim() !== '';
-        });
-
-        if (respuestas.length === 0) {
+        // Usamos delegación de eventos para que funcione si el botón se crea dinámicamente
+        $(document).on('click', '#btnAgregarRespuesta', function (e) {
             e.preventDefault();
-            alert('Debes agregar al menos una opción de respuesta.');
-            return false;
-        }
 
-        // Validar que no haya textos duplicados
-        const textos = [];
-        let hayDuplicados = false;
-
-        respuestas.each(function() {
-            const texto = $(this).val().trim().toLowerCase();
-            if (textos.includes(texto)) {
-                hayDuplicados = true;
-                return false;
+            let contenedor = $('#contenedorRespuestas');
+            if (contenedor.length === 0) {
+                console.error('⚠ Contenedor de respuestas no encontrado');
+                return;
             }
-            textos.push(texto);
+
+            // Crear nueva respuesta
+            let nuevaRespuesta = `
+                <div class="respuesta-item mb-2">
+                    <input type="text" name="respuestas[]" class="form-control mb-1" placeholder="Escribe una respuesta" required>
+                    <button type="button" class="btn btn-danger btn-sm btnEliminarRespuesta">Eliminar</button>
+                </div>
+            `;
+
+            contenedor.append(nuevaRespuesta);
+            console.log("✅ Respuesta agregada.");
         });
 
-        if (hayDuplicados) {
-            e.preventDefault();
-            alert('No puedes tener opciones de respuesta duplicadas.');
-            return false;
-        }
+        // Delegar evento para eliminar respuestas
+        $(document).on('click', '.btnEliminarRespuesta', function () {
+            $(this).closest('.respuesta-item').remove();
+            console.log("🗑 Respuesta eliminada.");
+        });
     });
 
-    // Confirmación antes de cancelar
-    $('a[href*="cancel"]').click(function(e) {
-        if (!confirm('¿Estás seguro de que quieres cancelar el wizard? Las respuestas agregadas se guardarán.')) {
-            e.preventDefault();
-        }
-    });
 });
+
 </script>
 @endsection
