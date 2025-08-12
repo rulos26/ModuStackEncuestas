@@ -36,15 +36,23 @@
     </div>
 
     <!-- CONTADOR DE PREGUNTAS EN SESIÓN -->
-    @if(Session::get('wizard_preguntas_count', 0) > 0)
-        <div class="alert alert-info">
-            <h5><i class="fas fa-info-circle"></i> Sesión Activa</h5>
+    @if(Session::get('wizard_preguntas_count', 0) > 0 && Session::get('wizard_encuesta_id'))
+        <div class="alert alert-success">
+            <h5><i class="fas fa-play-circle"></i> Sesión Activa</h5>
             <p class="mb-0">
                 <strong>{{ Session::get('wizard_preguntas_count', 0) }}</strong> pregunta(s) creada(s) en esta sesión.
-                <a href="{{ route('preguntas.wizard.cancel') }}" class="btn btn-sm btn-outline-danger ml-2"
-                   onclick="return confirm('¿Estás seguro de que quieres cancelar el wizard? Se perderán los datos de la sesión.')">
-                    <i class="fas fa-times"></i> Cancelar Sesión
-                </a>
+                <span class="badge badge-primary ml-2">
+                    <i class="fas fa-poll"></i> Encuesta ID: {{ Session::get('wizard_encuesta_id') }}
+                </span>
+                <div class="mt-2">
+                    <a href="{{ route('preguntas.wizard.create') }}" class="btn btn-success btn-sm">
+                        <i class="fas fa-plus"></i> Continuar Agregando Preguntas
+                    </a>
+                    <a href="{{ route('preguntas.wizard.cancel') }}" class="btn btn-outline-danger btn-sm ml-2"
+                       onclick="return confirm('¿Estás seguro de que quieres cancelar el wizard? Se perderán los datos de la sesión.')">
+                        <i class="fas fa-times"></i> Cancelar Sesión
+                    </a>
+                </div>
             </p>
         </div>
     @endif

@@ -60,7 +60,8 @@ class PreguntaWizardController extends Controller
     public function create(Request $request)
     {
         try {
-            $encuestaId = $request->get('encuesta_id');
+            // Obtener encuesta ID desde request o sesión
+            $encuestaId = $request->get('encuesta_id') ?? Session::get('wizard_encuesta_id');
 
             if (!$encuestaId) {
                 return redirect()->route('preguntas.wizard.index')
@@ -75,13 +76,16 @@ class PreguntaWizardController extends Controller
                 return $this->redirectIfNoAccess('No tienes permisos para modificar esta encuesta.');
             }
 
-            // Guardar encuesta seleccionada en sesión
-            Session::put('wizard_encuesta_id', $encuestaId);
+            // Guardar encuesta seleccionada en sesión si no existe
+            if (!Session::has('wizard_encuesta_id')) {
+                Session::put('wizard_encuesta_id', $encuestaId);
+            }
 
             Log::info('Acceso al wizard de preguntas', [
                 'user_id' => Auth::id(),
                 'encuesta_id' => $encuestaId,
-                'preguntas_existentes' => $encuesta->preguntas->count()
+                'preguntas_existentes' => $encuesta->preguntas->count(),
+                'preguntas_en_sesion' => Session::get('wizard_preguntas_count', 0)
             ]);
 
             return view('preguntas.wizard.create', compact('encuesta'));
@@ -255,8 +259,19 @@ class PreguntaWizardController extends Controller
             $encuestaId = Session::get('wizard_encuesta_id');
             $preguntasCount = Session::get('wizard_preguntas_count', 0);
 
+            if (!$encuestaId) {
+                return redirect()->route('preguntas.wizard.index')
+                    ->with('error', 'Sesión de wizard expirada. Selecciona una encuesta nuevamente.');
+            }
+
             if ($action === 'continue') {
-                // Continuar agregando preguntas
+                // Continuar agregando preguntas - mantener la sesión activa
+                Log::info('Continuando wizard de preguntas', [
+                    'user_id' => Auth::id(),
+                    'encuesta_id' => $encuestaId,
+                    'preguntas_en_sesion' => $preguntasCount
+                ]);
+
                 return redirect()->route('preguntas.wizard.create')
                     ->with('success', 'Pregunta agregada correctamente. Puedes agregar otra pregunta.');
             } else {
@@ -272,8 +287,15 @@ class PreguntaWizardController extends Controller
                     'preguntas_creadas' => $preguntasCount
                 ]);
 
-                return redirect()->route('encuestas.show', $encuestaId)
+                // Crear respuesta con cookies expiradas para limpiar el estado
+                $response = redirect()->route('encuestas.show', $encuestaId)
                     ->with('success', "Wizard completado. Se agregaron {$preguntasCount} pregunta(s) a la encuesta.");
+
+                // Limpiar cookies del wizard
+                $response->cookie('wizard_encuesta_id', '', -1);
+                $response->cookie('wizard_preguntas_count', '', -1);
+
+                return $response;
             }
         } catch (Exception $e) {
             Log::error('Error en confirmación del wizard', [
@@ -294,17 +316,26 @@ class PreguntaWizardController extends Controller
     {
         try {
             $encuestaId = Session::get('wizard_encuesta_id');
+            $preguntasCount = Session::get('wizard_preguntas_count', 0);
 
             // Limpiar sesión
             Session::forget(['wizard_encuesta_id', 'wizard_preguntas_count']);
 
             Log::info('Wizard de preguntas cancelado', [
                 'user_id' => Auth::id(),
-                'encuesta_id' => $encuestaId
+                'encuesta_id' => $encuestaId,
+                'preguntas_en_sesion' => $preguntasCount
             ]);
 
-            return redirect()->route('preguntas.wizard.index')
+            // Crear respuesta con cookies expiradas para limpiar el estado
+            $response = redirect()->route('preguntas.wizard.index')
                 ->with('info', 'Wizard cancelado. No se guardaron cambios.');
+
+            // Limpiar cookies del wizard
+            $response->cookie('wizard_encuesta_id', '', -1);
+            $response->cookie('wizard_preguntas_count', '', -1);
+
+            return $response;
 
         } catch (Exception $e) {
             Log::error('Error cancelando wizard', [

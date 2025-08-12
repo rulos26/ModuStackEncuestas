@@ -38,7 +38,7 @@
 
     <!-- ESTADÍSTICAS DE LA SESIÓN -->
     <div class="row mb-4">
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="info-box bg-success">
                 <span class="info-box-icon"><i class="fas fa-check-circle"></i></span>
                 <div class="info-box-content">
@@ -53,7 +53,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="info-box bg-info">
                 <span class="info-box-icon"><i class="fas fa-list"></i></span>
                 <div class="info-box-content">
@@ -68,7 +68,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="info-box bg-warning">
                 <span class="info-box-icon"><i class="fas fa-poll"></i></span>
                 <div class="info-box-content">
@@ -79,6 +79,21 @@
                     </div>
                     <span class="progress-description">
                         Preguntas totales
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="info-box bg-primary">
+                <span class="info-box-icon"><i class="fas fa-clock"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Sesión Activa</span>
+                    <span class="info-box-number">ID: {{ $encuesta->id }}</span>
+                    <div class="progress">
+                        <div class="progress-bar" style="width: 100%"></div>
+                    </div>
+                    <span class="progress-description">
+                        {{ $encuesta->titulo }}
                     </span>
                 </div>
             </div>

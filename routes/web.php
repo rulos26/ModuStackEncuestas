@@ -383,7 +383,7 @@ Route::middleware(['auth'])->prefix('envio-masivo')->name('envio-masivo.')->grou
 });
 
 // Wizard de preguntas (rutas independientes)
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'wizard.session'])->group(function () {
     Route::get('preguntas/wizard', [App\Http\Controllers\PreguntaWizardController::class, 'index'])->name('preguntas.wizard.index');
     Route::get('preguntas/wizard/create', [App\Http\Controllers\PreguntaWizardController::class, 'create'])->name('preguntas.wizard.create');
     Route::post('preguntas/wizard/store', [App\Http\Controllers\PreguntaWizardController::class, 'store'])->name('preguntas.wizard.store');
