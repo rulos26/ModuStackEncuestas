@@ -179,6 +179,7 @@ class RespuestaWizardController extends Controller
                     ->with('success', '¡Has configurado todas las respuestas!');
             }
 
+            // Volver a mostrar la siguiente pregunta
             return redirect()->route('respuestas.wizard.responder')
                 ->with('success', "Se agregaron {$respuestasCreadas} respuesta(s). Continuando con la siguiente pregunta.");
 
