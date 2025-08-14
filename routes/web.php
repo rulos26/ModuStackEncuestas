@@ -72,13 +72,13 @@ Route::middleware(['auth'])->group(function () {
     Route::post('testing/run', [App\Http\Controllers\TestRunnerController::class, 'run'])->name('testing.run');
     Route::post('testing/command', [App\Http\Controllers\TestRunnerController::class, 'runCommand'])->name('testing.command');
     Route::get('testing/system-info', [App\Http\Controllers\TestRunnerController::class, 'systemInfo'])->name('testing.system-info');
-
-    // Pruebas de Encuesta Pública
-    Route::get('testing/encuesta-publica', [App\Http\Controllers\TestingEncuestaPublicaController::class, 'index'])->name('testing.encuesta-publica');
-    Route::post('testing/encuesta-publica', [App\Http\Controllers\TestingEncuestaPublicaController::class, 'ejecutarPrueba'])->name('testing.encuesta-publica');
-    Route::get('testing/encuesta-publica/logs', [App\Http\Controllers\TestingEncuestaPublicaController::class, 'obtenerLogs'])->name('testing.encuesta-publica-logs');
-    Route::get('testing/encuesta-publica/vista/{encuesta_id}', [App\Http\Controllers\TestingEncuestaPublicaController::class, 'mostrarVistaPublica'])->name('testing.encuesta-publica-vista');
 });
+
+// Pruebas de Encuesta Pública (RUTAS PÚBLICAS - sin autenticación)
+Route::get('testing/encuesta-publica', [App\Http\Controllers\TestingEncuestaPublicaController::class, 'index'])->name('testing.encuesta-publica');
+Route::post('testing/encuesta-publica', [App\Http\Controllers\TestingEncuestaPublicaController::class, 'ejecutarPrueba'])->name('testing.encuesta-publica');
+Route::get('testing/encuesta-publica/logs', [App\Http\Controllers\TestingEncuestaPublicaController::class, 'obtenerLogs'])->name('testing.encuesta-publica-logs');
+Route::get('testing/encuesta-publica/vista/{encuesta_id}', [App\Http\Controllers\TestingEncuestaPublicaController::class, 'mostrarVistaPublica'])->name('testing.encuesta-publica-vista');
 
 // Información del sistema
 Route::get('system/info', [App\Http\Controllers\SystemController::class, 'info'])->name('system.info');
