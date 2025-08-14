@@ -21,6 +21,7 @@ class EnvioMasivoEncuestasController extends Controller
     {
         $encuestas = Encuesta::where('estado', 'publicada')
             ->orWhere('estado', 'enviada')
+            ->orWhere('estado', 'borrador')
             ->orderBy('titulo')
             ->get();
 
