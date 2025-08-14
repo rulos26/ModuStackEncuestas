@@ -114,11 +114,12 @@
                             <thead class="thead-dark">
                                 <tr>
                                     <th width="5%">#</th>
-                                    <th width="25%">Pregunta</th>
-                                    <th width="15%">Tipo</th>
-                                    <th width="35%">Opciones de Respuesta</th>
-                                    <th width="10%">Cantidad</th>
+                                    <th width="20%">Pregunta</th>
+                                    <th width="12%">Tipo</th>
+                                    <th width="30%">Opciones de Respuesta</th>
+                                    <th width="8%">Cantidad</th>
                                     <th width="10%">Estado</th>
+                                    <th width="15%">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -178,10 +179,25 @@
                                                 </span>
                                             @endif
                                         </td>
+                                        <td class="text-center">
+                                            @if($pregunta->respuestas->count() > 0)
+                                                <button type="button" class="btn btn-sm btn-outline-primary"
+                                                        onclick="configurarPregunta({{ $pregunta->id }})"
+                                                        title="Editar respuestas">
+                                                    <i class="fas fa-edit"></i> Editar
+                                                </button>
+                                            @else
+                                                <button type="button" class="btn btn-sm btn-warning"
+                                                        onclick="configurarPregunta({{ $pregunta->id }})"
+                                                        title="Configurar respuestas">
+                                                    <i class="fas fa-cogs"></i> Configurar
+                                                </button>
+                                            @endif
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="text-center text-muted">
+                                        <td colspan="7" class="text-center text-muted">
                                             <i class="fas fa-info-circle"></i> No hay preguntas para mostrar
                                         </td>
                                     </tr>
@@ -232,5 +248,29 @@ $(document).ready(function() {
         }
     });
 });
+
+// Función para configurar una pregunta específica
+function configurarPregunta(preguntaId) {
+    // Guardar el ID de la pregunta en la sesión
+    $.ajax({
+        url: '{{ route("respuestas.wizard.configurar.pregunta") }}',
+        method: 'POST',
+        data: {
+            _token: '{{ csrf_token() }}',
+            pregunta_id: preguntaId
+        },
+        success: function(response) {
+            if (response.success) {
+                // Redirigir al wizard de configuración
+                window.location.href = '{{ route("respuestas.wizard.responder") }}';
+            } else {
+                alert('Error: ' + response.message);
+            }
+        },
+        error: function() {
+            alert('Error al procesar la solicitud. Inténtalo de nuevo.');
+        }
+    });
+}
 </script>
 @endsection

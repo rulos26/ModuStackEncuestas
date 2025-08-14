@@ -247,6 +247,7 @@ console.log('=== FUNCIONES GLOBALES DEFINIDAS EN HEAD ===');
                                     </div>
                                 </div>
                             </div>
+                            
 
                             <div class="mt-3">
                                 <div class="d-flex justify-content-between align-items-center">

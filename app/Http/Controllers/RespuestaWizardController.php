@@ -319,6 +319,92 @@ class RespuestaWizardController extends Controller
     }
 
     /**
+     * Configurar una pregunta específica desde el resumen
+     */
+    public function configurarPregunta(Request $request)
+    {
+        try {
+            $preguntaId = $request->get('pregunta_id');
+
+            if (!$preguntaId) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'ID de pregunta no proporcionado.'
+                ]);
+            }
+
+            $pregunta = Pregunta::with('encuesta')->findOrFail($preguntaId);
+
+            // Verificar que la pregunta pertenece a la encuesta en sesión
+            $encuestaId = Session::get('wizard_encuesta_id');
+            if ($pregunta->encuesta_id != $encuestaId) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'La pregunta no pertenece a la encuesta actual.'
+                ]);
+            }
+
+            // Verificar que la pregunta es del tipo correcto
+            if (!in_array($pregunta->tipo, ['seleccion_unica', 'casillas_verificacion', 'seleccion_multiple'])) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Este tipo de pregunta no requiere configuración de respuestas.'
+                ]);
+            }
+
+            // Encontrar el índice de la pregunta en la lista de preguntas de la encuesta
+            $preguntas = $pregunta->encuesta->preguntas()
+                ->whereIn('tipo', ['seleccion_unica', 'casillas_verificacion', 'seleccion_multiple'])
+                ->whereDoesntHave('respuestas')
+                ->orderBy('orden')
+                ->get();
+
+            $preguntaIndex = $preguntas->search(function($item) use ($preguntaId) {
+                return $item->id == $preguntaId;
+            });
+
+            if ($preguntaIndex === false) {
+                // Si la pregunta ya tiene respuestas, buscar en todas las preguntas
+                $todasPreguntas = $pregunta->encuesta->preguntas()
+                    ->whereIn('tipo', ['seleccion_unica', 'casillas_verificacion', 'seleccion_multiple'])
+                    ->orderBy('orden')
+                    ->get();
+
+                $preguntaIndex = $todasPreguntas->search(function($item) use ($preguntaId) {
+                    return $item->id == $preguntaId;
+                });
+            }
+
+            // Guardar el índice en la sesión
+            Session::put('wizard_pregunta_index', $preguntaIndex);
+
+            Log::info('Pregunta específica seleccionada para configuración', [
+                'user_id' => Auth::id(),
+                'encuesta_id' => $encuestaId,
+                'pregunta_id' => $preguntaId,
+                'pregunta_index' => $preguntaIndex
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Pregunta configurada para edición.'
+            ]);
+
+        } catch (Exception $e) {
+            Log::error('Error configurando pregunta específica', [
+                'user_id' => Auth::id(),
+                'pregunta_id' => $request->get('pregunta_id'),
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al configurar la pregunta: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
      * Validar respuestas según el tipo de pregunta
      */
     private function validarRespuestas(Request $request, Pregunta $pregunta)

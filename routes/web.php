@@ -339,6 +339,7 @@ Route::middleware(['auth', 'respuesta.wizard.session'])->group(function () {
     Route::post('respuestas/wizard/store', [App\Http\Controllers\RespuestaWizardController::class, 'store'])->name('respuestas.wizard.store');
     Route::get('respuestas/wizard/resumen', [App\Http\Controllers\RespuestaWizardController::class, 'resumen'])->name('respuestas.wizard.resumen');
     Route::post('respuestas/wizard/confirmar', [App\Http\Controllers\RespuestaWizardController::class, 'confirmar'])->name('respuestas.wizard.confirmar');
+    Route::post('respuestas/wizard/configurar-pregunta', [App\Http\Controllers\RespuestaWizardController::class, 'configurarPregunta'])->name('respuestas.wizard.configurar.pregunta');
     Route::get('respuestas/wizard/cancel', [App\Http\Controllers\RespuestaWizardController::class, 'cancel'])->name('respuestas.wizard.cancel');
 });
 
