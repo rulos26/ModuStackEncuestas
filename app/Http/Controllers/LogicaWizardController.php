@@ -313,6 +313,10 @@ class LogicaWizardController extends Controller
                 'encuesta_id' => $encuestaId
             ]);
 
+            // Actualizar el estado de la encuesta a "enviada"
+            $encuesta->estado = 'publicada';
+            $encuesta->save();
+
             return redirect()->route('encuestas.index')
                 ->with('success', 'Lógica de la encuesta configurada exitosamente.');
 
