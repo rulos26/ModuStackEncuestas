@@ -135,14 +135,16 @@
                                             @endif
                                         </td>
                                         <td>
-                                            <span class="badge badge-{{ $pregunta->tipo === 'seleccion_unica' ? 'primary' : ($pregunta->tipo === 'casillas_verificacion' ? 'success' : 'info') }}">
-                                                <i class="fas fa-{{ $pregunta->tipo === 'seleccion_unica' ? 'dot-circle' : ($pregunta->tipo === 'casillas_verificacion' ? 'check-square' : 'list-check') }}"></i>
+                                            <span class="badge badge-{{ $pregunta->tipo === 'seleccion_unica' ? 'primary' : ($pregunta->tipo === 'casillas_verificacion' ? 'success' : ($pregunta->tipo === 'lista_desplegable' ? 'warning' : 'info')) }}">
+                                                <i class="fas fa-{{ $pregunta->tipo === 'seleccion_unica' ? 'dot-circle' : ($pregunta->tipo === 'casillas_verificacion' ? 'check-square' : ($pregunta->tipo === 'lista_desplegable' ? 'chevron-down' : 'list-check')) }}"></i>
                                                 @if($pregunta->tipo === 'seleccion_unica')
                                                     Selección Única
                                                 @elseif($pregunta->tipo === 'casillas_verificacion')
                                                     Casillas
                                                 @elseif($pregunta->tipo === 'seleccion_multiple')
                                                     Selección Múltiple
+                                                @elseif($pregunta->tipo === 'lista_desplegable')
+                                                    Lista Desplegable
                                                 @endif
                                             </span>
                                         </td>
