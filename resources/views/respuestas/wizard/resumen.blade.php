@@ -237,22 +237,12 @@
 </div>
 @endsection
 
-@section('scripts')
+@section('js')
 <script>
-$(document).ready(function() {
-    // Tooltips
-    $('[data-toggle="tooltip"]').tooltip();
+// Función para configurar una pregunta específica - Definida globalmente
+window.configurarPregunta = function(preguntaId) {
+    console.log('Función configurarPregunta llamada con ID:', preguntaId);
 
-    // Confirmación antes de finalizar
-    $('form[action*="confirmar"]').submit(function(e) {
-        if (!confirm('¿Estás seguro de que quieres finalizar el wizard? Se limpiará la sesión actual.')) {
-            e.preventDefault();
-        }
-    });
-});
-
-// Función para configurar una pregunta específica
-function configurarPregunta(preguntaId) {
     // Guardar el ID de la pregunta en la sesión
     $.ajax({
         url: '{{ route("respuestas.wizard.configurar.pregunta") }}',
@@ -273,6 +263,24 @@ function configurarPregunta(preguntaId) {
             alert('Error al procesar la solicitud. Inténtalo de nuevo.');
         }
     });
-}
+};
+
+console.log('=== FUNCIÓN CONFIGURAR PREGUNTA DEFINIDA GLOBALMENTE ===');
+</script>
+@endsection
+
+@section('scripts')
+<script>
+$(document).ready(function() {
+    // Tooltips
+    $('[data-toggle="tooltip"]').tooltip();
+
+    // Confirmación antes de finalizar
+    $('form[action*="confirmar"]').submit(function(e) {
+        if (!confirm('¿Estás seguro de que quieres finalizar el wizard? Se limpiará la sesión actual.')) {
+            e.preventDefault();
+        }
+    });
+});
 </script>
 @endsection
