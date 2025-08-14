@@ -254,8 +254,16 @@ class EncuestaPublicaController extends Controller
      */
     public function responder(Request $request, $id)
     {
-        // DEBUG - COMENTADO PERO NO BORRADO
-        dd($request->all());
+        // 🔍 DEBUG: Información de entrada
+        Log::info('🔍 ENCUESTA PÚBLICA - Iniciando método responder', [
+            'encuesta_id' => $id,
+            'request_data' => $request->all(),
+            'request_url' => request()->fullUrl(),
+            'user_agent' => request()->userAgent(),
+            'ip' => request()->ip(),
+            'timestamp' => now()->toDateTimeString()
+        ]);
+
         try {
             DB::beginTransaction();
 
