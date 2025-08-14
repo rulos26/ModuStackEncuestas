@@ -255,7 +255,7 @@ class EncuestaPublicaController extends Controller
     public function responder(Request $request, $id)
     {
         // DEBUG - COMENTADO PERO NO BORRADO
-
+        dd($request->all());
         try {
             DB::beginTransaction();
 
