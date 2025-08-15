@@ -105,8 +105,17 @@ class EncuestaRespuestasSaveController extends Controller
     {
         $encuesta = Encuesta::with(['empresa'])
         ->where('id', $slug)
-        
+
         ->first();
+        if (!$encuesta) {
+            Log::warning("❌ FIN ENCUESTA - Encuesta no encontrada: {$slug}");
+            return view('encuestas.fin', [
+                'encuesta' => null,
+                'error' => 'Encuesta no encontrada.'
+            ]);
+        }
+        return view('encuestas.fin', compact('encuesta'));
+
         dd($slug,$encuesta);
 
 
