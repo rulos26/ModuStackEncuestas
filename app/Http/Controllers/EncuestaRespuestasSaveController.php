@@ -76,7 +76,7 @@ class EncuestaRespuestasSaveController extends Controller
             'encuestas_pendientes' => $encuesta->encuestas_pendientes
         ]);
 
-        return redirect()->route('finalizar', $encuesta->slug);
+        return redirect()->route('finalizar', $encuesta->slug,$id);
 
         dd(
             'encuesta_id',
@@ -100,7 +100,7 @@ class EncuestaRespuestasSaveController extends Controller
         );
     }
 
-    public function finEncuesta($slug)
+    public function finEncuesta($slug,$id)
     {
        // dd($slug);
         $encuesta = Encuesta::with(['empresa'])

@@ -25,7 +25,7 @@ Auth::routes();
 
 Route::post('/encuesta/respuestas/save/{id}', [EncuestaRespuestasSaveController::class, 'save'])
      ->name('encuesta.respuestas.save');
-Route::get('/encuesta/fin/{slug}', [EncuestaRespuestasSaveController::class, 'finEncuesta'])
+Route::get('/encuesta/fin/{slug}/{id}', [EncuestaRespuestasSaveController::class, 'finEncuesta'])
      ->name('finalizar');
 
 
