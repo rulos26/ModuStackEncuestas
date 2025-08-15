@@ -107,7 +107,7 @@ class EncuestaRespuestasSaveController extends Controller
                 ->where('slug', $slug)
                 ->where('estado', 'publicada')
                 ->first();
-        dd($encuesta);
+        dd($slug,$encuesta);
     }
 
     private function guardarRespuestaUsuario($encuestaId, $preguntaId, $respuestaId, $respuestaTexto, $request)
