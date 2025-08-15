@@ -34,7 +34,7 @@ class RespuestasController extends Controller
 
             $encuestas = Encuesta::with(['empresa'])
                 ->where('estado', 'publicada')
-                ->where('habilitada', true)
+                
                 ->orderBy('created_at', 'desc')
                 ->get();
 

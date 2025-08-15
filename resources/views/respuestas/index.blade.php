@@ -84,7 +84,7 @@
                                         <div class="form-group">
                                             <label for="encuesta_id">
                                                 <i class="fas fa-list"></i>
-                                                Encuesta a Analizar
+                                                Encuesta a Analizar 
                                             </label>
                                             <select name="encuesta_id" id="encuesta_id" class="form-control @error('encuesta_id') is-invalid @enderror" required>
                                                 <option value="">-- Seleccionar Encuesta --</option>
