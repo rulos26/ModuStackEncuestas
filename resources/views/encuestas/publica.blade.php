@@ -26,7 +26,7 @@
             @endif
         </div>
 
-        <form action="{{ route('encuesta.respuestas.save') }}" method="POST">
+        <form method="POST" action="{{ route('responder', $encuesta->id) }}" id="encuesta-form">
             @csrf
             @foreach($encuesta->preguntas as $pregunta)
                 <div class="pregunta-card">
