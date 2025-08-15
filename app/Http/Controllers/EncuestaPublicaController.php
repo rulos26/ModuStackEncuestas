@@ -254,7 +254,7 @@ class EncuestaPublicaController extends Controller
      */
     public function responder(Request $request, $id)
     {
-        dd($request->all());
+        //dd($request->all());
 
         // 🔍 DEBUG: Información de entrada
         Log::info('🔍 ENCUESTA PÚBLICA - Iniciando método responder', [
@@ -275,7 +275,7 @@ class EncuestaPublicaController extends Controller
                 ->where('habilitada', true)
                 ->where('estado', 'publicada')
                 ->firstOrFail();
-
+            dd($encuesta);
             if (!$encuesta->estaDisponible()) {
                 return redirect()->back()->with('error', 'Esta encuesta no está disponible en este momento.');
             }
