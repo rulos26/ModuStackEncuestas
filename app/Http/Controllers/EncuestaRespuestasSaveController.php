@@ -102,7 +102,12 @@ class EncuestaRespuestasSaveController extends Controller
 
     public function finEncuesta($slug)
     {
-        dd($slug);
+       // dd($slug);
+        $encuesta = Encuesta::with(['empresa'])
+                ->where('slug', $slug)
+                ->where('estado', 'publicada')
+                ->first();
+        dd($encuesta);
     }
 
     private function guardarRespuestaUsuario($encuestaId, $preguntaId, $respuestaId, $respuestaTexto, $request)
