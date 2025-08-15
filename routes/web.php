@@ -197,7 +197,7 @@ Route::middleware(['auth'])->group(function () {
 
 // Rutas públicas de encuestas (sin autenticación, sin sesiones, sin cookies)
 Route::post('{id}', [EncuestaPublicaController::class, 'responder'])
-        ->name('responder');
+        ->name('responder')->middleware('no.session');
 Route::prefix('publica')
     ->name('encuestas.')
     ->withoutMiddleware([
