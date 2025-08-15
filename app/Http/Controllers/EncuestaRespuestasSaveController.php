@@ -103,9 +103,13 @@ class EncuestaRespuestasSaveController extends Controller
 
     public function finEncuesta($slug)
     {
-        dd($slug);
-
+        $encuesta = Encuesta::with(['empresa'])
+        ->where('id', $slug)
         
+        ->first();
+        dd($slug,$encuesta);
+
+
     }
 
     private function guardarRespuestaUsuario($encuestaId, $preguntaId, $respuestaId, $respuestaTexto, $request)
