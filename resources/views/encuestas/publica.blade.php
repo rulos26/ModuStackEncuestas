@@ -26,7 +26,7 @@
             @endif
         </div>
 
-        <form method="POST" action="{{ route('encuestas.responder', $encuesta->id) }}" id="encuesta-form">
+        <form method="POST" action="{{ route('responder', $encuesta->id) }}" id="encuesta-form">
 
             @foreach($encuesta->preguntas as $pregunta)
                 <div class="pregunta-card">

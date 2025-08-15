@@ -254,6 +254,8 @@ class EncuestaPublicaController extends Controller
      */
     public function responder(Request $request, $id)
     {
+        dd($request->all());
+
         // 🔍 DEBUG: Información de entrada
         Log::info('🔍 ENCUESTA PÚBLICA - Iniciando método responder', [
             'encuesta_id' => $id,

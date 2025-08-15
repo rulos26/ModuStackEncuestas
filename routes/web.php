@@ -196,6 +196,8 @@ Route::middleware(['auth'])->group(function () {
 // ============================================================================
 
 // Rutas públicas de encuestas (sin autenticación, sin sesiones, sin cookies)
+Route::post('{id}', [EncuestaPublicaController::class, 'responder'])
+        ->name('responder');
 Route::prefix('publica')
     ->name('encuestas.')
     ->withoutMiddleware([
@@ -216,9 +218,9 @@ Route::prefix('publica')
         Route::get('encuesta/{id}', [EncuestaPublicaController::class, 'mostrarVistaPublica'])
         ->name('publica.por-id')
         ->middleware(['no.session']);
-    Route::post('{id}', [EncuestaPublicaController::class, 'responder'])
+    /* Route::post('{id}', [EncuestaPublicaController::class, 'responder'])
         ->name('responder')
-        ->middleware('no.session');
+        ->middleware('no.session');*/
     Route::get('{slug}/fin', [EncuestaPublicaController::class, 'finEncuesta'])
         ->name('fin')
         ->middleware('no.session');
