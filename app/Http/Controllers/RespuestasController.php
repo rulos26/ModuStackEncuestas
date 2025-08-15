@@ -33,7 +33,7 @@ class RespuestasController extends Controller
             }
 
             $encuestas = Encuesta::with(['empresa'])->get();
-            dd($encuestas);
+            //dd($encuestas);
             return view('respuestas.index', compact('encuestas'));
 
         } catch (Exception $e) {
