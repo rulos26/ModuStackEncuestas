@@ -34,10 +34,10 @@ class RespuestasController extends Controller
 
             $encuestas = Encuesta::with(['empresa'])
                 ->where('estado', 'publicada')
-                
+
                 ->orderBy('created_at', 'desc')
                 ->get();
-
+            dd($encuestas);
             return view('respuestas.index', compact('encuestas'));
 
         } catch (Exception $e) {
