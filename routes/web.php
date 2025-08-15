@@ -13,6 +13,7 @@ use App\Http\Controllers\EncuestaLogicaController;
 use App\Http\Controllers\EncuestaPreviewController;
 use App\Http\Controllers\EncuestaPublicaController;
 use App\Http\Controllers\EncuestaRespuestaController;
+use App\Http\Controllers\EncuestaRespuestasSaveController;
 use App\Http\Controllers\PreguntaController;
 
 Route::get('/', function () {
@@ -22,6 +23,8 @@ Route::get('/', function () {
 // Rutas de autenticación (login, registro, etc.)
 Auth::routes();
 
+Route::post('/encuesta/respuestas/save', [EncuestaRespuestasSaveController::class, 'save'])
+     ->name('encuesta.respuestas.save');
 
 
 // Ruta al home después de login
