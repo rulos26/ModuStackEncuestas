@@ -77,7 +77,7 @@ class EncuestaRespuestasSaveController extends Controller
             'encuestas_pendientes' => $encuesta->encuestas_pendientes
         ]);
 
-        return redirect()->route('finalizar', $encuesta->slug, $encuesta->id);
+        return redirect()->route('finalizar',  $encuesta->id);
 
         dd(
             'encuesta_id',
@@ -101,51 +101,11 @@ class EncuestaRespuestasSaveController extends Controller
         );
     }
 
-    public function finEncuesta($slug, $id)
+    public function finEncuesta($slug)
     {
-        try {
-            Log::info('🏁 ENCUESTA - Accediendo a página de fin', [
-                'slug' => $slug,
-                'encuesta_id' => $id
-            ]);
+        dd($slug);
 
-            $encuesta = Encuesta::with(['empresa'])
-                ->where('slug', $slug)
-                ->where('id', $id)
-                ->where('estado', 'publicada')
-                ->first();
-  dd($encuesta);
-            if (!$encuesta) {
-                Log::warning('⚠️ ENCUESTA - Encuesta no encontrada para fin', [
-                    'slug' => $slug,
-                    'encuesta_id' => $id
-                ]);
-
-                return view('encuestas.fin', [
-                    'encuesta' => null,
-                    'error' => 'Encuesta no encontrada o no disponible.'
-                ]);
-            }
-
-            Log::info('✅ ENCUESTA - Página de fin cargada', [
-                'encuesta_id' => $encuesta->id,
-                'titulo' => $encuesta->titulo
-            ]);
-
-            return view('encuestas.fin', compact('encuesta'));
-
-        } catch (Exception $e) {
-            Log::error('❌ ENCUESTA - Error en página de fin', [
-                'slug' => $slug,
-                'encuesta_id' => $id,
-                'error' => $e->getMessage()
-            ]);
-
-            return view('encuestas.fin', [
-                'encuesta' => null,
-                'error' => 'Error al cargar la página de fin.'
-            ]);
-        }
+        
     }
 
     private function guardarRespuestaUsuario($encuestaId, $preguntaId, $respuestaId, $respuestaTexto, $request)
