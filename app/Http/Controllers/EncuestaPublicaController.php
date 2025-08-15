@@ -254,7 +254,13 @@ class EncuestaPublicaController extends Controller
      */
     public function responder(Request $request, $id)
     {
-        //dd($request->all());
+        // 1. Buscar y validar encuesta
+        $encuesta = Encuesta::with(['preguntas.respuestas'])
+        ->where('id', $id)
+        ->where('habilitada', true)
+        ->where('estado', 'publicada')
+        ->firstOrFail();
+        dd($request->all(),$encuesta,$id);
 
         // 🔍 DEBUG: Información de entrada
         Log::info('🔍 ENCUESTA PÚBLICA - Iniciando método responder', [
