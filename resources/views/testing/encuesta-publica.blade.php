@@ -81,7 +81,8 @@
                                             <label for="tipo_prueba">Tipo de Prueba:</label>
                                             <select class="form-control" id="tipo_prueba" name="tipo_prueba">
                                                 <option value="mostrar">Mostrar Encuesta (GET)</option>
-                                                <option value="responder">Responder Encuesta (POST)</option>
+                                                <option value="responder">Responder Encuesta (POST) - SIMULADO</option>
+                                                <option value="responder_real">Responder Encuesta (POST) - GUARDAR EN BD</option>
                                                 <option value="fin">Página de Fin (GET)</option>
                                                 <option value="debug">Debug Completo</option>
                                                 <option value="vista_publica">Probar Vista Pública (Sin Token)</option>
@@ -152,6 +153,13 @@
                                                 onclick="probarVistaPublica()">
                                             <i class="fas fa-eye"></i>
                                             Probar Vista Pública
+                                        </button>
+
+                                        <button type="button"
+                                                class="btn btn-success mb-2"
+                                                onclick="guardarRespuestasReales()">
+                                            <i class="fas fa-save"></i>
+                                            Guardar Respuestas en BD
                                         </button>
                                     </div>
                                 </div>
@@ -360,6 +368,52 @@ function probarVistaPublica() {
                 const urlVista = response.url_vista;
                 window.open(urlVista, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
                 mostrarResultados(response);
+            } else {
+                mostrarError('Error: ' + response.detalles);
+            }
+        },
+        error: function(xhr) {
+            mostrarError('Error en la petición: ' + xhr.responseText);
+        }
+    });
+}
+
+function guardarRespuestasReales() {
+    const encuestaId = $('#encuesta_id').val();
+    const slug = $('#slug_encuesta').val();
+
+    if (!confirm('¿Estás seguro de que quieres guardar respuestas simuladas en la base de datos? Esto incrementará los contadores de la encuesta.')) {
+        return;
+    }
+
+    $('#resultados').html(`
+        <div class="text-center">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+            <p>Guardando respuestas en la base de datos...</p>
+        </div>
+    `);
+
+    $.ajax({
+        url: '{{ route("testing.encuesta-publica") }}',
+        method: 'POST',
+        data: {
+            encuesta_id: encuestaId,
+            slug_encuesta: slug,
+            tipo_prueba: 'responder_real',
+            user_agent: $('#user_agent').val(),
+            ip_address: $('#ip_address').val(),
+            _token: '{{ csrf_token() }}'
+        },
+        success: function(response) {
+            if (response.estado === 'completado') {
+                mostrarResultados(response);
+                // Mostrar alerta de éxito
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Respuestas Guardadas!',
+                    text: `Se guardaron ${response.respuestas_guardadas || 'varias'} respuestas en la base de datos.`,
+                    confirmButtonText: 'OK'
+                });
             } else {
                 mostrarError('Error: ' + response.detalles);
             }

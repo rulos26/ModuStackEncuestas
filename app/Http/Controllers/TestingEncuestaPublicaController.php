@@ -65,6 +65,10 @@ class TestingEncuestaPublicaController extends Controller
                     $resultado = $this->probarResponder($encuestaId, $slug, $resultado);
                     break;
 
+                case 'responder_real':
+                    $resultado = $this->probarResponder($encuestaId, $slug, $resultado);
+                    break;
+
                 case 'fin':
                     $resultado = $this->probarFin($encuestaId, $slug, $resultado);
                     break;
@@ -157,42 +161,127 @@ class TestingEncuestaPublicaController extends Controller
     }
 
     /**
-     * Probar método responder
+     * Probar método responder - AHORA GUARDA EN BD
      */
     private function probarResponder($encuestaId, $slug, $resultado)
     {
-        Log::info('📝 TESTING - Probando método responder', ['encuesta_id' => $encuestaId]);
+        Log::info('📝 TESTING - Probando método responder con guardado real', ['encuesta_id' => $encuestaId]);
 
-        $encuesta = Encuesta::find($encuestaId);
-        if (!$encuesta) {
-            throw new Exception("Encuesta con ID {$encuestaId} no encontrada");
-        }
+        try {
+            DB::beginTransaction();
 
-        // Simular datos de respuesta
-        $respuestasSimuladas = [];
-        foreach ($encuesta->preguntas as $pregunta) {
-            switch ($pregunta->tipo) {
-                case 'respuesta_corta':
-                    $respuestasSimuladas[$pregunta->id] = "Respuesta de prueba para pregunta {$pregunta->id}";
-                    break;
-                case 'seleccion_unica':
-                    if ($pregunta->respuestas->count() > 0) {
-                        $respuestasSimuladas[$pregunta->id] = $pregunta->respuestas->first()->id;
-                    }
-                    break;
-                case 'escala_lineal':
-                    $respuestasSimuladas[$pregunta->id] = rand(1, 5);
-                    break;
+            $encuesta = Encuesta::find($encuestaId);
+            if (!$encuesta) {
+                throw new Exception("Encuesta con ID {$encuestaId} no encontrada");
             }
+
+            // Simular datos de respuesta
+            $respuestasSimuladas = [];
+            $respuestasGuardadas = 0;
+
+            foreach ($encuesta->preguntas as $pregunta) {
+                $respuestaId = null;
+                $respuestaTexto = null;
+
+                switch ($pregunta->tipo) {
+                    case 'respuesta_corta':
+                        $respuestaTexto = "Respuesta de prueba para pregunta {$pregunta->id} - " . now()->format('Y-m-d H:i:s');
+                        $respuestasSimuladas[$pregunta->id] = $respuestaTexto;
+                        break;
+
+                    case 'parrafo':
+                        $respuestaTexto = "Esta es una respuesta de párrafo simulada para la pregunta {$pregunta->id}. Fue generada automáticamente para testing el " . now()->format('Y-m-d H:i:s');
+                        $respuestasSimuladas[$pregunta->id] = $respuestaTexto;
+                        break;
+
+                    case 'seleccion_unica':
+                        if ($pregunta->respuestas->count() > 0) {
+                            $respuestaId = $pregunta->respuestas->first()->id;
+                            $respuestasSimuladas[$pregunta->id] = $respuestaId;
+                        }
+                        break;
+
+                    case 'casillas_verificacion':
+                        if ($pregunta->respuestas->count() > 0) {
+                            // Tomar las primeras 2 respuestas como seleccionadas
+                            $respuestasSeleccionadas = $pregunta->respuestas->take(2)->pluck('id')->toArray();
+                            $respuestasSimuladas[$pregunta->id] = $respuestasSeleccionadas;
+
+                            // Guardar cada selección como respuesta separada
+                            foreach ($respuestasSeleccionadas as $respId) {
+                                $this->guardarRespuestaUsuario($encuesta->id, $pregunta->id, $respId, null, request());
+                                $respuestasGuardadas++;
+                            }
+                            continue; // Continuar con la siguiente pregunta
+                        }
+                        break;
+
+                    case 'lista_desplegable':
+                        if ($pregunta->respuestas->count() > 0) {
+                            $respuestaId = $pregunta->respuestas->first()->id;
+                            $respuestasSimuladas[$pregunta->id] = $respuestaId;
+                        }
+                        break;
+
+                    case 'fecha':
+                        $respuestaTexto = now()->format('Y-m-d');
+                        $respuestasSimuladas[$pregunta->id] = $respuestaTexto;
+                        break;
+
+                    case 'hora':
+                        $respuestaTexto = now()->format('H:i');
+                        $respuestasSimuladas[$pregunta->id] = $respuestaTexto;
+                        break;
+
+                    case 'escala_lineal':
+                        $respuestaTexto = rand(1, 5);
+                        $respuestasSimuladas[$pregunta->id] = $respuestaTexto;
+                        break;
+
+                    default:
+                        $respuestaTexto = "Respuesta simulada para tipo {$pregunta->tipo} - pregunta {$pregunta->id}";
+                        $respuestasSimuladas[$pregunta->id] = $respuestaTexto;
+                        break;
+                }
+
+                // Guardar la respuesta en la base de datos
+                if ($respuestaId || $respuestaTexto) {
+                    $this->guardarRespuestaUsuario($encuesta->id, $pregunta->id, $respuestaId, $respuestaTexto, request());
+                    $respuestasGuardadas++;
+                }
+            }
+
+            // Actualizar contadores de la encuesta
+            $this->actualizarContadoresEncuesta($encuesta);
+
+            DB::commit();
+
+            $resultado['detalles'] = "✅ TESTING - Respuestas guardadas en BD:\n" .
+                                    "   - Encuesta ID: {$encuesta->id}\n" .
+                                    "   - Título: {$encuesta->titulo}\n" .
+                                    "   - Respuestas simuladas: " . count($respuestasSimuladas) . "\n" .
+                                    "   - Respuestas guardadas en BD: {$respuestasGuardadas}\n" .
+                                    "   - Timestamp: " . now()->format('Y-m-d H:i:s') . "\n\n" .
+                                    "📝 Respuestas simuladas:\n" .
+                                    json_encode($respuestasSimuladas, JSON_PRETTY_PRINT);
+
+            Log::info('✅ TESTING - Respuestas guardadas exitosamente', [
+                'encuesta_id' => $encuesta->id,
+                'respuestas_guardadas' => $respuestasGuardadas
+            ]);
+
+            return $resultado;
+
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            Log::error('❌ TESTING - Error guardando respuestas', [
+                'encuesta_id' => $encuestaId,
+                'error' => $e->getMessage()
+            ]);
+
+            throw new Exception("Error guardando respuestas: " . $e->getMessage());
         }
-
-        $resultado['detalles'] = "📝 Simulando respuestas:\n" .
-                                "   - Encuesta ID: {$encuesta->id}\n" .
-                                "   - Preguntas: " . count($respuestasSimuladas) . "\n" .
-                                "   - Respuestas simuladas:\n" .
-                                json_encode($respuestasSimuladas, JSON_PRETTY_PRINT);
-
-        return $resultado;
     }
 
     /**
@@ -395,6 +484,56 @@ class TestingEncuestaPublicaController extends Controller
             return 0;
         } catch (Exception $e) {
             return 0;
+        }
+    }
+
+    /**
+     * Guardar una respuesta de usuario en la base de datos (para testing)
+     */
+    private function guardarRespuestaUsuario($encuestaId, $preguntaId, $respuestaId, $respuestaTexto, $request)
+    {
+        // Verificar que la respuesta existe si es de selección
+        if ($respuestaId) {
+            $pregunta = \App\Models\Pregunta::find($preguntaId);
+            $respuesta = $pregunta->respuestas()->where('id', $respuestaId)->first();
+            if (!$respuesta) {
+                return false; // Respuesta no válida
+            }
+        }
+
+        // Guardar respuesta del usuario
+        DB::table('respuestas_usuario')->insert([
+            'encuesta_id' => $encuestaId,
+            'pregunta_id' => $preguntaId,
+            'respuesta_id' => $respuestaId,
+            'respuesta_texto' => $respuestaTexto,
+            'ip_address' => $request->ip() ?? '127.0.0.1',
+            'user_agent' => $request->userAgent() ?? 'TestingEncuestaPublicaController',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return true;
+    }
+
+    /**
+     * Actualizar contadores de la encuesta después de guardar una respuesta (para testing)
+     */
+    private function actualizarContadoresEncuesta($encuesta)
+    {
+        try {
+            // Incrementar encuestas respondidas
+            $encuesta->increment('encuestas_respondidas');
+
+            // Actualizar encuestas pendientes si es necesario
+            if (isset($encuesta->encuestas_pendientes)) {
+                $encuesta->decrement('encuestas_pendientes');
+            }
+        } catch (Exception $e) {
+            Log::error('Error actualizando contadores de encuesta en testing', [
+                'encuesta_id' => $encuesta->id,
+                'error' => $e->getMessage()
+            ]);
         }
     }
 
