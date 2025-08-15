@@ -76,7 +76,7 @@ class EncuestaRespuestasSaveController extends Controller
             'encuestas_pendientes' => $encuesta->encuestas_pendientes
         ]);
 
-        return redirect()->route('encuestas.fin', $encuesta->slug);
+        return redirect()->route('finalizar', $encuesta->slug);
 
         dd(
             'encuesta_id',
@@ -98,6 +98,11 @@ class EncuestaRespuestasSaveController extends Controller
             'respuestasEnviadas',
             $respuestasEnviadas,
         );
+    }
+
+    public function finEncuesta($slug)
+    {
+        dd($slug);
     }
 
     private function guardarRespuestaUsuario($encuestaId, $preguntaId, $respuestaId, $respuestaTexto, $request)
