@@ -7,8 +7,8 @@ use Illuminate\Http\Request;
 class EncuestaRespuestasSaveController extends Controller
 {
     //
-    public function save(Request $request)
+    public function save(Request $request, $id)
     {
-        dd($request->all());
+        dd($request->all(),$id);
     }
 }

@@ -23,7 +23,7 @@ Route::get('/', function () {
 // Rutas de autenticación (login, registro, etc.)
 Auth::routes();
 
-Route::post('/encuesta/respuestas/save', [EncuestaRespuestasSaveController::class, 'save'])
+Route::post('/encuesta/respuestas/save/{id}', [EncuestaRespuestasSaveController::class, 'save'])
      ->name('encuesta.respuestas.save');
 
 
