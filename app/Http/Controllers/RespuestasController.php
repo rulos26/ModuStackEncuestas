@@ -32,11 +32,7 @@ class RespuestasController extends Controller
                 return $this->redirectIfNoAccess('No tienes permisos para acceder al módulo de respuestas.');
             }
 
-            $encuestas = Encuesta::with(['empresa'])
-                ->where('estado', 'publicada')
-
-                ->orderBy('created_at', 'desc')
-                ->get();
+            $encuestas = Encuesta::with(['empresa'])->get();
             dd($encuestas);
             return view('respuestas.index', compact('encuestas'));
 
